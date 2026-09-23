@@ -30,6 +30,14 @@ import {
   type ToolCall,
 } from "./api.ts";
 import { applyTextPatch } from "./patch.ts";
+import { collectDocuments, publishDocuments } from "./documents.ts";
+import {
+  collectTestResults,
+  invalidTests,
+  reportFiles,
+} from "./verification.ts";
+import { usageRecorder } from "./telemetry.ts";
+import { refreshReports, reportingStatus } from "./reporting.ts";
 import { processRun } from "./process.ts";
 import {
   DEFAULT_LOG_BYTES,
@@ -109,6 +117,36 @@ export class Engine {
     const next = { ...db, revision: db.revision + 1 };
     await this.store.commitState(db, next, type, data);
     db.revision = next.revision;
+    if (
+      [
+        "task_prepared",
+        "run_started",
+        "verification_started",
+        "candidate_submitted",
+        "check_recorded",
+        "review_ready",
+        "run_paused",
+        "codex_decision",
+        "run_cancelled",
+        "run_resumed",
+        "feature_resumed",
+        "new_batch",
+      ].includes(type)
+    )
+      await refreshReports(
+        this,
+        this.config.schema_version === "1.3" &&
+          [
+            "task_prepared",
+            "run_started",
+            "run_paused",
+            "codex_decision",
+            "run_cancelled",
+            "run_resumed",
+            "feature_resumed",
+            "new_batch",
+          ].includes(type),
+      );
   }
   async project() {
     const project = await this.store.read("project.json");
@@ -220,7 +258,7 @@ export class Engine {
         "当前 FINAL 已失效或存在活动运行，不能交付历史审批结果",
       );
   }
-  async prepare(draft: Doc) {
+  async prepare(draft: Doc, documentDirectory?: string) {
     return this.store.lock(async () => {
       const project = await this.project();
       const db = await this.db();
@@ -236,40 +274,14 @@ export class Engine {
       const s = await this.freeze(project.workspace);
       const specVersion = draft.spec_version ?? 1;
       const specRoot = `specs/${draft.task_id}/${draft.feature_id}/v${specVersion}`;
-      const refs: Doc[] = [];
-      const documents: Doc = {};
-      for (const [name, p] of Object.entries(draft.documents ?? {}) as [
-        string,
-        string,
-      ][]) {
-        const content = await textFile(this.config.project.control_root, p);
-        this.secrets.assertSafe(content);
-        const target = specRoot + "/" + name + ".md";
-        if (await exists(this.store.file(target)))
-          ensure(
-            (await textFile(this.config.project.control_root, target)) ===
-              content,
-            "SPEC_VERSION",
-            "规范改变时必须增加版本",
-          );
-        else await atomic(this.store.file(target), content);
-        refs.push(await artifact(this.config.project.control_root, target));
-        documents[name] = target;
-      }
-      for (const p of draft.context_paths ?? []) {
-        const content = await textFile(this.config.project.control_root, p);
-        this.secrets.assertSafe(content);
-        const target = specRoot + "/context-" + hash(p).slice(7, 19) + ".md";
-        if (await exists(this.store.file(target)))
-          ensure(
-            (await textFile(this.config.project.control_root, target)) ===
-              content,
-            "SPEC_VERSION",
-            "上下文变化必须增加规范版本",
-          );
-        else await atomic(this.store.file(target), content);
-        refs.push(await artifact(this.config.project.control_root, target));
-      }
+      const inputs = await collectDocuments(
+        this.config,
+        this.secrets,
+        draft,
+        specRoot,
+        documentDirectory,
+      );
+      const { refs, documents } = inputs;
       const commandIds = [
         ...new Set([
           ...(draft.command_ids ?? []),
@@ -352,13 +364,47 @@ export class Engine {
         ensure(
           specVersion >= f.spec_version,
           "SPEC_VERSION",
-          "规范版本不可回退",
+          `规范版本不可回退: v${f.spec_version} → v${specVersion}`,
         );
-        ensure(
-          specVersion !== f.spec_version || task.spec_digest === f.spec_digest,
-          "SPEC_VERSION",
-          "规范内容变化必须增加版本",
-        );
+        if (
+          specVersion === f.spec_version &&
+          task.spec_digest !== f.spec_digest
+        ) {
+          const previous = await this.store.read(f.task_ref);
+          const changed: string[] = [];
+          const oldRefs = new Map<string, string>(
+            previous.context_refs.map((r: Doc) => [r.path, r.sha256]),
+          );
+          const newRefs = new Map<string, string>(
+            task.context_refs.map((r: Doc) => [r.path, r.sha256]),
+          );
+          for (const file of new Set([...oldRefs.keys(), ...newRefs.keys()]))
+            if (oldRefs.get(file) !== newRefs.get(file))
+              changed.push(
+                `${file}: ${oldRefs.get(file) ?? "无"} → ${newRefs.get(file) ?? "无"}`,
+              );
+          for (const field of [
+            "scope",
+            "goal",
+            "allowed_paths",
+            "protected_paths",
+            "acceptance_criteria",
+            "test_cases",
+            "commands",
+            "document_refs",
+          ])
+            if (digest(previous[field]) !== digest(task[field]))
+              changed.push(field);
+          const manifest = await this.store.read(specRoot + "/manifest.json");
+          if (digest(manifest.protected_files) !== digest(protectedFiles))
+            changed.push("protected_files");
+          ensure(
+            false,
+            "SPEC_VERSION",
+            "规范内容变化必须增加版本；差异: " +
+              (changed.join("; ") || "context_refs 顺序变化"),
+          );
+        }
         if (specVersion > f.spec_version) {
           f.status = "not_started";
           f.approved_snapshot_id = null;
@@ -422,9 +468,12 @@ export class Engine {
           "跨功能验收 ID 必须唯一",
         );
       }
-      await this.store.immutable(specRoot + "/manifest.json", {
+      await publishDocuments(this.store, this.config, specRoot, inputs, {
         spec_digest: task.spec_digest,
         protected_files: protectedFiles,
+        ...(documentDirectory === undefined
+          ? {}
+          : { document_sources: inputs.sources }),
       });
       const taskRef = "tasks/" + task.message_id + ".json";
       await this.store.immutable(taskRef, task);
@@ -445,6 +494,7 @@ export class Engine {
         spec_version: specVersion,
         spec_digest: task.spec_digest,
         task_ref: taskRef,
+        prepared_revision: db.revision + 1,
         dependencies: draft.dependencies ?? [],
         ...(scope === "final"
           ? { final_basis: this.finalBasis(db, task.task_id) }
@@ -545,6 +595,7 @@ export class Engine {
         run_id: runId,
         task_ref: taskRef,
         executor: name,
+        usage_tracking: 1,
         executor_digest: digest(executor),
         policy_digest: await this.policyDigest(),
         phase: "executing",
@@ -636,7 +687,9 @@ export class Engine {
           ? task.scope === "final"
             ? "export --run " + run.run_id
             : "准备下一个功能或 FINAL"
-          : "携带返工单重新 prepare";
+          : run.review?.rework_id
+            ? "携带返工单重新 prepare"
+            : "从原始 draft 重新 prepare";
     else if (run.status === "paused")
       next = "解决阻塞后 resume；预算暂停需明确 --new-batch";
     else if (run.phase === "reviewing")
@@ -660,6 +713,12 @@ export class Engine {
       this.vars[this.config.executors[run.executor].api_key_env] ?? "",
       this.secrets,
       this.event,
+      usageRecorder(this.store.root, {
+        executor: run.executor,
+        model: this.config.executors[run.executor].model,
+        run_id: run.run_id,
+        phase: "implementation",
+      }),
     );
     if (run.messages.length === 0) {
       let context = "";
@@ -1047,6 +1106,8 @@ export class Engine {
     const started = now();
     let result;
     const initialization = [];
+    const verification = this.config.project.verification?.[command.id];
+    let previousReports: string[] = [];
     const budget: LogBudget = {
       maxBytes: this.config.project.max_check_log_bytes ?? DEFAULT_LOG_BYTES,
       usedBytes: 0,
@@ -1125,6 +1186,7 @@ export class Engine {
       );
     };
     try {
+      previousReports = await reportFiles(copy, verification);
       for (const init of task.commands.filter(
         (c: Command) => c.purpose === "init" && c.id !== command.id,
       )) {
@@ -1145,6 +1207,12 @@ export class Engine {
         );
       }
       await verifyInput("before-check");
+      previousReports = [
+        ...new Set([
+          ...previousReports,
+          ...(await reportFiles(copy, verification)),
+        ]),
+      ];
       result = await runLogged(command);
       await verifyInput("after-check");
     } catch (e) {
@@ -1211,6 +1279,68 @@ export class Engine {
       }
     }
     this.secrets.assertSafe(JSON.stringify(result));
+    const testSources: Doc[] = [];
+    let testResults;
+    try {
+      const reports: { path: string; text: string }[] = [];
+      if (verification?.kind === "test") {
+        if (verification.source === "stdout") {
+          const stdout = outputLogs.findLast(
+            (a) => a.command_id === command.id && a.stream === "stdout",
+          );
+          ensure(stdout && completeLogs, "TEST_REPORT", "缺少完整测试 stdout");
+          ensure(
+            stdout.bytes <= 20 * 1024 * 1024,
+            "TEST_REPORT",
+            "测试报告超过 20 MiB",
+          );
+          reports.push({
+            path: stdout.path,
+            text: await fs.readFile(this.store.file(stdout.path), "utf8"),
+          });
+          testSources.push({
+            path: stdout.path,
+            sha256: stdout.sha256,
+            type: "log",
+          });
+        } else
+          for (const p of await reportFiles(copy, verification)) {
+            const src = await safePath(copy, p);
+            ensure(
+              (await fs.stat(src)).size <= 20 * 1024 * 1024,
+              "TEST_REPORT",
+              "测试报告超过 20 MiB",
+            );
+            const bytes = await fs.readFile(src);
+            ensure(
+              bytes.length <= 20 * 1024 * 1024,
+              "TEST_REPORT",
+              "测试报告读取期间超过 20 MiB",
+            );
+            const text = new TextDecoder("utf-8", { fatal: true }).decode(
+              bytes,
+            );
+            this.secrets.assertSafe(text);
+            const target = `runs/${run.run_id}/${category}/${checkId}-test-reports/${p}`;
+            await atomic(this.store.file(target), text);
+            const ref = await artifact(
+              this.config.project.control_root,
+              target,
+              "report",
+            );
+            collected.push(ref);
+            testSources.push(ref);
+            reports.push({ path: p, text });
+          }
+      }
+      testResults = await collectTestResults(
+        verification,
+        previousReports,
+        reports,
+      );
+    } catch (e) {
+      testResults = invalidTests(this.secrets.clean((e as Error).message));
+    }
     const reportRef = `runs/${run.run_id}/${category}/${checkId}.json`;
     const logRef = `runs/${run.run_id}/${category}/${checkId}.log`;
     await atomic(
@@ -1236,6 +1366,9 @@ export class Engine {
         null,
       policy_digest: await this.policyDigest(),
       artifact_requirements: this.config.project.artifacts[command.id] ?? [],
+      ...(verification ? { verification } : {}),
+      test_results: testResults,
+      test_sources: testSources,
       collected,
       runner: this.runner.kind,
       environment_digest: digest({
@@ -1327,7 +1460,10 @@ export class Engine {
             started_at: result.started_at,
             finished_at: result.finished_at,
             result:
-              result.exitCode === null || result.timedOut || result.aborted
+              result.exitCode === null ||
+              result.timedOut ||
+              result.aborted ||
+              result.test_results.eligible === false
                 ? "error"
                 : result.exitCode === 0
                   ? "unverified"
@@ -1335,9 +1471,11 @@ export class Engine {
             exit_code: result.exitCode,
             artifacts,
             observation:
-              result.exitCode === 0
-                ? "命令已执行且退出码为零；Codex 必须检查实际断言和用户场景后判定业务通过"
-                : "检查失败或运行环境异常；查看完整日志",
+              result.test_results.eligible === false
+                ? "测试证据不合格: " + result.test_results.reason
+                : result.exitCode === 0
+                  ? "命令已执行且退出码为零；Codex 必须检查实际断言和用户场景后判定业务通过"
+                  : "检查失败或运行环境异常；查看完整日志",
           };
           contract(ev, "verification_evidence", this.mode);
           const ref = "evidence/" + ev.message_id + ".json";
@@ -1400,6 +1538,7 @@ export class Engine {
   }
   async checkEvidence(task: Doc, run: Doc, review: Doc) {
     const map = new Map<string, Doc>();
+    const countsEligible = new Map<string, boolean>();
     for (const item of run.evidence) {
       const e = await this.store.read(item.ref);
       ensure(digest(e) === item.digest, "EVIDENCE_TAMPER", "验证证据已修改");
@@ -1426,6 +1565,11 @@ export class Engine {
       const reportArtifact = e.artifacts.find((a: Doc) => a.type === "report");
       ensure(reportArtifact, "EVIDENCE", "缺少执行器原始报告");
       const report = await this.store.read(reportArtifact.path);
+      countsEligible.set(
+        e.message_id,
+        this.config.project.verification?.[command.id]?.kind !== "test" ||
+          report.test_results?.eligible === true,
+      );
       ensure(
         report.runner === this.runner.kind &&
           report.snapshot_id === run.candidate.snapshot_id &&
@@ -1475,6 +1619,7 @@ export class Engine {
             (e: Doc) =>
               e.test_case_id === tcId &&
               e.exit_code === 0 &&
+              countsEligible.get(e.message_id) === true &&
               !["fail", "error"].includes(e.result),
           );
           ensure(
@@ -1743,6 +1888,7 @@ export class Engine {
   }
   async status(runId?: string) {
     const db = await this.db();
+    const reporting = await reportingStatus(this, runId);
     if (runId) {
       const r = db.runs[runId];
       ensure(r, "RUN", "运行不存在");
@@ -1750,10 +1896,12 @@ export class Engine {
         ...this.describe(r, await this.store.read(r.task_ref)),
         feature: db.features[key(await this.store.read(r.task_ref))],
         revision: db.revision,
+        reporting,
       };
     }
     return {
       revision: db.revision,
+      reporting,
       active_run: db.active_run,
       features: db.features,
       runs: Object.values(db.runs).map((r) => ({
@@ -1804,9 +1952,12 @@ export class Engine {
         validation_scope: "registered-command-execution",
         business_acceptance: "not_evaluated",
         results,
-        passed: results.every((r) => r.exitCode === 0),
+        passed: results.every(
+          (r) => r.exitCode === 0 && r.test_results.eligible !== false,
+        ),
       };
       await this.store.put("baseline-results.json", report);
+      await refreshReports(this, this.config.schema_version === "1.3");
       return report;
     });
   }
@@ -1866,6 +2017,7 @@ export class Engine {
     }
     return this.secrets.clean({
       task,
+      reporting: await reportingStatus(this, runId),
       documents,
       report: run.report,
       evidence,
@@ -2196,6 +2348,7 @@ export class Engine {
           "\n",
       );
       await this.store.event("exported", { run_id: runId, directory: output });
+      await refreshReports(this, this.config.schema_version === "1.3");
       return { directory: output, ...delivery };
     });
   }

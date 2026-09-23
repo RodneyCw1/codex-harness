@@ -1,6 +1,11 @@
 import type { Executor } from "./config.ts";
 import { Secrets } from "./config.ts";
-import { Block, ensure } from "./files.ts";
+import { Block, ensure, id } from "./files.ts";
+import {
+  normalizeUsage,
+  type UsageObserver,
+  type RequestRecord,
+} from "./telemetry.ts";
 export interface ToolCall {
   id: string;
   type: "function";
@@ -79,16 +84,19 @@ export class ModelClient {
   key: string;
   secrets: Secrets;
   event: (v: unknown) => void;
+  observeUsage: UsageObserver;
   constructor(
     executor: Executor,
     key: string,
     secrets: Secrets,
     event: (v: unknown) => void = () => {},
+    observeUsage: UsageObserver = async () => {},
   ) {
     this.executor = executor;
     this.key = key;
     this.secrets = secrets;
     this.event = event;
+    this.observeUsage = observeUsage;
     ensure(key, "AUTH_MISSING", "未设置 " + executor.api_key_env);
   }
   async request(
@@ -112,6 +120,14 @@ export class ModelClient {
     this.secrets.assertSafe(body);
     for (let attempt = 0; ; attempt++) {
       let retryAfter = 0;
+      const record: RequestRecord = {
+        request_id: id("request"),
+        attempt,
+        state: "pending",
+        started_at: new Date().toISOString(),
+        usage: normalizeUsage(undefined),
+      };
+      await this.observeUsage(record);
       try {
         const deadline = AbortSignal.timeout(
           this.executor.request_timeout_seconds * 1000,
@@ -129,6 +145,7 @@ export class ModelClient {
             signal: signal ? AbortSignal.any([deadline, signal]) : deadline,
           },
         );
+        record.http_status = response.status;
         if (response.status === 429 || response.status >= 500) {
           retryAfter = Math.min(
             30,
@@ -166,6 +183,10 @@ export class ModelClient {
         } catch {
           throw new Block("API_PROTOCOL", "API 未返回有效 JSON");
         }
+        record.usage = normalizeUsage(raw.usage);
+        if (typeof raw.id === "string")
+          record.response_id = this.secrets.clean(raw.id.slice(0, 256));
+        await this.observeUsage(record);
         const choice = raw.choices?.[0];
         ensure(
           choice && choice.finish_reason !== "length",
@@ -232,6 +253,10 @@ export class ModelClient {
           }, ms);
           signal?.addEventListener("abort", abort, { once: true });
         });
+      } finally {
+        record.state = "complete";
+        record.finished_at = new Date().toISOString();
+        await this.observeUsage(record);
       }
     }
   }

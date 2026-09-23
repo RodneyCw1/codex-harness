@@ -12,14 +12,16 @@ Codex 理解需求、分析代码、制定实现/验收/测试标准并独立验
 
 - 根 AGENTS.md：合并后的开工入口，保留原项目规则。
 - docs/harness：本项目采用的规范、画像、任务文档与脱敏交接；Codex 维护并纳入保护范围。
-- 项目外配置：使用 [v1.2 配置示例](config/harness.config.example.yaml)，实际路径由本机配置决定。
+- 项目外配置：使用 [v1.3 配置示例](config/harness.config.example.yaml) 和 [配置 Schema](config/config.schema.json)，实际路径由本机配置决定。
 - 项目外 work_root：运行器创建的隔离工作树。
 - 项目外 control_root：冻结规范、权威状态、原始检查记录和交付证据。
 
-模板没有业务通过结果。原协议目录中的 examples、feature_list、run-state 和 VALIDATION 是原版模板或历史示例，不代表本项目状态。v1.2 的本机配置以上面的 v1.2 示例为准，协议原件里的旧配置仅用于理解兼容格式。
+模板没有业务通过结果。原协议目录中的 examples、feature_list、run-state 和 VALIDATION 是原版模板或历史示例，不代表本项目状态。v1.3 的本机配置以上面的示例为准，协议原件里的旧配置仅用于理解兼容格式。
 
 ## 新需求
 
 在 tasks 下复制 [_template](tasks/_template/README.md)，填写需求、实现依据、验收行为和真实测试方法。没有具体需求时不要把模板派发给工作 AI。每次只执行一个功能，所有功能完成后还须最终快照验证。
+
+三份文档的 `task_id`、`spec_version` 必须与 draft 一致，通过 `prepare --docs` 一次冻结。内容变更时由 Codex 明确升版。`report` 查看过程记录，`stats` 查看供应商已知用量与空间；缺失用量和旧测试计数保持未知。进度与交接文档的 `HARNESS_REPORT_START/END` 区块由执行器更新，自定义说明保留在区块外。
 
 新会话从根 AGENTS.md 开始，核对本机配置和真实 status；换电脑只重新绑定本机环境，不覆盖项目规范或凭空重建旧运行历史。

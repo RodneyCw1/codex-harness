@@ -1,5 +1,5 @@
 # 非秘密配置。复制后由你填写工作 AI，由 Codex 回填项目范围与真实命令。
-schema_version: '1.2'
+schema_version: '1.3'
 # 可选：必须位于 source_root 之外；不要提交到版本库。
 # private_env_file: 'C:/Harness/private/work-ai.env'
 executors:
@@ -33,6 +33,7 @@ project:
   allowed_paths: [] # Codex 分析项目后填写，如 ['src/', 'tests/unit/']
   protected_paths: ['AGENTS.md', 'docs/harness/'] # 加入验收脚本及其可信依赖
   command_env_allowlist: [] # 只继承必要的非秘密变量；PATH 和系统变量由程序提供
+  verification: {} # command_id -> {kind: test, format: tap, source: stdout} 或 {kind: check}
   commands: [] # Codex 按项目实际工具填写；不可留空开始任务
   artifacts: {} # 可选：command_id -> [{path: 'artifacts/result.png', type: screenshot}]
 sandbox:
@@ -44,3 +45,6 @@ sandbox:
   # 有明确网络需求且得到任务授权时，由 Codex 预先登记，例如：
   # network:
   #   allow_domains: ['registry.npmjs.org']
+
+# 1.3: 每个非 init 命令必须声明 test 或 check，purpose 仍表示工作流阶段。
+# project.verification 示例见 RUNTIME.md；真实测试使用 junit 文件或 tap stdout。

@@ -6,9 +6,9 @@
 
 Codex Harness 在 Windows 上把项目需求、外部工作模型和独立验证串成完整流程。当前 Codex 会话负责分析项目、编写实现与验收文档、派发任务、审查证据和安排返工；本地执行器提供受限文件工具、原生沙箱检查、快照和状态恢复。无需额外接入一个决策模型 API；外部工作模型仍需要单独配置兼容的 API。
 
-本仓库包含 **v1.2.1 执行器**和配套的 **v1.2 项目规范模板**。配置版本为 **1.2**，随包保留的固定协议版本仍为 **1.0**。
+本仓库包含 **v1.3.0 执行器**和配套的 **v1.3 项目规范模板**。配置版本为 **1.3**，随包保留的固定协议版本仍为 **1.0**。
 
-为兼容已有启动路径，执行器目录仍叫 `codex-harness-executor-v1.2/`，内部 CLI 版本为 **1.2.1**；项目模板继续使用 **1.2**。详见[更新记录](CHANGELOG.md)和[v1.2.1 升级说明](codex-harness-executor-v1.2/MIGRATION-1.2.1.md)。
+为兼容已有启动路径，两个组件目录名仍保留 `v1.2`。新增 `onboard` 接入向导、`prepare --docs` 文档冻结、`report` 过程报告和 `stats` 用量/空间统计；JUnit XML/TAP 支持真实测试计数，零执行或无效报告不能支持验收。详见[更新记录](CHANGELOG.md)、[v1.3 用法与迁移](codex-harness-executor-v1.2/MIGRATION-1.3.md)和[本版验证记录](codex-harness-executor-v1.2/VALIDATION-V1.3.md)。
 
 ## 可以做什么
 
@@ -72,7 +72,7 @@ flowchart TD
    .\codex-harness-executor-v1.2\harness.cmd --help
    ```
 
-   Node.js 应显示 `v24.x.x`，执行器应显示 `1.2.1`。帮助和版本输出正常，不代表沙箱或模型连接已经通过验证。
+   Node.js 应显示 `v24.x.x`，执行器应显示 `1.3.0`。帮助和版本输出正常，不代表沙箱或模型连接已经通过验证。
 
 3. 按[新手教程](docs/GETTING-STARTED.zh-CN.md)在项目外创建专用 YAML 配置，填写 `base_url`、`model` 和 `api_key_env`。真实 Key 只在本机填写到 `private_env_file` 指向的项目外文件，不粘贴到聊天或 YAML。执行器会在 `base_url` 后追加 `/chat/completions`。
 4. 在 Codex 中打开**目标项目**，替换下面所有尖括号内容后发送：
@@ -149,6 +149,8 @@ v1.2.1 的 `resume` 只接受当前可恢复运行，历史、已取消和已完
 | [固定协议 v1](codex-harness-project-template-v1.2/project/docs/harness/protocol-v1/README.md) | 保留的协议规范；项目定制放在该目录之外 |
 
 ## 验证状态
+
+本版 [v1.3.0 验证记录](codex-harness-executor-v1.2/VALIDATION-V1.3.md)：**118 项回归、10 项 Windows 宿主检查通过**，typecheck、build 与编译 CLI 冒烟通过。模拟供应商接入及失败→返工→FINAL→导出闭环已验证；本版未执行真实供应商联调。
 
 随包的 [v1.2.1 验证记录](codex-harness-executor-v1.2/VALIDATION-V1.2.1.md)日期为 **2026-09-23**，记录了 **97 项回归检查、8 项原生宿主检查全部通过**，TypeScript 与编译通过。模拟模型完成失败、返工、修复、最终验证和导出；本次补丁没有重新执行真实模型联调。记录环境为 Windows、Node.js `24.21.0`、Codex CLI `0.155.0-alpha.16`。
 

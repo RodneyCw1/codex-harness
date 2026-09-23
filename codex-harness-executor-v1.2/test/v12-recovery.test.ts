@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
+import os from "node:os";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { pathToFileURL } from "node:url";
@@ -26,13 +27,13 @@ function deferred() {
   return { promise, resolve };
 }
 
-test('recover never deletes a live legacy coordinator lock',async()=>{
-  const {store}=await controlStore();
-  const legacy={pid:process.pid,token:'legacy-active'};
-  await store.put('writer.lock',legacy);
-  await assert.rejects(store.recoverLock(),/仍在运行/);
-  assert.deepEqual(await store.read('writer.lock'),legacy);
-  await assert.rejects(store.recoverLock(),/仍在运行/);
+test("recover never deletes a live legacy coordinator lock", async () => {
+  const { store } = await controlStore();
+  const legacy = { pid: process.pid, token: "legacy-active" };
+  await store.put("writer.lock", legacy);
+  await assert.rejects(store.recoverLock(), /仍在运行/);
+  assert.deepEqual(await store.read("writer.lock"), legacy);
+  await assert.rejects(store.recoverLock(), /仍在运行/);
 });
 
 for (const [description, content] of [
@@ -210,7 +211,9 @@ await store.lock(async () => {
 );
 
 async function projectConfig(git: boolean) {
-  const root = path.resolve(".test-data/init-recovery-" + id("case"));
+  const root = git
+    ? path.resolve(".test-data/init-recovery-" + id("case"))
+    : await fs.mkdtemp(path.join(os.tmpdir(), "harness-init-recovery-"));
   const source = path.join(root, "source");
   await fs.mkdir(source, { recursive: true });
   await fs.writeFile(path.join(source, "source.txt"), "baseline\n");

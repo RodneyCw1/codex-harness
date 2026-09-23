@@ -6,9 +6,9 @@ English | [简体中文](README.zh-CN.md) | [Step-by-step setup guide (中文)](
 
 Codex Harness connects project requirements, an external coding model, and independent verification on Windows. Your current Codex session analyzes the project, prepares implementation and acceptance documents, dispatches work, reviews evidence, and requests revisions. A local executor provides bounded file tools, native sandboxed checks, snapshots, and recoverable state. No additional decision-model API is required; the external worker still needs its own compatible API configuration.
 
-This repository contains the **v1.2.1 executor** and its **v1.2 project template**. The configuration version is **1.2**; the bundled, fixed protocol remains **1.0**.
+This repository contains the **v1.3.0 executor** and its **v1.3 project template**. The configuration version is **1.3**; the bundled, fixed protocol remains **1.0**.
 
-The executor folder remains `codex-harness-executor-v1.2/` for path compatibility; its CLI version is **1.2.1**. The project template stays at **1.2**. See the [v1.2.1 changes](CHANGELOG.md) and [migration notes](codex-harness-executor-v1.2/MIGRATION-1.2.1.md).
+Both component folder names retain `v1.2` for path compatibility. Version 1.3 adds `onboard`, project document freezing with `prepare --docs`, automatic reports, JUnit/TAP test counts, and provider token/storage statistics. Zero executed tests or invalid reports cannot support acceptance. See the [changes](CHANGELOG.md), [migration and command reference](codex-harness-executor-v1.2/MIGRATION-1.3.md), and [validation record](codex-harness-executor-v1.2/VALIDATION-V1.3.md).
 
 ## What it does
 
@@ -72,7 +72,7 @@ The compiled `dist/harness.mjs` includes runtime dependencies. **Using the execu
    .\codex-harness-executor-v1.2\harness.cmd --help
    ```
 
-   Expect Node.js `v24.x.x` and executor version `1.2.1`. Help/version output alone does not verify the sandbox or model connection.
+   Expect Node.js `v24.x.x` and executor version `1.3.0`. Help/version output alone does not verify the sandbox or model connection.
 
 3. Use the [beginner guide](docs/GETTING-STARTED.zh-CN.md) to create a project-specific YAML configuration outside the project. Fill in `base_url`, `model`, and `api_key_env`. Store the real key in the outside-project file referenced by `private_env_file`; do not paste it into the chat or YAML. The executor appends `/chat/completions` to `base_url`.
 4. Open the **target project** in Codex and send this prompt after replacing every bracketed field:
@@ -150,6 +150,8 @@ Most component reference documents are currently in Chinese.
 | [Fixed protocol v1](codex-harness-project-template-v1.2/project/docs/harness/protocol-v1/README.md) | The preserved protocol specification; keep project customizations outside this directory |
 
 ## Validation status
+
+The [v1.3.0 validation record](codex-harness-executor-v1.2/VALIDATION-V1.3.md) reports **118 regression tests and 10 Windows host tests passing**, plus type checking, compilation, and compiled CLI smoke checks. Simulated-provider onboarding and the failure → revision → FINAL → export workflow were exercised. Real-provider integration was not run for this release.
 
 The supplied [v1.2.1 validation record](codex-harness-executor-v1.2/VALIDATION-V1.2.1.md), dated **2026-09-23**, reports **97 regression checks and 8 native-host checks passing**, plus successful TypeScript checking and compilation. A simulated worker completed failure, revision, repair, final verification, and export. Real-model integration was not rerun for this patch. Its recorded environment was Windows, Node.js `24.21.0`, and Codex CLI `0.155.0-alpha.16`.
 

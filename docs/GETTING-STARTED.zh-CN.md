@@ -1,5 +1,7 @@
 # Codex Harness 从零开始：安装、配置与使用
 
+**v1.3 推荐入口：** 使用 `onboard --config <项目外 YAML> --input <接入 JSON> --dry-run` 查看计划，确认输入后去掉 `--dry-run` 完成接入。任务文档可用 `prepare --docs` 直接冻结；`report` 查看过程，`stats` 查看供应商 token 和空间。参数、JSON 示例、JUnit/TAP 登记及迁移见 [v1.3 说明](../codex-harness-executor-v1.2/MIGRATION-1.3.md)。下面保留的手工流程与 v1.2 历史环境说明仍可用于排错；新发行 CLI 版本为 1.3.0，历史测试记录不代表本机预检结果。
+
 [返回中文首页](../README.zh-CN.md) · [English README](../README.md)
 
 本教程适用于 **Codex Harness v1.2.1、Windows、PowerShell 和 Codex 桌面会话**。目标是先让工作模型修复自带加法示例，完成独立验收并导出成果，再把同一流程用于自己的项目。

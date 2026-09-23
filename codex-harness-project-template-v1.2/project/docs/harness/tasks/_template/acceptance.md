@@ -1,3 +1,7 @@
+---
+task_id: REPLACE_TASK_ID
+spec_version: 1
+---
 # 验收文档
 
 任务 ID：[TASK-ID] · 规范版本：[整数] · 维护与通过权：Codex

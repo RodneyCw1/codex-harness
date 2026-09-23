@@ -3,16 +3,26 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { loadConfig, Secrets } from "./config.ts";
-import { Block, ensure, readJson, within, atomic } from "./files.ts";
+import { parse } from "yaml";
+import { Block, ensure, readJson, within } from "./files.ts";
 import { WindowsSandbox } from "./sandbox.ts";
-import { ModelClient } from "./api.ts";
+import { doctor } from "./doctor.ts";
+import { onboard, promptOnboard, type OnboardInput } from "./onboarding.ts";
+import { buildReport, refreshReports } from "./reporting.ts";
+import { storageStats, usageStats } from "./telemetry.ts";
 import { initialize } from "./workspace.ts";
 import { Engine } from "./engine.ts";
-const help = `Codex Harness 1.2.1 — Node.js 24 / Windows
+const help = `Codex Harness 1.3.0 — Node.js 24 / Windows
 用法：harness <命令> --config <项目配置.yaml> [参数]
   init --project <目录>          创建项目事实清单与独立工作区
   doctor [--live] [--executor ID] 实测沙箱，--live 探测模型工具往返
-  prepare --task <draft.json>    由 Codex 冻结规范、填充快照和协议字段
+  onboard [--input <JSON>] [--dry-run]  交互或参数接入；默认预检、初始化及基线
+    --project <目录> --template <模板包> --work-root <目录> --control-root <目录>
+    --executor <名称> --base-url <URL> --model <ID> --api-key-env <变量名>
+    [--private-env-file <项目外私有文件>] [--codex-path <codex.exe>]
+  prepare --task <draft.json> [--docs <项目相对目录>]  冻结三份文档
+  report [--run <ID>] [--refresh] [--sync]  查询、重建报告或同步摘要
+  stats [--run <ID>]             供应商用量和项目当前空间统计
   baseline                      独立记录接入时基线验证
   run --task <控制目录任务路径> [--executor ID]
   verify --run <ID>              独立运行冻结候选的所有测试
@@ -33,6 +43,19 @@ async function main() {
     strict: true,
     options: {
       config: { type: "string" },
+      input: { type: "string" },
+      template: { type: "string" },
+      "work-root": { type: "string" },
+      "control-root": { type: "string" },
+      "base-url": { type: "string" },
+      model: { type: "string" },
+      "api-key-env": { type: "string" },
+      "private-env-file": { type: "string" },
+      "codex-path": { type: "string" },
+      "dry-run": { type: "boolean" },
+      docs: { type: "string" },
+      refresh: { type: "boolean" },
+      sync: { type: "boolean" },
       project: { type: "string" },
       task: { type: "string" },
       executor: { type: "string" },
@@ -55,7 +78,7 @@ async function main() {
     return;
   }
   if (values.version) {
-    console.log("1.2.1");
+    console.log("1.3.0");
     return;
   }
   ensure(
@@ -63,6 +86,71 @@ async function main() {
     "NODE_VERSION",
     "需要 Node.js 24",
   );
+  if (positionals[0] === "onboard") {
+    let input: OnboardInput = values.input ? await readJson(values.input) : {};
+    if (!input.config && values.config)
+      input.config = await fs
+        .readFile(values.config, "utf8")
+        .then(parse)
+        .catch((e) => {
+          if (e.code === "ENOENT") return {};
+          throw e;
+        });
+    input.config ??= {};
+    input.config.project ??= {};
+    if (values.project)
+      input.config.project.source_root = path.resolve(values.project);
+    if (values.template) input.template_root = path.resolve(values.template);
+    if (values["work-root"])
+      input.config.project.work_root = path.resolve(values["work-root"]);
+    if (values["control-root"])
+      input.config.project.control_root = path.resolve(values["control-root"]);
+    if (values["private-env-file"])
+      input.config.private_env_file = path.resolve(values["private-env-file"]);
+    if (values["codex-path"])
+      input.config.sandbox = {
+        profile: "trusted_local",
+        network: true,
+        ...input.config.sandbox,
+        codex_path: path.resolve(values["codex-path"]),
+      };
+    const name =
+      values.executor ??
+      input.config.workflow?.active_executor ??
+      Object.keys(input.config.executors ?? {})[0] ??
+      "primary";
+    if (values.model || values["base-url"] || values["api-key-env"]) {
+      input.config.executors ??= {};
+      input.config.executors[name] ??= { protocol: "openai_chat_completions" };
+      const e = input.config.executors[name];
+      if (values.model) e.model = values.model;
+      if (values["base-url"]) e.base_url = values["base-url"];
+      if (values["api-key-env"]) e.api_key_env = values["api-key-env"];
+    }
+    if (values.executor)
+      input.config.workflow = {
+        ...input.config.workflow,
+        active_executor: name,
+      };
+    let file = values.config;
+    if (
+      process.stdin.isTTY &&
+      (!file ||
+        !input.config.project.source_root ||
+        !Object.keys(input.config.executors ?? {}).length)
+    ) {
+      const prompted = await promptOnboard(file, input);
+      file = prompted.file;
+      input = prompted.input;
+    }
+    ensure(file, "CONFIG", "请指定 --config");
+    const result = await onboard(file, input, values["dry-run"]);
+    console.log(
+      JSON.stringify({ ok: result.ok, command: "onboard", result }, null, 2),
+    );
+    if (!result.ok && !result.dry_run) process.exitCode = 2;
+    return;
+  }
   ensure(values.config, "CONFIG", "请指定 --config");
   const loaded = await loadConfig(values.config);
   secrets = loaded.secrets;
@@ -90,58 +178,31 @@ async function main() {
     case "init":
       result = await initialize(config, secrets);
       break;
-    case "doctor": {
-      await fs.mkdir(config.project.control_root, { recursive: true });
-      await fs.mkdir(config.project.work_root, { recursive: true });
-      const sandbox = await engine.store
-        .lock(() => runner.probe())
-        .catch((e) => ({
-          ok: false,
-          error: secrets.clean({
-            code: e.code ?? "SANDBOX_UNAVAILABLE",
-            message: e.message,
-          }),
-        }));
-      const selected = values.executor ?? config.workflow.active_executor;
-      ensure(config.executors[selected], "EXECUTOR", "执行者不存在");
-      let live: any = { status: "not_run", reason: "未指定 --live" };
-      if (values.live)
-        try {
-          live = {
-            ok: true,
-            ...(await new ModelClient(
-              config.executors[selected],
-              vars[config.executors[selected].api_key_env] ?? "",
-              secrets,
-              (e) => console.error(JSON.stringify(e)),
-            ).probe()),
-          };
-        } catch (e) {
-          live = {
-            ok: false,
-            error: secrets.clean({
-              code: (e as Block).code ?? "MODEL_UNAVAILABLE",
-              message: (e as Error).message,
-            }),
-          };
-        }
+    case "report":
+      if (values.run)
+        ensure((await engine.db()).runs[values.run], "RUN", "运行不存在");
+      result =
+        values.refresh || values.sync
+          ? await engine.store.lock(() => refreshReports(engine, values.sync))
+          : await buildReport(engine, values.run);
+      break;
+    case "stats":
+      if (values.run)
+        ensure((await engine.db()).runs[values.run], "RUN", "运行不存在");
       result = {
-        ok: sandbox.ok && live.ok !== false,
-        configuration: {
-          ok: true,
-          schema_version: config.schema_version,
-          profile: config.sandbox.profile,
-          network: config.sandbox.network,
-        },
-        executor: selected,
-        sandbox,
-        model: live,
+        usage: await usageStats(engine.store.root, values.run),
+        storage: await storageStats(
+          config.project.work_root,
+          engine.store.root,
+        ),
       };
-      await atomic(engine.store.file("doctor.json"), result);
+      break;
+    case "doctor": {
+      result = await doctor(engine, values.live, values.executor);
       break;
     }
     case "prepare":
-      result = await engine.prepare(await readJson(need("task")));
+      result = await engine.prepare(await readJson(need("task")), values.docs);
       break;
     case "run": {
       let task = need("task");

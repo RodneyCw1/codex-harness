@@ -1,6 +1,7 @@
 import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
+import os from "node:os";
 import assert from "node:assert/strict";
 import { normalizeConfig, Secrets, commandEnvironment } from "../src/config.ts";
 import { Engine } from "../src/engine.ts";
@@ -10,7 +11,8 @@ import { common } from "../src/protocol.ts";
 import { id } from "../src/files.ts";
 import type { CheckRunner } from "../src/sandbox.ts";
 export async function fixture() {
-  const root = path.resolve(".test-data/e2e-" + id("case"));
+  // A non-Git fixture must be outside the checkout, even in an unsandboxed host run.
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "harness-e2e-"));
   await fs.mkdir(path.join(root, "source"), { recursive: true });
   await fs.writeFile(
     path.join(root, "source", "sum.mjs"),

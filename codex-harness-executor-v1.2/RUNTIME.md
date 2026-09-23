@@ -1,5 +1,7 @@
 # 运行器接口与实现边界
 
+v1.3 新增 `onboard`、`prepare --docs`、`report` 和 `stats`，以及 `project.verification`。完整参数、统计口径及旧配置迁移见 [v1.3 接口说明](MIGRATION-1.3.md)。以下既有运行及安全边界继续适用。
+
 ## 进程与权限
 
 可信 Node.js 协调者进程持有配置、API Key 和控制目录。模型调用使用 `POST <base_url>/chat/completions`、非流式响应、标准 assistant/tool 消息链。模型仅获得 `read_file`、`search_code`、`apply_patch`、`run_check`、`submit_candidate`，没有 shell、approve、decide、任意 HTTP 或控制目录访问工具。

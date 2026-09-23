@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse } from "yaml";
 import { ensure, within, digest, safePath, relativeName } from "./files.ts";
+import type { Verification } from "./verification.ts";
 export interface Command {
   id: string;
   argv: string[];
@@ -42,6 +43,7 @@ export interface Config {
     max_check_log_bytes?: number;
     command_env_allowlist: string[];
     commands: Command[];
+    verification?: Record<string, Verification>;
     artifacts: Record<
       string,
       { path: string; type: string; required?: boolean; role?: string }[]
@@ -62,9 +64,9 @@ export function normalizeConfig(
   vars: NodeJS.ProcessEnv = process.env,
 ): Config {
   ensure(
-    raw && ["1.0", "1.1", "1.2"].includes(raw.schema_version),
+    raw && ["1.0", "1.1", "1.2", "1.3"].includes(raw.schema_version),
     "CONFIG",
-    "schema_version 必须为 1.0、1.1 或 1.2",
+    "schema_version 必须为 1.0、1.1、1.2 或 1.3",
   );
   const expand = (s: unknown): string => {
     ensure(typeof s === "string", "CONFIG", "缺少配置字符串");
@@ -293,6 +295,75 @@ export function normalizeConfig(
     "COMMAND",
     "命令 ID 重复",
   );
+  ensure(
+    p.verification === undefined ||
+      (p.verification &&
+        typeof p.verification === "object" &&
+        !Array.isArray(p.verification)),
+    "VERIFICATION_CONFIG",
+    "verification 必须为命令映射",
+  );
+  for (const [cid, rule] of Object.entries(p.verification ?? {}) as [
+    string,
+    any,
+  ][]) {
+    ensure(
+      p.commands.some((c: Command) => c.id === cid && c.purpose !== "init"),
+      "VERIFICATION_CONFIG",
+      "verification 引用了未知或初始化命令",
+    );
+    ensure(
+      rule && ["test", "check"].includes(rule.kind),
+      "VERIFICATION_CONFIG",
+      "必须声明 test 或 check",
+    );
+    if (rule.kind === "test") {
+      ensure(
+        ["junit", "tap"].includes(rule.format),
+        "VERIFICATION_CONFIG",
+        "只支持 junit 和 tap",
+      );
+      ensure(
+        (rule.source === "stdout" &&
+          rule.format === "tap" &&
+          rule.files === undefined) ||
+          (rule.source === undefined &&
+            Array.isArray(rule.files) &&
+            rule.files.length > 0),
+        "VERIFICATION_CONFIG",
+        "选择 TAP stdout 或报告文件",
+      );
+      for (const pattern of rule.files ?? []) {
+        ensure(
+          typeof pattern === "string" &&
+            pattern.length < 240 &&
+            !/[\\\\:\x00-\x1f]/.test(pattern),
+          "VERIFICATION_CONFIG",
+          "报告模式必须是项目相对路径",
+        );
+        for (const part of pattern.split("/"))
+          ensure(
+            part && part !== "." && part !== "..",
+            "VERIFICATION_CONFIG",
+            "报告模式越界",
+          );
+      }
+    } else
+      ensure(
+        rule.source === undefined &&
+          rule.files === undefined &&
+          rule.format === undefined,
+        "VERIFICATION_CONFIG",
+        "非测试检查不能声明测试报告",
+      );
+  }
+  if (raw.schema_version === "1.3")
+    for (const c of p.commands)
+      ensure(
+        c.purpose === "init" || p.verification?.[c.id],
+        "VERIFICATION_CONFIG",
+        "1.3 必须声明检查类型: " + c.id,
+      );
   const s = {
     profile: "strict",
     codex_path: "codex",
@@ -308,9 +379,10 @@ export function normalizeConfig(
     "未知沙箱模式",
   );
   ensure(
-    s.profile !== "trusted_local" || raw.schema_version === "1.2",
+    s.profile !== "trusted_local" ||
+      ["1.2", "1.3"].includes(raw.schema_version),
     "SANDBOX",
-    "trusted_local 必须显式使用 1.2 配置",
+    "trusted_local 必须显式使用 1.2 或 1.3 配置",
   );
   ensure(
     s.network !== true || s.profile === "trusted_local",
@@ -337,7 +409,9 @@ export function normalizeConfig(
   }
   s.read_roots = s.read_roots.map((x: string) => path.resolve(base, expand(x)));
   const result: Config = {
-    schema_version: raw.schema_version === "1.2" ? "1.2" : "1.1",
+    schema_version: ["1.2", "1.3"].includes(raw.schema_version)
+      ? raw.schema_version
+      : "1.1",
     executors,
     workflow: w,
     project: p,
@@ -368,6 +442,9 @@ export class Secrets {
 }
 export async function loadConfig(file: string) {
   const raw = parse((await fs.readFile(file, "utf8")).replace(/^\uFEFF/, ""));
+  return loadConfigValue(raw, file);
+}
+export async function loadConfigValue(raw: any, file: string) {
   const vars = { ...process.env };
   const base = path.dirname(path.resolve(file));
   if (raw.private_env_file) {

@@ -1,8 +1,10 @@
-# Codex Harness 本地执行器 v1.2.1
+# Codex Harness 本地执行器 v1.3.0
+
+v1.3 提供自动接入、项目文档直接冻结、过程报告、JUnit/TAP 用例计数和供应商用量/空间统计。配置版本 1.3，协议仍为 1.0，目录名保持不变。见 [迁移与用法](MIGRATION-1.3.md) 和 [本版验证记录](VALIDATION-V1.3.md)。
 
 当前 Codex 会话分析项目、冻结实现/验收/测试文档、调度工作 AI、独立验收并自动返工。执行器提供文件工具、原生沙箱、快照证据和状态恢复；无需第二个决策模型 API。
 
-v1.2.1 修复历史运行恢复、旧 FINAL 导出及长日志丢失。配置仍为 1.2、交换协议仍为 1.0；升级及旧记录处理见 [MIGRATION-1.2.1.md](MIGRATION-1.2.1.md)。原 v1.2 项目规范模板可继续使用。
+本版保留 v1.2.1 对历史运行恢复、旧 FINAL 导出及长日志的修复。旧版记录处理见 [MIGRATION-1.2.1.md](MIGRATION-1.2.1.md)。原 v1.2 项目规范模板可继续使用。
 
 ## 安装与配置
 
@@ -16,7 +18,7 @@ v1.2.1 修复历史运行恢复、旧 FINAL 导出及长日志丢失。配置仍
 
 ## Windows 执行模式
 
-新版模板显式选择 schema_version: '1.2'、sandbox.profile: trusted_local、network: true。这是用户信任项目代码的本机模式：允许普通文件读取和联网，写入限制在检查副本及临时目录；指定原项目、控制目录、私有 Key 文件、Codex 私有目录禁止访问，验收文件只读。它不承诺全面读取隔离或断网。不会修改 Windows 防火墙。
+新版模板显式选择 schema_version: '1.3'、sandbox.profile: trusted_local、network: true。这是用户信任项目代码的本机模式：允许普通文件读取和联网，写入限制在检查副本及临时目录；指定原项目、控制目录、私有 Key 文件、Codex 私有目录禁止访问，验收文件只读。它不承诺全面读取隔离或断网。不会修改 Windows 防火墙。
 
 旧配置继续使用 strict 语义，不能因升级自动放宽权限。当前测试机的 Codex CLI 不支持旧根目录拒读策略，因此旧配置会明确阻塞。不要添加全权限参数或用测试适配器绕过 doctor。
 
@@ -24,7 +26,7 @@ v1.2.1 修复历史运行恢复、旧 FINAL 导出及长日志丢失。配置仍
 
 发送：请阅读此执行器的 COORDINATOR.md，使用我的配置文件接入目标项目；先 doctor --live、分析代码与规范、运行基线，再按我的需求完成文档、派发、独立验收和返工。没有业务需求时只完成接入。
 
-命令入口为 harness.cmd；所有业务命令使用 --config <项目外配置路径>。顺序为 doctor → init → baseline → prepare → run → verify → inspect → decide；REVISE 后自动重派发，全部功能通过后 FINAL → verify → decide → export。
+命令入口为 harness.cmd；所有业务命令使用 --config <项目外配置路径>。`onboard` 整合规范合并及 doctor → init → baseline；随后 prepare --docs → run → verify → inspect → decide。REVISE 后自动重派发，全部功能通过后 FINAL → verify → decide → export。原单步接入命令继续可用。
 
 Codex 桌面外层沙箱可能无法嵌套启动原生沙箱。必要时只为可信 harness 协调者申请宿主执行权限；项目检查仍由执行器进入原生沙箱。用户不需要逐轮搬运 JSON。
 
