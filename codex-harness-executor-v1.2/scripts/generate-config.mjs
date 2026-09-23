@@ -52,6 +52,7 @@ const project = object(
     source_root: string,
     work_root: string,
     control_root: string,
+    max_check_log_bytes: integer(1, Number.MAX_SAFE_INTEGER),
     read_paths: strings,
     allowed_paths: strings,
     protected_paths: strings,

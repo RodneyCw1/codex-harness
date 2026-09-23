@@ -39,6 +39,7 @@ export interface Config {
     allowed_paths: string[];
     protected_paths: string[];
     generated_dirs: string[];
+    max_check_log_bytes?: number;
     command_env_allowlist: string[];
     commands: Command[];
     artifacts: Record<
@@ -174,6 +175,13 @@ export function normalizeConfig(
   p.command_env_allowlist ??= [];
   p.commands ??= [];
   p.artifacts ??= {};
+  ensure(
+    p.max_check_log_bytes === undefined ||
+      (Number.isSafeInteger(p.max_check_log_bytes) &&
+        p.max_check_log_bytes > 0),
+    "LOG_CONFIG",
+    "max_check_log_bytes 必须为正安全整数",
+  );
   ensure(
     p.generated_dirs === undefined ||
       (Array.isArray(p.generated_dirs) &&

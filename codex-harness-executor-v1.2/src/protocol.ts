@@ -1,14 +1,7 @@
 import Ajv from "ajv/dist/2020.js";
 import schema from "./contracts.schema.json" with { type: "json" };
-import fs from "node:fs/promises";
-import {
-  ensure,
-  digest,
-  hash,
-  safePath,
-  matches,
-  relativeName,
-} from "./files.ts";
+import { fileHash } from "./logs.ts";
+import { ensure, digest, safePath, matches, relativeName } from "./files.ts";
 const ajv = new (Ajv as any)({ strict: false, allErrors: true });
 const validate = ajv.compile(schema);
 // Protocol documents are validated at the boundary; semantics are checked below.
@@ -106,12 +99,11 @@ export function validateTask(task: Doc, mode = "live") {
   );
 }
 export async function artifact(root: string, p: string, type = "other") {
-  const b = await fs.readFile(await safePath(root, p));
-  return { path: p, sha256: hash(b), type };
+  return { path: p, sha256: await fileHash(await safePath(root, p)), type };
 }
 export async function verifyArtifact(root: string, a: Doc) {
   ensure(
-    hash(await fs.readFile(await safePath(root, a.path))) === a.sha256,
+    (await fileHash(await safePath(root, a.path))) === a.sha256,
     "ARTIFACT_CHANGED",
     "证据或规范文件已变化: " + a.path,
   );

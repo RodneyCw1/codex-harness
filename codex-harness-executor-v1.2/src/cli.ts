@@ -8,7 +8,7 @@ import { WindowsSandbox } from "./sandbox.ts";
 import { ModelClient } from "./api.ts";
 import { initialize } from "./workspace.ts";
 import { Engine } from "./engine.ts";
-const help = `Codex Harness 1.2 — Node.js 24 / Windows
+const help = `Codex Harness 1.2.1 — Node.js 24 / Windows
 用法：harness <命令> --config <项目配置.yaml> [参数]
   init --project <目录>          创建项目事实清单与独立工作区
   doctor [--live] [--executor ID] 实测沙箱，--live 探测模型工具往返
@@ -19,6 +19,7 @@ const help = `Codex Harness 1.2 — Node.js 24 / Windows
   decide --run <ID> --review <JSON> [--rework <JSON>]
   status [--run <ID>]
   inspect --run <ID> [--offset N] 向 Codex 返回规范、差异与分页验证日志
+  inspect --run <ID> --log <引用> [--byte-offset N] 读取完整日志（每页最多64KiB）
   stop --run <ID>
   cancel --run <ID> --reason <说明>  取消已停止的当前轮，保留代码、计数和证据
   resume --run <ID> [--new-batch]
@@ -41,6 +42,8 @@ async function main() {
       resolved: { type: "string" },
       reason: { type: "string" },
       offset: { type: "string" },
+      log: { type: "string" },
+      "byte-offset": { type: "string" },
       live: { type: "boolean" },
       "new-batch": { type: "boolean" },
       help: { type: "boolean" },
@@ -52,7 +55,7 @@ async function main() {
     return;
   }
   if (values.version) {
-    console.log("1.2.0");
+    console.log("1.2.1");
     return;
   }
   ensure(
@@ -124,7 +127,12 @@ async function main() {
         }
       result = {
         ok: sandbox.ok && live.ok !== false,
-        configuration: {ok:true,schema_version:config.schema_version,profile:config.sandbox.profile,network:config.sandbox.network},
+        configuration: {
+          ok: true,
+          schema_version: config.schema_version,
+          profile: config.sandbox.profile,
+          network: config.sandbox.network,
+        },
         executor: selected,
         sandbox,
         model: live,
@@ -168,7 +176,23 @@ async function main() {
       result = await engine.baseline();
       break;
     case "inspect":
-      result = await engine.inspect(need("run"), Number(values.offset ?? 0));
+      ensure(
+        !values["byte-offset"] || values.log,
+        "ARGUMENT",
+        "--byte-offset 需要 --log",
+      );
+      ensure(
+        !values.log || values.offset === undefined,
+        "ARGUMENT",
+        "--log 使用 --byte-offset，不能与 --offset 混用",
+      );
+      result = values.log
+        ? await engine.inspectLog(
+            need("run"),
+            values.log,
+            Number(values["byte-offset"] ?? 0),
+          )
+        : await engine.inspect(need("run"), Number(values.offset ?? 0));
       break;
     case "stop":
       result = await engine.stop(need("run"));

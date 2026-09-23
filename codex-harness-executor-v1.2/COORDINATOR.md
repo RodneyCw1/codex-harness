@@ -17,7 +17,7 @@
 1. 在控制目录 `inputs/` 写三份文档和 task draft，使用 `examples/task.draft.json`。需求、验收项和测试用例双向映射；所有必需验收有真实验证方法。验收脚本及用于定义断言的依赖必须列为 protected_paths。不要把执行者可编辑的单元测试作为唯一验收依据。
 2. 调用 `prepare --task <draft绝对路径> --config <路径>`。它产生 1.0 任务包、规范摘要、当前快照、批次和轮数。不要手工编造 SHA、候选 ID 或执行退出码。再次派发前重新 prepare，保留相同规范版本与内容；规范变化才增加版本。
 3. 调用 `run --task <prepare返回的任务路径> [--executor 名称] --config <路径>`。只选择一个执行者。运行持续向 stderr 输出阶段事件，stdout 是 JSON 结果。收到 candidate 后调用 `verify --run <ID>`。
-4. 调用 `inspect --run <ID>` 读取规范、实际差异和验证日志。日志预览最多每文件 50,000 字符，存在 truncated 时用 --offset <next_offset> 继续读取；二进制差异需要单独检查。最终任务的 inspect 展示从原始基线到最终候选的全部变化。
+4. 调用 `inspect --run <ID>` 读取规范、实际差异和验证日志。日志预览最多每文件 50,000 字符，存在 truncated 时用 --offset <next_offset> 继续读取；也可用 `inspect --run <ID> --log <登记引用> --byte-offset 0` 按返回 next_byte_offset 读取完整单个日志。检查摘要里的 stdout/stderr 可能只是头尾预览，不能当作完整日志。二进制差异需要单独检查。最终任务的 inspect 展示从原始基线到最终候选的全部变化。
 5. 阅读代码差异及真实用户场景证据。退出码零只意味着命令成功执行，证据结果为 `unverified`，必须由你确认实际断言、界面/接口行为、边界场景及回归结果。执行者自测不能替代 verify 的独立证据。
 6. 基于 `runs/<ID>/review.template.json` 写正式 review。每项只引用相关 evidence_id；有必需检查未执行、缺产物或存在阻断缺陷时不能 ACCEPT。向 `decide --run <ID> --review <路径>` 提交。
 7. REVISE 必须生成 1.0 返工单并附 `--rework <路径>`：关联失败项、当前实际结果、预期、复现、证据、允许修复范围和复验测试。下一轮自动从步骤 2 继续，无需用户逐轮批准范围内修复。
@@ -32,6 +32,10 @@
 ## 恢复与权限
 
 会话中断后先 status。普通中断使用 `resume --run <ID>`，保留批次和轮数；只有用户明确续跑因预算暂停的任务时才使用 `--new-batch`。补丁意图已记录时，resume 核对每个文件处于写前或写后版本再补齐，未知内容保持阻塞，不盲目重放。
+
+v1.2.1 只恢复当前任务/批次的最新有效轮次；cancelled、已完成轮次不能重开。BLOCK 解除只处理一次，然后重新 prepare。旧 FINAL 无功能验收清单，或功能集合/规范/依赖/审批已变化时，提升 FINAL 版本并重新验收，不能复用旧交付结果。
+
+检查与初始化的 stdout/stderr 共享 project.max_check_log_bytes（缺省256MiB）；超额或写盘失败必须保留失败并重新验证，不得凭部分日志批准。调整限额会改变策略摘要，按既有取消/重准备流程处理。完整返工历史备份与自动迁移尚未提供。
 
 需求在运行中改变、候选已过期或需要修订当前标准时，先 stop，等待状态暂停，再 `cancel --run <ID> --reason <具体原因>`。它保留代码、证据和已消耗轮数，只撤销当前未审批轮的派发；然后提高规范版本并重新 prepare。不能通过 cancel 绕过 10/3 限额。已接受的历史结果不能由 cancel 改写。
 

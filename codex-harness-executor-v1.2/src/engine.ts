@@ -32,6 +32,13 @@ import {
 import { applyTextPatch } from "./patch.ts";
 import { processRun } from "./process.ts";
 import {
+  DEFAULT_LOG_BYTES,
+  LogSink,
+  readLogPage,
+  readCharacterPage,
+  type LogBudget,
+} from "./logs.ts";
+import {
   type Doc,
   contract,
   validateTask,
@@ -158,6 +165,60 @@ export class Engine {
       manifest_ref: dir + "/manifest.json",
       tree: this.store.file(dir + "/tree"),
     };
+  }
+  finalBasis(db: Database, taskId: string) {
+    const features = Object.values(db.features)
+      .filter((f) => f.task_id === taskId && f.feature_id !== "FINAL")
+      .sort((a, b) => a.feature_id.localeCompare(b.feature_id));
+    ensure(
+      features.length > 0 &&
+        features.every(
+          (f) =>
+            f.status === "passing" &&
+            f.approved_snapshot_id &&
+            f.acceptance_review_id,
+        ),
+      "FINAL_STALE",
+      "功能集合或审批已失效，须重新完成最终验收",
+    );
+    return features.map((f) => ({
+      feature_id: f.feature_id,
+      task_ref: f.task_ref,
+      spec_version: f.spec_version,
+      spec_digest: f.spec_digest,
+      dependencies: [...(f.dependencies ?? [])].sort(),
+      acceptance_review_id: f.acceptance_review_id,
+      approved_snapshot_id: f.approved_snapshot_id,
+    }));
+  }
+  checkFinalBasis(db: Database, task: Doc, run?: Doc, exporting = false) {
+    if (task.scope !== "final") return;
+    const f = db.features[key(task)];
+    ensure(
+      f &&
+        f.spec_digest === task.spec_digest &&
+        f.spec_version === task.spec_version &&
+        f.batch_id === task.batch_id &&
+        (!run || f.task_ref === run.task_ref) &&
+        Array.isArray(f.final_basis) &&
+        (!run ||
+          (Array.isArray(run.final_basis) &&
+            digest(run.final_basis) === digest(f.final_basis))) &&
+        digest(f.final_basis) === digest(this.finalBasis(db, task.task_id)),
+      "FINAL_STALE",
+      "FINAL 的功能验收清单缺失或已变化；提升 FINAL 版本并重新验收",
+    );
+    if (exporting)
+      ensure(
+        !db.active_run &&
+          f.status === "passing" &&
+          f.latest_run_id === run!.run_id &&
+          run!.status === "completed" &&
+          f.acceptance_review_id === run!.review?.message_id &&
+          f.approved_snapshot_id === run!.candidate?.snapshot_id,
+        "FINAL_STALE",
+        "当前 FINAL 已失效或存在活动运行，不能交付历史审批结果",
+      );
   }
   async prepare(draft: Doc) {
     return this.store.lock(async () => {
@@ -385,6 +446,9 @@ export class Engine {
         spec_digest: task.spec_digest,
         task_ref: taskRef,
         dependencies: draft.dependencies ?? [],
+        ...(scope === "final"
+          ? { final_basis: this.finalBasis(db, task.task_id) }
+          : {}),
       };
       await this.save(db, "task_prepared", { task_ref: taskRef });
       return {
@@ -475,6 +539,7 @@ export class Engine {
       const name = executorName ?? this.config.workflow.active_executor;
       const executor = this.config.executors[name];
       ensure(executor, "EXECUTOR", "执行者不存在");
+      this.checkFinalBasis(db, task);
       const runId = id("run");
       const run: Doc = {
         run_id: runId,
@@ -495,10 +560,12 @@ export class Engine {
         tool_count: 0,
         review: null,
         block_reason: null,
+        ...(task.scope === "final" ? { final_basis: f.final_basis } : {}),
       };
       db.runs[runId] = run;
       db.active_run = runId;
       f.status = "in_progress";
+      f.latest_run_id = runId;
       await this.save(db, "run_started", { run_id: runId, executor: name });
       return this.withRun(db, run, task, async (signal) => {
         await this.runner.probe(signal);
@@ -960,8 +1027,17 @@ export class Engine {
     // Preserve directory rules: expanding every protected document exceeds the
     // Windows helper's command-line limit on repositories with many standards.
     const protectedPaths = (task.protected_paths as string[])
-      .map(p => p === '**' ? '.' : p.replace(/\/\*\*$|\/$/, ''))
-      .filter((p, i, all) => all.indexOf(p) === i && !all.some(parent => parent !== p && (parent === '.' || p.toLowerCase().startsWith(parent.toLowerCase()+'/'))));
+      .map((p) => (p === "**" ? "." : p.replace(/\/\*\*$|\/$/, "")))
+      .filter(
+        (p, i, all) =>
+          all.indexOf(p) === i &&
+          !all.some(
+            (parent) =>
+              parent !== p &&
+              (parent === "." ||
+                p.toLowerCase().startsWith(parent.toLowerCase() + "/")),
+          ),
+      );
     const cwd = command.cwd === "." ? copy : await safePath(copy, command.cwd);
     ensure(
       cwd === copy,
@@ -971,6 +1047,70 @@ export class Engine {
     const started = now();
     let result;
     const initialization = [];
+    const budget: LogBudget = {
+      maxBytes: this.config.project.max_check_log_bytes ?? DEFAULT_LOG_BYTES,
+      usedBytes: 0,
+    };
+    const outputLogs: Doc[] = [];
+    let completeLogs = true,
+      commandIndex = 0;
+    const runLogged = async (c: Command) => {
+      const prefix = `runs/${run.run_id}/${category}/${checkId}-${commandIndex++}-${c.id}`;
+      const options = {
+        stdoutPath: this.store.file(prefix + ".stdout.log"),
+        stderrPath: this.store.file(prefix + ".stderr.log"),
+        budget,
+        secrets: this.secrets.values,
+      };
+      const r = await this.runner.run(c, copy, protectedPaths, signal, options);
+      // Small deterministic test doubles may still return captured output.
+      // Production must always use the native streaming runner.
+      if (!r.logs) {
+        ensure(
+          this.mode !== "live",
+          "LOG_WRITE_FAILED",
+          "运行器未返回完整日志记录",
+        );
+        const out = new LogSink(
+          options.stdoutPath,
+          budget,
+          options.secrets,
+          () => {},
+        );
+        const err = new LogSink(
+          options.stderrPath,
+          budget,
+          options.secrets,
+          () => {},
+        );
+        await out.open();
+        await err.open();
+        await out.append(r.stdout, true);
+        await err.append(r.stderr, true);
+        r.logs = {
+          stdout: await out.close(),
+          stderr: await err.close(),
+          complete: !budget.error && !r.timedOut && !r.aborted,
+          ...(budget.error ? { error: budget.error } : {}),
+        };
+        r.stdout = out.preview();
+        r.stderr = err.preview();
+      }
+      for (const stream of ["stdout", "stderr"] as const) {
+        const info = r.logs[stream];
+        ensure(
+          info.path ===
+            options[stream === "stdout" ? "stdoutPath" : "stderrPath"],
+          "LOG_WRITE_FAILED",
+          "日志位置与登记目标不符",
+        );
+        info.path = prefix + `.${stream}.log`;
+        if (info.sha256) outputLogs.push({ ...info, stream, command_id: c.id });
+      }
+      completeLogs &&= r.logs.complete;
+      if (!r.logs.complete) r.exitCode = null;
+      return r;
+    };
     const inputChecks: { stage: string; snapshot_id: string }[] = [];
     const verifyInput = async (stage: string) => {
       const actual = await this.snapshot(copy);
@@ -988,19 +1128,14 @@ export class Engine {
       for (const init of task.commands.filter(
         (c: Command) => c.purpose === "init" && c.id !== command.id,
       )) {
-        const initialized = await this.runner.run(
-          init,
-          copy,
-          protectedPaths,
-          signal,
-        );
+        const initialized = await runLogged(init);
         initialization.push({ command: init, ...initialized });
         await verifyInput("after-init:" + init.id);
         ensure(
           initialized.exitCode === 0 &&
             !initialized.aborted &&
             !initialized.timedOut,
-          "INIT_FAILED",
+          budget.error ?? "INIT_FAILED",
           "检查副本初始化失败: " +
             init.id +
             "\n" +
@@ -1010,10 +1145,12 @@ export class Engine {
         );
       }
       await verifyInput("before-check");
-      result = await this.runner.run(command, copy, protectedPaths, signal);
+      result = await runLogged(command);
       await verifyInput("after-check");
     } catch (e) {
+      completeLogs = false;
       result = {
+        ...(result ?? {}),
         exitCode: null,
         stdout: result?.stdout ?? "",
         stderr:
@@ -1026,6 +1163,11 @@ export class Engine {
         aborted: signal?.aborted ?? false,
       };
     }
+    if (budget.error) {
+      result.exitCode = null;
+      result.stderr +=
+        "\n" + budget.error + ": 部分日志已保存，本次检查不可通过";
+    }
     const finished = now();
     for (const protectedFile of s.files.filter((f) =>
       matches(f.path, task.protected_paths),
@@ -1036,7 +1178,11 @@ export class Engine {
         result.stderr += "\nSTANDARDS_CHANGED: " + protectedFile.path;
       }
     }
-    const collected = [];
+    const collected = outputLogs.map((a) => ({
+      path: a.path,
+      sha256: a.sha256,
+      type: "log",
+    }));
     for (const item of this.config.project.artifacts[command.id] ?? []) {
       try {
         const src = await safePath(copy, item.path);
@@ -1077,6 +1223,13 @@ export class Engine {
       spec_digest: task.spec_digest,
       command,
       initialization,
+      log_capture: {
+        complete: completeLogs && !budget.error,
+        total_bytes: budget.usedBytes,
+        limit_bytes: budget.maxBytes,
+        files: outputLogs,
+        ...(budget.error ? { error: budget.error } : {}),
+      },
       input_checks: inputChecks,
       tested_input_digest:
         inputChecks.find((x) => x.stage === "before-check")?.snapshot_id ??
@@ -1111,6 +1264,7 @@ export class Engine {
       );
       ensure(!run.review, "REVIEWED", "已评审的候选不能重验");
       const task = await this.store.read(run.task_ref);
+      this.checkFinalBasis(db, task, run);
       await this.checkPolicy(run);
       return this.withRun(db, run, task, async (signal) => {
         await this.runner.probe(signal);
@@ -1283,7 +1437,8 @@ export class Engine {
       );
       if (e.exit_code === 0)
         ensure(
-          report.tested_input_digest === run.candidate.snapshot_id &&
+          (!report.log_capture || report.log_capture.complete === true) &&
+            report.tested_input_digest === run.candidate.snapshot_id &&
             report.input_checks?.some((x: Doc) => x.stage === "after-check") &&
             report.input_checks.every(
               (x: Doc) => x.snapshot_id === run.candidate.snapshot_id,
@@ -1355,6 +1510,7 @@ export class Engine {
       const run = db.runs[runId];
       ensure(run?.candidate, "RUN", "候选不存在");
       const task = await this.store.read(run.task_ref);
+      this.checkFinalBasis(db, task, run);
       await this.checkPolicy(run);
       contract(review, "review", this.mode);
       matchBindings(task, run.candidate, review);
@@ -1645,8 +1801,8 @@ export class Engine {
       const report = {
         artifact_mode: this.mode,
         baseline_snapshot: project.baseline_snapshot,
-        validation_scope: 'registered-command-execution',
-        business_acceptance: 'not_evaluated',
+        validation_scope: "registered-command-execution",
+        business_acceptance: "not_evaluated",
         results,
         passed: results.every((r) => r.exitCode === 0),
       };
@@ -1669,17 +1825,13 @@ export class Engine {
       const e = await this.store.read(ref.ref);
       const logs = [];
       for (const a of e.artifacts.filter((a: Doc) => a.type === "log")) {
-        const content = await fs.readFile(
+        const page = await readCharacterPage(
           await safePath(this.config.project.control_root, a.path),
-          "utf8",
+          offset,
         );
         logs.push({
           path: a.path,
-          text: content.slice(offset, offset + 50000),
-          offset,
-          total_chars: content.length,
-          truncated: offset + 50000 < content.length,
-          next_offset: offset + 50000 < content.length ? offset + 50000 : null,
+          ...page,
         });
       }
       evidence.push({ ...e, logs });
@@ -1722,6 +1874,41 @@ export class Engine {
       block_reason: run.block_reason,
       review_template:
         run.phase === "reviewing" ? `runs/${runId}/review.template.json` : null,
+    });
+  }
+  async inspectLog(runId: string, ref: string, offset = 0) {
+    const db = await this.db();
+    const run = db.runs[runId];
+    const allowed = new Set<string>();
+    const collect = (report: Doc) => {
+      if (report.log_ref) allowed.add(report.log_ref);
+      for (const a of report.log_capture?.files ?? []) allowed.add(a.path);
+      for (const a of report.collected ?? [])
+        if (a.type === "log") allowed.add(a.path);
+    };
+    if (run) {
+      for (const item of run.evidence) {
+        const evidence = await this.store.read(item.ref);
+        for (const a of evidence.artifacts)
+          if (a.type === "log") allowed.add(a.path);
+      }
+      for (const report of run.self_tests) collect(report);
+    } else {
+      const baseline = await this.store
+        .read("baseline-results.json")
+        .catch(() => null);
+      for (const report of baseline?.results ?? [])
+        if (report.report_ref.startsWith(`runs/${runId}/baseline/`))
+          collect(report);
+    }
+    ensure(allowed.has(ref), "LOG_REFERENCE", "仅可读取该运行登记的日志引用");
+    return this.secrets.clean({
+      run_id: runId,
+      path: ref,
+      ...(await readLogPage(
+        await safePath(this.config.project.control_root, ref),
+        offset,
+      )),
     });
   }
   async stop(runId: string) {
@@ -1774,6 +1961,41 @@ export class Engine {
       );
       const task = await this.store.read(run.task_ref);
       const f = db.features[key(task)];
+      ensure(
+        f &&
+          f.task_ref === run.task_ref &&
+          f.batch_id === task.batch_id &&
+          f.spec_version === task.spec_version &&
+          f.spec_digest === task.spec_digest,
+        "RUN_STALE",
+        "运行不属于当前任务、批次或规范；请使用 status 返回的当前运行",
+      );
+      // Legacy records can only be recovered when identity gives one answer.
+      // Timestamps cannot distinguish replayed or interrupted operations.
+      const matching = Object.values(db.runs).filter(
+        (r) => r.task_ref === f.task_ref,
+      );
+      const latest =
+        f.latest_run_id ?? (matching.length === 1 ? matching[0].run_id : null);
+      ensure(
+        latest === runId,
+        "RUN_STALE",
+        "历史运行或最新轮次无法唯一确认，不能恢复",
+      );
+      ensure(
+        run.status !== "cancelled" && run.status !== "completed",
+        "RUN_TERMINAL",
+        run.status === "cancelled"
+          ? "已取消运行不可恢复；请重新 prepare"
+          : "已完成运行无需恢复；返工请重新 prepare，通过后准备下一功能或 FINAL",
+      );
+      ensure(
+        ["running", "paused"].includes(run.status) &&
+          ["in_progress", "blocked"].includes(f.status),
+        "RUN_STALE",
+        "功能已不处于该运行可恢复的状态",
+      );
+      this.checkFinalBasis(db, task, run);
       await this.checkPolicy(run);
       ensure(
         f.spec_digest === task.spec_digest,
@@ -1781,11 +2003,6 @@ export class Engine {
         "规范已升级，请重新 prepare",
       );
       await this.checkSpec(task, (await this.project()).workspace);
-      ensure(
-        run.status !== "completed" || run.review?.decision !== "ACCEPT",
-        "COMPLETED",
-        "已完成的运行无需恢复",
-      );
       ensure(
         digest(this.config.executors[run.executor]) === run.executor_digest,
         "EXECUTOR_CHANGED",
@@ -1820,7 +2037,14 @@ export class Engine {
         "轮数暂停需明确 resume --new-batch",
       );
       if (run.review) {
+        ensure(
+          run.status === "paused" && f.status === "blocked",
+          "RUN_STALE",
+          "该评审不处于暂停状态",
+        );
         f.status = "not_started";
+        f.latest_run_id = runId;
+        run.status = "completed";
         db.active_run = null;
         await this.save(db, "feature_resumed", { run_id: runId });
         return {
@@ -1835,6 +2059,7 @@ export class Engine {
       run.block_reason = null;
       run.pid = process.pid;
       f.status = "in_progress";
+      f.latest_run_id = runId;
       db.active_run = runId;
       await this.save(db, "run_resumed", { run_id: runId });
       await this.reconcile(db, run, task);
@@ -1855,6 +2080,7 @@ export class Engine {
         "只有通过的最终运行可以交付",
       );
       const task = await this.store.read(run.task_ref);
+      this.checkFinalBasis(db, task, run, true);
       await this.checkPolicy(run);
       ensure(task.scope === "final", "FINAL_REQUIRED", "须完成最终快照验收");
       const project = await this.project();

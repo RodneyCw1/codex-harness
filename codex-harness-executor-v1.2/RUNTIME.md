@@ -25,6 +25,7 @@ Key 来自进程环境或明确的项目外私有环境文件。后者只解析 
 | run --task [--executor] | 只执行一轮并提交候选，或冻结 FINAL 候选；不自行审批 |
 | verify --run | 对冻结候选新建检查副本，独立运行全部登记 TC，形成不可替代自测的证据 |
 | inspect --run | 返回规范、差异、证据和日志预览；不修改状态 |
+| inspect --run --log --byte-offset | 每次读取登记日志最多64KiB，返回 UTF-8 边界上的 next_byte_offset；不改变原 --offset 字符语义 |
 | decide --run --review [--rework] [--resolved] | 仅协调者提交评审，校验绑定关系、全部必需项、真实产物和当前版本 |
 | status [--run] | 读取状态、当前阶段、暂停原因及计数 |
 | stop --run | 写停止请求；运行器中止 HTTP 和检查子进程树 |
@@ -73,3 +74,13 @@ db.json 原子替换，并在写前校验 revision。所有状态变更使用单
 ## v1.2 补充
 
 配置、生成目录、产物 required/role、实际受测输入摘要、CLI/工具指纹、Windows 内核锁及日志分页详见 MIGRATION-1.2.md。源码和保护文件在 init 后、检查前后核对；环境改变或输入不匹配的证据不能批准。
+
+## v1.2.1 修复
+
+当前轮次由 feature.latest_run_id 与 task_ref/batch_id/spec_version/spec_digest 共同识别。历史和终止运行不能改变当前状态；遗留记录只有唯一身份匹配时可恢复。
+
+FINAL 内部 final_basis 固定通过的功能集合及规范、依赖和审批依据。启动、验证、审批和导出都重新检查；旧 FINAL 缺少清单时要求提升 FINAL 版本重验。已有 delivery.json 不能绕过当前有效性检查。
+
+项目检查日志流式保存，64KiB 头尾预览与完整日志分开。每次检查及其初始化命令默认共享256MiB额度，可用 project.max_check_log_bytes 配置正整数；超过预览长度不会停止命令，超过保存额度或日志写入失败才阻塞。日志增量脱敏、流式摘要、分页读取，完整性状态保存在内部 log_capture 中。启动失败、超时、停止、输入变化或日志不完整均不能通过。旧日志继续兼容；此前丢失的内容只能重跑获得。
+
+本版未解决完整返工历史导出，仍不能把 export 当作跨电脑恢复备份。详见 MIGRATION-1.2.1.md。

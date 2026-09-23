@@ -6,6 +6,7 @@ import type { Config, Command } from "./config.ts";
 import { commandEnvironment, Secrets } from "./config.ts";
 import { Block, ensure, id, atomic, exists, within, hash } from "./files.ts";
 import { processRun, type ProcessResult } from "./process.ts";
+import type { ProcessLogOptions } from "./logs.ts";
 export interface CheckRunner {
   kind: string;
   probe(signal?: AbortSignal): Promise<unknown>;
@@ -15,6 +16,7 @@ export interface CheckRunner {
     cwd: string,
     protectedPaths: string[],
     signal?: AbortSignal,
+    logs?: ProcessLogOptions,
   ): Promise<ProcessResult>;
 }
 const toml = (v: any): string =>
@@ -143,6 +145,7 @@ export class WindowsSandbox implements CheckRunner {
     cwd: string,
     protectedPaths: string[],
     signal?: AbortSignal,
+    logs?: ProcessLogOptions,
   ) {
     const syntax = await this.detect();
     const temp = path.join(cwd, ".harness-tmp");
@@ -227,6 +230,7 @@ export class WindowsSandbox implements CheckRunner {
       env,
       timeoutMs: command.timeout_seconds * 1000,
       signal,
+      logs,
     });
     return this.secrets.clean(r);
   }

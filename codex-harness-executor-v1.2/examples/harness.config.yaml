@@ -29,6 +29,8 @@ project:
   source_root: 'C:/Projects/your-project'
   work_root: 'C:/Harness/work/your-project'
   control_root: 'C:/Harness/control/your-project'
+  # 可选：一次检查及其初始化的 stdout/stderr 合计上限；缺省为 256 MiB。
+  # max_check_log_bytes: 268435456
   read_paths: ['**']
   allowed_paths: [] # Codex 分析项目后填写，如 ['src/', 'tests/unit/']
   protected_paths: ['AGENTS.md', 'docs/harness/'] # 加入验收脚本及其可信依赖

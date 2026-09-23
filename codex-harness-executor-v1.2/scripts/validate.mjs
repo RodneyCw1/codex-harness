@@ -5,6 +5,9 @@ await fs.mkdir("reports", { recursive: true });
 const files = (await fs.readdir("test"))
   .filter((p) => p.endsWith(".test.ts"))
   .map((p) => "test/" + p);
+const hostFiles = (await fs.readdir("test/host"))
+  .filter((p) => p.endsWith(".test.ts"))
+  .map((p) => "test/host/" + p);
 const checks = [
   [
     "typecheck",
@@ -17,15 +20,7 @@ const checks = [
   ["build", [process.execPath, "scripts/build.mjs"]],
   ["cli-help", [process.execPath, "dist/harness.mjs", "--help"]],
   ["cli-version", [process.execPath, "dist/harness.mjs", "--version"]],
-  [
-    "host",
-    [
-      process.execPath,
-      "--test",
-      "--test-concurrency=1",
-      "test/host/sandbox.test.ts",
-    ],
-  ],
+  ["host", [process.execPath, "--test", "--test-concurrency=1", ...hostFiles]],
   [
     "audit",
     [

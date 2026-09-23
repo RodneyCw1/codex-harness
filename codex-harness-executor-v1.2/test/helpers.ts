@@ -114,13 +114,14 @@ export async function fixture() {
     async probe() {
       return { test_double: true };
     },
-    async run(command, cwd, protectedPaths, signal) {
+    async run(command, cwd, protectedPaths, signal, logs) {
       assert.deepEqual(command.argv, [process.execPath, "check.mjs"]);
       return processRun(command.argv, {
         cwd,
         env: commandEnvironment(config, vars, path.join(cwd, "tmp")),
         timeoutMs: 10000,
         signal,
+        logs,
       });
     },
   };

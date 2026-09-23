@@ -2,7 +2,7 @@
 
 [返回中文首页](../README.zh-CN.md) · [English README](../README.md)
 
-本教程适用于 **Codex Harness v1.2、Windows、PowerShell 和 Codex 桌面会话**。目标是先让工作模型修复自带加法示例，完成独立验收并导出成果，再把同一流程用于自己的项目。
+本教程适用于 **Codex Harness v1.2.1、Windows、PowerShell 和 Codex 桌面会话**。目标是先让工作模型修复自带加法示例，完成独立验收并导出成果，再把同一流程用于自己的项目。
 
 你负责安装环境、在本机填写 API Key、提供项目路径和需求。Codex 负责分析项目、维护三份任务文档、调用执行器、审查证据和安排返工。执行器本身没有独立聊天界面，也没有关闭会话后继续决策的后台服务。
 
@@ -149,6 +149,8 @@ C:\Tools\codex-harness\
     └── project\
 ```
 
+执行器目录保留 `v1.2` 名称以兼容已有路径，内部程序版本为 **1.2.1**；项目模板与配置仍是 1.2，协议仍是 1.0。
+
 这个目录是**工具仓库**。稍后的 `C:\Projects\harness-demo` 才是本次被修改的**目标项目**，不要混淆两者。
 
 ### 2.2 检查执行器入口
@@ -162,7 +164,7 @@ Test-Path -LiteralPath $Harness
 & $Harness --help
 ```
 
-**成功标志**：依次看到 `True`、`1.2.0` 和命令帮助。无需运行 `npm install`、`npm run build` 或双击 `.mjs` 文件。双击 `.cmd` 可能窗口一闪而过，使用 PowerShell 才方便查看输出。
+**成功标志**：依次看到 `True`、`1.2.1` 和命令帮助。无需运行 `npm install`、`npm run build` 或双击 `.mjs` 文件。双击 `.cmd` 可能窗口一闪而过，使用 PowerShell 才方便查看输出。
 
 ### 2.3 创建示例目录并复制项目
 
@@ -341,7 +343,7 @@ Test-Path -LiteralPath 'C:\Harness\private\work-ai.env'
 若你改过默认路径，先替换这段提示词中的路径。不要在提示词里追加 Key。
 
 ```text
-请使用 Codex Harness v1.2 完成下面的示例项目接入与修复。
+请使用 Codex Harness v1.2.1 完成下面的示例项目接入与修复。
 
 目标项目：C:\Projects\harness-demo
 规范模板包：C:\Tools\codex-harness\codex-harness-project-template-v1.2
@@ -509,7 +511,7 @@ git -C 'C:\Projects\my-app' status --short
 打开真实项目的 Codex 本地会话，将所有项目路径和模型占位符替换后发送：
 
 ```text
-请按 Codex Harness v1.2 接入我的项目，本次只接入，不执行业务改动。
+请按 Codex Harness v1.2.1 接入我的项目，本次只接入，不执行业务改动。
 
 目标项目：C:\Projects\my-app
 规范模板包：C:\Tools\codex-harness\codex-harness-project-template-v1.2
@@ -592,7 +594,14 @@ $RunId = 'REPLACE_WITH_ACTUAL_RUN_ID'
 & $Harness inspect --config $Config --run $RunId
 ```
 
-`$RunId` 来自实际 `status` 或 Codex 的报告，不要自行编造。`inspect` 提供差异与证据预览；日志若标记截断，要让 Codex 按 `next_offset` 继续分页读取，再完成评审。预览末尾没有错误，并不等于完整日志没有错误。
+`$RunId` 来自实际 `status` 或 Codex 的报告，不要自行编造。`inspect` 提供差异与证据预览，原有 `--offset` 字符分页保留。v1.2.1 的 stdout/stderr 完整日志与有限预览分开保存；出现 `PREVIEW_TRUNCATED` 时，从返回的产物中取得实际日志引用：
+
+```powershell
+$LogRef = 'REPLACE_WITH_REGISTERED_LOG_REFERENCE'
+& $Harness inspect --config $Config --run $RunId --log $LogRef --byte-offset 0
+```
+
+按 `next_byte_offset` 继续读取，每页最多 64 KiB。预览末尾没有错误，并不等于完整日志没有错误。一次检查及其初始化默认合计保存 256 MiB，可通过可选的 `project.max_check_log_bytes` 正整数调整；超限或写入失败会保留部分日志并阻止通过，调整后必须重跑检查。
 
 ### 7.3 停止与恢复
 
@@ -610,6 +619,8 @@ $RunId = 'REPLACE_WITH_ACTUAL_RUN_ID'
 ```powershell
 & $Harness resume --config $Config --run $RunId
 ```
+
+`resume` 仅恢复当前功能的最新有效运行；任务引用、批次或规范不匹配时返回 `RUN_STALE`，已取消及已完成运行返回 `RUN_TERMINAL`。当前 BLOCK 处理一次后重新 prepare，旧轮次不会再次改变功能状态。
 
 `resume` 恢复可继续的运行状态，不是启动常驻自动决策服务；后续派发与评审仍由 Codex 会话推进。普通恢复保留轮数；每功能每批次最多 10 轮，连续 3 轮无进展暂停。只有你明确决定继续因预算暂停的工作时，才由 Codex 使用 `--new-batch`，不能通过重置批次隐去失败。
 
@@ -634,7 +645,7 @@ $RunId = 'REPLACE_WITH_ACTUAL_RUN_ID'
 
 保留项目规范，在新电脑重新安装环境、绑定实际可执行文件路径、配置本机 Key，并重新运行 `doctor --live` 和项目基线。工具仓库可重新下载，Key 不随仓库传输。
 
-若要恢复旧运行，需要完整匹配的工作目录、控制记录和候选，并由 Codex 核对。只有项目源码或聊天记录时，应按新的接入/任务处理，不宣称恢复旧运行。升级 Node.js、CLI 或执行器后，旧证据可能失效；让 Codex 依据实际状态重新验证。详见[新电脑说明](../codex-harness-project-template-v1.2/NEW-COMPUTER.md)和[迁移说明](../codex-harness-executor-v1.2/MIGRATION-1.2.md)。
+若要恢复旧运行，需要完整匹配的工作目录、控制记录和候选，并由 Codex 核对。只有项目源码或聊天记录时，应按新的接入/任务处理，不宣称恢复旧运行。升级 Node.js、CLI 或执行器后，旧证据可能失效；让 Codex 依据实际状态重新验证。详见[新电脑说明](../codex-harness-project-template-v1.2/NEW-COMPUTER.md)和[v1.2.1 迁移说明](../codex-harness-executor-v1.2/MIGRATION-1.2.1.md)。
 
 <a id="troubleshooting"></a>
 
@@ -647,7 +658,7 @@ $RunId = 'REPLACE_WITH_ACTUAL_RUN_ID'
 | `node` / `git` 不是可识别命令 | 安装是否完成，终端是否继承新 PATH | 重开终端和桌面应用，再用 `Get-Command` 核对路径 |
 | `NODE_VERSION` | 执行 Harness 的 Node.js 是否为 24.x | 指定 Node.js 24 的绝对路径，见下方示例 |
 | 双击 `harness.cmd` 后窗口消失 | 是否通过 PowerShell 调用 | 在终端用 `& '完整路径\harness.cmd' --help` 查看输出 |
-| `npm run build` / `npm test` 提示缺少脚本 | 是否沿用旧包 README 的开发步骤 | 当前发行包直接运行 `harness.cmd`；这些脚本不是本包可用的安装步骤 |
+| `npm run build` / `npm test` 提示缺少脚本 | 是否处于执行器目录，版本是否为 1.2.1 | 日常直接运行 `harness.cmd`；开发时进入 `codex-harness-executor-v1.2`，先 `npm ci` |
 | 配置文件找不到 | 文件路径、扩展名及 `--config` 参数 | 用 `Test-Path` 检查；去掉误加的 `.txt` |
 | YAML 解析错误 / `CONFIG` | 缩进、引号、字段值和三个目录关系 | 用空格缩进，检查同级字段对齐；逐项对照第 3 节 |
 | 源、工作、控制目录必须互不包含 | 是否把 work/control 放进项目，或彼此嵌套 | 改为独立目录；已有运行先让 Codex 处理迁移，不直接篡改绑定 |
@@ -665,6 +676,10 @@ $RunId = 'REPLACE_WITH_ACTUAL_RUN_ID'
 | 初始化依赖失败 | 新检查副本是否缺依赖，缓存写入位置是否正确 | 登记固定 `purpose: init` 命令；所需可写缓存放检查副本，不放宽任意写入权限 |
 | `CHECK_INPUT_CHANGED` / 必需产物缺失 | 检查是否修改了源码或验收输入，是否产生真实报告 | 修正检查流程或候选后重跑，不删断言或隐藏报告要求 |
 | `ROUND_LIMIT` / `STALLED` | 最近失败项和连续无进展原因 | 先让 Codex 汇总证据，再决定修订需求或明确续跑 |
+| `RUN_STALE` / `RUN_TERMINAL` | 是否恢复了旧轮次或终止运行 | 用 status 核对当前运行；已完成返工从 prepare 开始，不重开旧运行 |
+| `FINAL_STALE` | 功能、规范、依赖或最终审批是否变化，是否为旧版 FINAL | 提高 FINAL 规范版本，重新准备、运行、验证和评审；不复用旧 delivery.json |
+| `LOG_LIMIT_EXCEEDED` / `LOG_WRITE_FAILED` | 日志合计限额、磁盘空间与写入权限 | 保留并查看已保存部分，修复后重跑；不完整日志不能通过 |
+| `PROCESS_START_FAILED` | 已登记命令的可执行文件和路径是否存在 | 根据脱敏的真实启动错误修正命令配置，重新准备并检查 |
 | export 被拒绝 | 是否只有功能 ACCEPT，尚无最终 ACCEPT | 完成 FINAL 的独立检查与评审；使用最终运行 ID |
 | export 成功但原项目没变 | 是否只看了 `source_root` | 查看导出目录的 `after/`；合并回原项目是后续操作 |
 
@@ -690,7 +705,7 @@ $HarnessModule = 'C:\Tools\codex-harness\codex-harness-executor-v1.2\dist\harnes
 ### 提交一条有用的排错信息
 
 ```text
-我在使用 Codex Harness v1.2。
+我在使用 Codex Harness v1.2.1。
 失败阶段：<安装 / doctor / baseline / run / verify / export>
 配置路径：<项目外配置的绝对路径>
 Node.js 版本：<node --version 输出>

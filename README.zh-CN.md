@@ -6,7 +6,9 @@
 
 Codex Harness 在 Windows 上把项目需求、外部工作模型和独立验证串成完整流程。当前 Codex 会话负责分析项目、编写实现与验收文档、派发任务、审查证据和安排返工；本地执行器提供受限文件工具、原生沙箱检查、快照和状态恢复。无需额外接入一个决策模型 API；外部工作模型仍需要单独配置兼容的 API。
 
-本仓库包含 **v1.2 执行器**和配套的 **v1.2 项目规范模板**。配置版本为 **1.2**，随包保留的固定协议版本仍为 **1.0**。
+本仓库包含 **v1.2.1 执行器**和配套的 **v1.2 项目规范模板**。配置版本为 **1.2**，随包保留的固定协议版本仍为 **1.0**。
+
+为兼容已有启动路径，执行器目录仍叫 `codex-harness-executor-v1.2/`，内部 CLI 版本为 **1.2.1**；项目模板继续使用 **1.2**。详见[更新记录](CHANGELOG.md)和[v1.2.1 升级说明](codex-harness-executor-v1.2/MIGRATION-1.2.1.md)。
 
 ## 可以做什么
 
@@ -58,7 +60,7 @@ flowchart TD
 
 ## 快速开始
 
-已编译的 `dist/harness.mjs` 包含运行依赖，**使用执行器无需 `npm install` 或自行构建**。当前包内 `package.json` 是发行元数据，没有定义旧包 README 中提及的开发脚本。
+已编译的 `dist/harness.mjs` 包含运行依赖，**使用执行器无需 `npm install` 或自行构建**。需要开发执行器时，在执行器目录先运行 `npm ci`，再使用已提供的 `typecheck`、`test`、`test:host` 和 `build` 脚本。
 
 1. 在本仓库点击 **Code → Download ZIP**，解压后将两个组件目录保留在目标项目之外。在解压后的仓库目录打开 PowerShell。
 2. 检查 Node.js 和执行器：
@@ -70,7 +72,7 @@ flowchart TD
    .\codex-harness-executor-v1.2\harness.cmd --help
    ```
 
-   Node.js 应显示 `v24.x.x`，执行器应显示 `1.2.0`。帮助和版本输出正常，不代表沙箱或模型连接已经通过验证。
+   Node.js 应显示 `v24.x.x`，执行器应显示 `1.2.1`。帮助和版本输出正常，不代表沙箱或模型连接已经通过验证。
 
 3. 按[新手教程](docs/GETTING-STARTED.zh-CN.md)在项目外创建专用 YAML 配置，填写 `base_url`、`model` 和 `api_key_env`。真实 Key 只在本机填写到 `private_env_file` 指向的项目外文件，不粘贴到聊天或 YAML。执行器会在 `base_url` 后追加 `/chat/completions`。
 4. 在 Codex 中打开**目标项目**，替换下面所有尖括号内容后发送：
@@ -118,6 +120,10 @@ $Config = 'C:\Harness\config\demo.yaml'
 
 最终通过的成果导出到 `control_root/exports/<run-id>/`，包含 `changes.patch`、`before/`、`after/`、`delivery.json` 及评审和证据记录。应用前先与当前源码比较。Harness 不会自动合并、提交、推送或发布。
 
+v1.2.1 的 `resume` 只接受当前可恢复运行，历史、已取消和已完成运行不能覆盖当前状态。导出会重新核对当前 FINAL 及其冻结的功能审批依据，已有交付目录也不能绕过。旧 FINAL 缺少该清单时，需要提高 FINAL 规范版本并重新验收。
+
+检查日志完整脱敏落盘，每路预览最多 64 KiB；一次检查连同初始化默认合计最多保存 256 MiB，日志不完整不能通过。使用 `inspect --run <ID> --log <引用> --byte-offset 0` 读取已登记日志，再按 `next_byte_offset` 继续。
+
 ## 执行边界
 
 - **可信本机模式**：v1.2 模板明确选择 `trusted_local` 与 `network: true`。普通读取和联网允许，指定的原项目、控制目录、私有 Key 文件和 Codex 私有路径受保护；检查写入限于检查副本及其临时目录，验收输入只读。适用于你信任的项目代码，不承诺全面读取隔离或断网。
@@ -144,7 +150,7 @@ $Config = 'C:\Harness\config\demo.yaml'
 
 ## 验证状态
 
-随包的 [v1.2 验证记录](codex-harness-executor-v1.2/VALIDATION.md)日期为 **2026-09-23**，记录了 63 项回归检查、6 项原生宿主检查通过，以及真实模型返工、最终验证和导出演练。记录环境为 Windows、Node.js `24.21.0`、Codex CLI `0.155.0-alpha.16`。
+随包的 [v1.2.1 验证记录](codex-harness-executor-v1.2/VALIDATION-V1.2.1.md)日期为 **2026-09-23**，记录了 **97 项回归检查、8 项原生宿主检查全部通过**，TypeScript 与编译通过。模拟模型完成失败、返工、修复、最终验证和导出；本次补丁没有重新执行真实模型联调。记录环境为 Windows、Node.js `24.21.0`、Codex CLI `0.155.0-alpha.16`。
 
 这些是特定机器、配置与测试项目的历史发行记录，不保证另一版本 CLI、供应商或项目一定可用。你的机器仍需运行 `doctor --live`，记录真实项目基线，并审查实际测试断言及必需产物。执行了零个测试用例，不能认定业务验收通过。
 

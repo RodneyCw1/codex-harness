@@ -6,7 +6,9 @@ English | [简体中文](README.zh-CN.md) | [Step-by-step setup guide (中文)](
 
 Codex Harness connects project requirements, an external coding model, and independent verification on Windows. Your current Codex session analyzes the project, prepares implementation and acceptance documents, dispatches work, reviews evidence, and requests revisions. A local executor provides bounded file tools, native sandboxed checks, snapshots, and recoverable state. No additional decision-model API is required; the external worker still needs its own compatible API configuration.
 
-This repository contains the **v1.2 executor** and its **v1.2 project template**. The configuration version is **1.2**; the bundled, fixed protocol remains **1.0**.
+This repository contains the **v1.2.1 executor** and its **v1.2 project template**. The configuration version is **1.2**; the bundled, fixed protocol remains **1.0**.
+
+The executor folder remains `codex-harness-executor-v1.2/` for path compatibility; its CLI version is **1.2.1**. The project template stays at **1.2**. See the [v1.2.1 changes](CHANGELOG.md) and [migration notes](codex-harness-executor-v1.2/MIGRATION-1.2.1.md).
 
 ## What it does
 
@@ -58,7 +60,7 @@ For installation, see [Node.js downloads](https://nodejs.org/en/download), [Git 
 
 ## Quick start
 
-The compiled `dist/harness.mjs` includes runtime dependencies. **Using the executor does not require `npm install` or a build.** The packaged `package.json` is distribution metadata and does not define the development scripts mentioned in the older package README.
+The compiled `dist/harness.mjs` includes runtime dependencies. **Using the executor does not require `npm install` or a build.** For development, the executor directory now includes the dependency lockfile and `typecheck`, `test`, `test:host`, and `build` scripts; run `npm ci` there first.
 
 1. Download this repository using **Code → Download ZIP**, extract it, and keep both component folders outside your target project. Open PowerShell in the extracted repository directory.
 2. Check Node.js and the executor:
@@ -70,7 +72,7 @@ The compiled `dist/harness.mjs` includes runtime dependencies. **Using the execu
    .\codex-harness-executor-v1.2\harness.cmd --help
    ```
 
-   Expect Node.js `v24.x.x` and executor version `1.2.0`. Help/version output alone does not verify the sandbox or model connection.
+   Expect Node.js `v24.x.x` and executor version `1.2.1`. Help/version output alone does not verify the sandbox or model connection.
 
 3. Use the [beginner guide](docs/GETTING-STARTED.zh-CN.md) to create a project-specific YAML configuration outside the project. Fill in `base_url`, `model`, and `api_key_env`. Store the real key in the outside-project file referenced by `private_env_file`; do not paste it into the chat or YAML. The executor appends `/chat/completions` to `base_url`.
 4. Open the **target project** in Codex and send this prompt after replacing every bracketed field:
@@ -119,6 +121,10 @@ Replace the example paths first. `doctor --live` performs sandbox probes and rea
 
 Final accepted results are exported under `control_root/exports/<run-id>/`, including `changes.patch`, `before/`, `after/`, `delivery.json`, and review/evidence records. Review the export against your current source before applying it. Harness does not automatically merge, commit, push, or publish.
 
+In v1.2.1, `resume` only accepts the current recoverable run; cancelled, completed, or superseded runs cannot overwrite current state. Export rechecks the current FINAL and its frozen feature approvals, including when a delivery already exists. Old FINAL records without that approval list require a new FINAL specification version and revalidation.
+
+Check stdout/stderr are saved as complete, redacted files with previews capped at 64 KiB per stream. The default saved-log limit is 256 MiB per check including initialization; incomplete capture cannot pass verification. Read a registered log with `inspect --run <ID> --log <reference> --byte-offset 0`, then use `next_byte_offset`.
+
 ## Execution boundaries
 
 - **Trusted local mode:** the v1.2 template explicitly selects `trusted_local` with `network: true`. It permits ordinary file reads and network access while protecting designated source, control, private-key, and Codex-private paths. Check writes are limited to the check copy and its temporary directory, and acceptance inputs are read-only. Use it for project code you trust; it does not promise general read isolation or offline execution.
@@ -145,7 +151,7 @@ Most component reference documents are currently in Chinese.
 
 ## Validation status
 
-The supplied [v1.2 validation record](codex-harness-executor-v1.2/VALIDATION.md), dated **2026-09-23**, reports 63 regression checks and 6 native-host checks passing, plus a real-model revision, final-verification, and export exercise. Its recorded environment was Windows, Node.js `24.21.0`, and Codex CLI `0.155.0-alpha.16`.
+The supplied [v1.2.1 validation record](codex-harness-executor-v1.2/VALIDATION-V1.2.1.md), dated **2026-09-23**, reports **97 regression checks and 8 native-host checks passing**, plus successful TypeScript checking and compilation. A simulated worker completed failure, revision, repair, final verification, and export. Real-model integration was not rerun for this patch. Its recorded environment was Windows, Node.js `24.21.0`, and Codex CLI `0.155.0-alpha.16`.
 
 These are historical package records for a specific machine, configuration, and test project. They are not a guarantee that a different CLI, provider, or project works. On your machine, run `doctor --live`, record the actual project baseline, and review real test assertions and required artifacts. Zero executed tests do not establish business acceptance.
 
