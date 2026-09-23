@@ -1,0 +1,21 @@
+{
+  "protocol_version": "1.0",
+  "kind": "execution_report",
+  "artifact_mode": "illustrative",
+  "message_id": "REPORT-002",
+  "task_id": "TASK-DEMO",
+  "feature_id": "F-001",
+  "batch_id": "BATCH-001",
+  "spec_version": 1,
+  "spec_digest": "sha256:ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76",
+  "submission_id": "SUBMIT-002",
+  "round_number": 2,
+  "snapshot_id": "sha256:c3d4d7c2196f01091cfbc3ed595dc12092369f584314c3e8c4fa4cf5beae246a",
+  "changed_files": [
+    "src/name.py",
+    "tests/test_name.py"
+  ],
+  "self_test_refs": [],
+  "unresolved_issues": [],
+  "summary": "模拟执行者报告：候选已提交，等待独立验收。"
+}

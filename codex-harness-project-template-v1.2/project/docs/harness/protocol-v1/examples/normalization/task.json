@@ -1,0 +1,148 @@
+{
+  "protocol_version": "1.0",
+  "kind": "task",
+  "artifact_mode": "illustrative",
+  "message_id": "DISPATCH-001",
+  "task_id": "TASK-DEMO",
+  "feature_id": "F-001",
+  "batch_id": "BATCH-001",
+  "spec_version": 1,
+  "spec_digest": "sha256:ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76",
+  "scope": "feature",
+  "expected_round": 1,
+  "baseline_snapshot": {
+    "id": "sha256:69ef71427bfcd918e121ece1fe202d63912bd4cb2baea3b36cc0bb0bf1669615",
+    "manifest_ref": "snapshots/snapshot-0.json",
+    "git_commit": null
+  },
+  "current_snapshot": {
+    "id": "sha256:69ef71427bfcd918e121ece1fe202d63912bd4cb2baea3b36cc0bb0bf1669615",
+    "manifest_ref": "snapshots/snapshot-0.json",
+    "git_commit": null
+  },
+  "goal": "删除名称两端空格，拒绝空串或全空格输入，保留内部空格。",
+  "context_refs": [
+    {
+      "path": "spec/implementation.md",
+      "sha256": "sha256:7ddbbbbeba955ca2a3e3126db4b4c1e8a56daf17d166caf17b45208e2cc38527",
+      "type": "report"
+    },
+    {
+      "path": "spec/acceptance.md",
+      "sha256": "sha256:bc6ec62dd56ac8629849e31e9ac87383eefdc36bfdebe76421aebc141b1f58d0",
+      "type": "report"
+    },
+    {
+      "path": "spec/test-plan.md",
+      "sha256": "sha256:04724597817e74307b7f2b00b65bd215e499914fa0a49f8581428fc4a3368f21",
+      "type": "report"
+    },
+    {
+      "path": "spec/commands.json",
+      "sha256": "sha256:27e8d9199506e8f018b7c36e31c56321c0b39f09043744b989e03f69c1dc7712",
+      "type": "report"
+    }
+  ],
+  "document_refs": {
+    "implementation": "spec/implementation.md",
+    "acceptance": "spec/acceptance.md",
+    "test_plan": "spec/test-plan.md"
+  },
+  "allowed_paths": [
+    "src/name.py",
+    "tests/test_name.py"
+  ],
+  "protected_paths": [
+    "spec/",
+    "acceptance/",
+    "AGENTS.md"
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "requirement_ids": [
+        "REQ-001"
+      ],
+      "required": true,
+      "behavior": "删除两端空格，保留内部空格",
+      "test_ids": [
+        "TC-001"
+      ]
+    },
+    {
+      "id": "AC-002",
+      "requirement_ids": [
+        "REQ-002"
+      ],
+      "required": true,
+      "behavior": "空串及全空格输入抛出ValidationError",
+      "test_ids": [
+        "TC-002"
+      ]
+    }
+  ],
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "acceptance_ids": [
+        "AC-001"
+      ],
+      "command_id": "check_normal",
+      "expected_result": "满足对应AC且命令退出码为0",
+      "required_artifact_types": [
+        "log"
+      ]
+    },
+    {
+      "id": "TC-002",
+      "acceptance_ids": [
+        "AC-002"
+      ],
+      "command_id": "check_empty",
+      "expected_result": "满足对应AC且命令退出码为0",
+      "required_artifact_types": [
+        "log"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "id": "check_normal",
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "acceptance/test_name.py::test_normal"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 600,
+      "purpose": "feature"
+    },
+    {
+      "id": "check_empty",
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "acceptance/test_name.py::test_empty"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 600,
+      "purpose": "feature"
+    },
+    {
+      "id": "final_regression",
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "tests",
+        "acceptance"
+      ],
+      "cwd": ".",
+      "timeout_seconds": 600,
+      "purpose": "final"
+    }
+  ],
+  "previous_rework_id": null
+}

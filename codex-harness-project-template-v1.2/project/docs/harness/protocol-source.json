@@ -1,0 +1,256 @@
+{
+  "distribution": "1.1-split.1",
+  "protocol_version": "1.0.0",
+  "source_package": "Codex Harness v1.1/protocol-v1",
+  "file_count": 62,
+  "files": [
+    {
+      "path": "DECISIONS.md",
+      "sha256": "429f85a7881250ccdce538ef00a105cfd8938d69e87f2cf1d5017768071019f9"
+    },
+    {
+      "path": "examples/acceptance-scenarios.md",
+      "sha256": "5641aa8d29a1ae7a85113aeea0d7a986514040136f52346f48bb5056b79dce51"
+    },
+    {
+      "path": "examples/normalization/feature-list-after-round-2.json",
+      "sha256": "b18adbdf51877cb9599f868867a2dde8777e6c8a25837079bf90199c13c0ba55"
+    },
+    {
+      "path": "examples/normalization/final/evidence-TC-001.json",
+      "sha256": "da39693f26a91e9d18607ff761752a65441ef2e484da543c281529a6d6b05a3b"
+    },
+    {
+      "path": "examples/normalization/final/evidence-TC-002.json",
+      "sha256": "7788e64086b13d9861638ebec9a9a12c79512bbb3ff775241cf3e022c1c01022"
+    },
+    {
+      "path": "examples/normalization/final/review.json",
+      "sha256": "06bd8c802409309643fcf46cd75fb6d1389866ac8d5e7d72196052b54a554683"
+    },
+    {
+      "path": "examples/normalization/final/state.json",
+      "sha256": "8048bdee8820743d8f64282eb53dd610336f8127dfd7a0e34879c676f9f28b75"
+    },
+    {
+      "path": "examples/normalization/final/task.json",
+      "sha256": "083736be2dfd3d1fd997f43405c9d92d239aecee6af665a47da57cf5f42ab5c8"
+    },
+    {
+      "path": "examples/normalization/final/TC-001.log",
+      "sha256": "935e4b6432057baec8bc152f88a999a4f75fbbf609441217d85baaf383e0cb87"
+    },
+    {
+      "path": "examples/normalization/final/TC-002.log",
+      "sha256": "b098428401a0b4e52a0b79f6b570f51632bba5f2f6e0cc930ff0b19ae2f8fc88"
+    },
+    {
+      "path": "examples/normalization/round-01/evidence-TC-001.json",
+      "sha256": "8d7c87cb96027252bc0e5efba72716b5ba8ccdfc0b12b7310612c3780921df9c"
+    },
+    {
+      "path": "examples/normalization/round-01/evidence-TC-002.json",
+      "sha256": "1fa164f93f2cf45717e810950165c380a1fc3578d569166a06b489b4b610b7ed"
+    },
+    {
+      "path": "examples/normalization/round-01/execution-report.json",
+      "sha256": "afce69c2145033622779c3629f6749882472e950f0e5e4f26c40b06281d00e90"
+    },
+    {
+      "path": "examples/normalization/round-01/review.json",
+      "sha256": "94998da9e0ff07f8382c62dd4632dbdf00ab321f9e7bb06eb67fea5ea7fca2f2"
+    },
+    {
+      "path": "examples/normalization/round-01/rework.json",
+      "sha256": "a86231c12b4d5a0a71b5684111d7bf6bc0d19dfad50024b7a2710e4991825100"
+    },
+    {
+      "path": "examples/normalization/round-01/TC-001.log",
+      "sha256": "5f078143daddd84770994d364872a4bf2b0f7941a6c75d39ff22a396b455b4a4"
+    },
+    {
+      "path": "examples/normalization/round-01/TC-002.log",
+      "sha256": "9f5674a60a950cf2da25d5d286ad1a5a0dc043c9b33b5f78a9bbf972249061ad"
+    },
+    {
+      "path": "examples/normalization/round-02/evidence-TC-001.json",
+      "sha256": "62ba7b1b9047cdaeff464df8240451884d2fc3155e29390c47191eebeedb5064"
+    },
+    {
+      "path": "examples/normalization/round-02/evidence-TC-002.json",
+      "sha256": "39bf119fe689daa72476ce21bb5acb9434f9157bb0de1f0ad880c88feacc7434"
+    },
+    {
+      "path": "examples/normalization/round-02/execution-report.json",
+      "sha256": "c46ebe84197e17a01cff10760fcc5e2699e4f65cf57eaa3cebddddf05bf91b10"
+    },
+    {
+      "path": "examples/normalization/round-02/review.json",
+      "sha256": "c1440ac4484e8b7d930f959ec59b3afb05d8d44f74ede3ced2b9c5869f6bfd6c"
+    },
+    {
+      "path": "examples/normalization/round-02/task.json",
+      "sha256": "b23eac03320d30101ba055ac266a19eec54a900ff180ffa332be1c0b06601c89"
+    },
+    {
+      "path": "examples/normalization/round-02/TC-001.log",
+      "sha256": "5f078143daddd84770994d364872a4bf2b0f7941a6c75d39ff22a396b455b4a4"
+    },
+    {
+      "path": "examples/normalization/round-02/TC-002.log",
+      "sha256": "c580fb604644fab1f4b559c4182e15678a535b2e4c1f91019fa38da1e1a332f3"
+    },
+    {
+      "path": "examples/normalization/snapshots/snapshot-0.json",
+      "sha256": "69ef71427bfcd918e121ece1fe202d63912bd4cb2baea3b36cc0bb0bf1669615"
+    },
+    {
+      "path": "examples/normalization/snapshots/snapshot-1.json",
+      "sha256": "18f8e475ef0440867a8b52634d2106613a038a1aebca4cd5d097403b485ff280"
+    },
+    {
+      "path": "examples/normalization/snapshots/snapshot-2.json",
+      "sha256": "c3d4d7c2196f01091cfbc3ed595dc12092369f584314c3e8c4fa4cf5beae246a"
+    },
+    {
+      "path": "examples/normalization/spec/acceptance.md",
+      "sha256": "bc6ec62dd56ac8629849e31e9ac87383eefdc36bfdebe76421aebc141b1f58d0"
+    },
+    {
+      "path": "examples/normalization/spec/commands.json",
+      "sha256": "27e8d9199506e8f018b7c36e31c56321c0b39f09043744b989e03f69c1dc7712"
+    },
+    {
+      "path": "examples/normalization/spec/implementation.md",
+      "sha256": "7ddbbbbeba955ca2a3e3126db4b4c1e8a56daf17d166caf17b45208e2cc38527"
+    },
+    {
+      "path": "examples/normalization/spec/manifest.json",
+      "sha256": "ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76"
+    },
+    {
+      "path": "examples/normalization/spec/test-plan.md",
+      "sha256": "04724597817e74307b7f2b00b65bd215e499914fa0a49f8581428fc4a3368f21"
+    },
+    {
+      "path": "examples/normalization/state-before-final.json",
+      "sha256": "4f1a821124faf5d95e0ca54fee174272e8a39f20481883694de97be4deb0a179"
+    },
+    {
+      "path": "examples/normalization/task.json",
+      "sha256": "eb21839e2556981c6ba1de174625ef6c3333e4d639d39c0d67485cb7281c3207"
+    },
+    {
+      "path": "examples/README.md",
+      "sha256": "0168ef14c98946a20b84b74acba631518f29e303058a70b146e1616ebf92df21"
+    },
+    {
+      "path": "INTEGRATION.md",
+      "sha256": "0907d2e9daccc07cccc2611a65c8758cdcd2bf0520f9a13f0542a0c06c6cdcc1"
+    },
+    {
+      "path": "prompts/codex-coordinator.md",
+      "sha256": "f1bd2e2c063375ef2f01aef8fefaabd16da3ab2b3ccccdd007e870aa9a08151c"
+    },
+    {
+      "path": "prompts/codex-reviewer.md",
+      "sha256": "5bec8715400c4735c1906a37170ff568bc1bc26c23eff0675a786ce1750bd868"
+    },
+    {
+      "path": "prompts/executor.md",
+      "sha256": "e5bff10c991aa6306e868159f5cb14f95593bee2a4854256538fbab00b861d06"
+    },
+    {
+      "path": "prompts/README.md",
+      "sha256": "0262eb98a322448a584e0989edf404d3bf88e8d0bdc1281c7f43ff37c4a3c0cd"
+    },
+    {
+      "path": "PROTOCOL.md",
+      "sha256": "aad5d10e062b335035c5a894cc48255c21ebbc610b20991a416696a8b5d73d93"
+    },
+    {
+      "path": "README.md",
+      "sha256": "b22ac4bc94f3a09f2413229943428d1525fc448b226c39282591c5d3521bd0ac"
+    },
+    {
+      "path": "schemas/config.schema.json",
+      "sha256": "fe4af3eb81dccac90bbb0503fd4a3d23cacd1b62fe54d565e11e7ed379f84e87"
+    },
+    {
+      "path": "schemas/contracts.schema.json",
+      "sha256": "cc8efafe4a97edde215a80eb2dd500221899dc58faf8ede76606915a001b4f93"
+    },
+    {
+      "path": "schemas/README.md",
+      "sha256": "ae7d1472acf0fc43f9363cbb8d3077e8614aac18f87abcd916ef7bb5e1dce6e6"
+    },
+    {
+      "path": "SHA256SUMS.txt",
+      "sha256": "1ddd8f9c185f2020d2fed066b3a6924fa3b27c447f37ea05e6e288fa85c79ada"
+    },
+    {
+      "path": "templates/acceptance.md",
+      "sha256": "ad8d7b2316dd05fab36da968cb6b748a4b437036ce16062f1ca476e9d8ae5f01"
+    },
+    {
+      "path": "templates/AGENTS.fragment.md",
+      "sha256": "fe349681e1be734971541934483a8f921e5b4b5037bcd307b82981843dbec654"
+    },
+    {
+      "path": "templates/clean-state-checklist.md",
+      "sha256": "535b59518c0dfe0306afe8fc0f93b18474c1b1ac5f7805e9a33b6027e4980621"
+    },
+    {
+      "path": "templates/environment.example",
+      "sha256": "cb12997092cc638dbb3234a2455b113ec293089fa27292a6e2d21b3af867be9a"
+    },
+    {
+      "path": "templates/evaluator-rubric.md",
+      "sha256": "d1fff656108484ff6459200851ba975499884a05042486e8c5bea2e55846109c"
+    },
+    {
+      "path": "templates/feature_list.json",
+      "sha256": "55d3f80d64e017d99a0912936d35fff652e6c02c22ed82d83a82dad690a23245"
+    },
+    {
+      "path": "templates/harness.config.yaml",
+      "sha256": "eb298cc42329e701faf17f43729403d2fe75b17b13c81dad53bb72b6ab276c89"
+    },
+    {
+      "path": "templates/implementation.md",
+      "sha256": "57a2429384f44d1e4d809ad31f699b3d3966ceb00c4742dd20fc258003153a8b"
+    },
+    {
+      "path": "templates/progress.md",
+      "sha256": "8c9ed40af2abb294d523f0383b14f210e8af3ea48d56c79327581f37476d40c7"
+    },
+    {
+      "path": "templates/project-profile.md",
+      "sha256": "949e7bdb3542e058a4aa41935cdd7caa8217a2b18b26197546eb4eb37b811d34"
+    },
+    {
+      "path": "templates/README.md",
+      "sha256": "a8c527c6f7092f6952343b213a7d8e9ca9b7d5713d07c788a076cafeec8d78bf"
+    },
+    {
+      "path": "templates/run-state.json",
+      "sha256": "7f6f3c6d0eabac86bd79318ca7203d3d27678465ce0b81f71d30b6662c048e1b"
+    },
+    {
+      "path": "templates/session-handoff.md",
+      "sha256": "5c4bea35af1957e813ad10bc56e2f5544f75bf9448399a7df265a0398ce68011"
+    },
+    {
+      "path": "templates/test-plan.md",
+      "sha256": "83df2c0290525aef3da79dc11506e6861a31150a116791a184e9379939223807"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "9a9ce588c9fa21021ac1fa3894003d2dcac58045264121d60bf5352c734eb656"
+    },
+    {
+      "path": "WORKFLOW.md",
+      "sha256": "35efb628492b49f52539911ca0f935521b317df57742fa048070ba1f6339c729"
+    }
+  ]
+}

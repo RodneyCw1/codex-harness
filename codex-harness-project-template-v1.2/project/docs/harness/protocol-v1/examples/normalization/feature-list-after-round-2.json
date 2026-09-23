@@ -1,0 +1,31 @@
+{
+  "protocol_version": "1.0",
+  "kind": "feature_list",
+  "artifact_mode": "illustrative",
+  "task_id": "TASK-DEMO",
+  "features": [
+    {
+      "id": "F-001",
+      "priority": 1,
+      "area": "name",
+      "title": "名称规范化",
+      "requirement_ids": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "acceptance_ids": [
+        "AC-001",
+        "AC-002"
+      ],
+      "dependencies": [],
+      "status": "passing",
+      "approved_snapshot_id": "sha256:c3d4d7c2196f01091cfbc3ed595dc12092369f584314c3e8c4fa4cf5beae246a",
+      "acceptance_review_id": "REVIEW-002",
+      "evidence_ids": [
+        "EVID-2-1",
+        "EVID-2-2"
+      ],
+      "notes": "模拟功能通过；整体尚未交付。"
+    }
+  ]
+}

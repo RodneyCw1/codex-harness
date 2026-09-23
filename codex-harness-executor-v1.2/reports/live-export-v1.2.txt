@@ -1,0 +1,50 @@
+{
+  "directory": "C:\\Users\\Administrator\\Documents\\Codex\\2026-09-17\\w-x20\\work\\harness-runtime\\.test-data\\live-v12-1790127243307\\control\\exports\\run-f868df00-e216-4818-805c-6ee94635f645",
+  "artifact_mode": "live",
+  "run_id": "run-f868df00-e216-4818-805c-6ee94635f645",
+  "task_id": "LIVE-V12",
+  "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+  "baseline": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+  "changed_files": [
+    "sum.mjs"
+  ],
+  "review": {
+    "protocol_version": "1.0",
+    "kind": "review",
+    "artifact_mode": "live",
+    "message_id": "review-b5ece9ec-cdd2-4549-95ef-ce99c4a1d44f",
+    "task_id": "LIVE-V12",
+    "feature_id": "FINAL",
+    "batch_id": "batch-ea64ab53-f7d9-44bc-8867-aeb8db696786",
+    "spec_version": 1,
+    "spec_digest": "sha256:6e9b09db1e50b36d55934e7967e7c5aa8ee32373ac98159babafd505b95a9a4b",
+    "submission_id": "submission-c8577dac-910c-40f0-a3d4-2a8bddf5afd8",
+    "round_number": 0,
+    "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+    "scope": "final",
+    "producer": "codex",
+    "decision": "ACCEPT",
+    "checks": [
+      {
+        "acceptance_id": "AC-SUM",
+        "verdict": "pass",
+        "evidence_ids": [
+          "evidence-f4ed5228-b63b-4846-94a5-0a7cc0bd64a6"
+        ],
+        "explanation": "已读取独立验证日志和4项实际结果，正数、负数、零、小数加法符合冻结标准。"
+      }
+    ],
+    "hard_gates": {
+      "scope_ok": true,
+      "standards_intact": true,
+      "handoff_ready": true
+    },
+    "unresolved_blockers": [],
+    "summary": "Codex 已核对实际候选使用 a+b、冻结检查脚本未改、四个真实断言全部通过且输入摘要一致。",
+    "next_action": "deliver",
+    "rework_id": null,
+    "block_reason": null
+  },
+  "auto_merge": false,
+  "auto_publish": false
+}

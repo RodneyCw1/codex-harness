@@ -1,0 +1,9 @@
+# Keep repository documentation and Git configuration consistent.
+/.gitattributes text eol=lf
+/.gitignore text eol=lf
+/README*.md text eol=lf
+/docs/** text eol=lf
+
+# Preserve release-package bytes so the supplied SHA256SUMS remain valid.
+/codex-harness-executor-v1.2/** -text
+/codex-harness-project-template-v1.2/** -text

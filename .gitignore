@@ -1,0 +1,33 @@
+# Local editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Installed dependencies and temporary test/build caches
+node_modules/
+.test-data/
+.cache/
+coverage/
+
+# Credentials and machine-specific configuration
+.env
+.env.*
+*.env
+*.local.yaml
+*.local.yml
+*.private.yaml
+*.private.yml
+*.pem
+*.key
+*.pfx
+*.p12
+!.env.example
+!*.env.example
+
+# Runtime directories, if created at the repository root
+/work/
+/control/
+/private/
+
+# Keep the supplied dist/, reports/, and protocol example logs in version control.

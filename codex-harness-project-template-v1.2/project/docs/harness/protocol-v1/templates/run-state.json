@@ -1,0 +1,18 @@
+{
+  "protocol_version": "1.0",
+  "kind": "run_state",
+  "artifact_mode": "illustrative",
+  "revision": 0,
+  "task_id": "REPLACE_TASK_ID",
+  "batch_id": "REPLACE_BATCH_ID",
+  "run_status": "paused",
+  "phase": "analyzing",
+  "current_feature_id": null,
+  "spec_version": 1,
+  "spec_digest": null,
+  "candidate_snapshot_id": null,
+  "counters": [],
+  "stop_reason": "模板尚未接入项目，不能派发。",
+  "last_event_id": null,
+  "pending_operations": []
+}

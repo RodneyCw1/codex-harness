@@ -1,0 +1,47 @@
+{
+  "protocol_version": "1.0",
+  "kind": "review",
+  "artifact_mode": "illustrative",
+  "message_id": "REVIEW-001",
+  "task_id": "TASK-DEMO",
+  "feature_id": "F-001",
+  "batch_id": "BATCH-001",
+  "spec_version": 1,
+  "spec_digest": "sha256:ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76",
+  "submission_id": "SUBMIT-001",
+  "round_number": 1,
+  "snapshot_id": "sha256:18f8e475ef0440867a8b52634d2106613a038a1aebca4cd5d097403b485ff280",
+  "scope": "feature",
+  "producer": "codex",
+  "decision": "REVISE",
+  "checks": [
+    {
+      "acceptance_id": "AC-001",
+      "verdict": "pass",
+      "evidence_ids": [
+        "EVID-1-1"
+      ],
+      "explanation": "模拟审查对应日志。"
+    },
+    {
+      "acceptance_id": "AC-002",
+      "verdict": "fail",
+      "evidence_ids": [
+        "EVID-1-2"
+      ],
+      "explanation": "模拟审查对应日志。"
+    }
+  ],
+  "hard_gates": {
+    "scope_ok": true,
+    "standards_intact": true,
+    "handoff_ready": true
+  },
+  "unresolved_blockers": [
+    "DEFECT-001"
+  ],
+  "summary": "模拟第一轮发现空输入缺陷。",
+  "next_action": "rework",
+  "rework_id": "REWORK-001",
+  "block_reason": null
+}

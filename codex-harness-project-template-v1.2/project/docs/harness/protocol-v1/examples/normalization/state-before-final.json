@@ -1,0 +1,32 @@
+{
+  "protocol_version": "1.0",
+  "kind": "run_state",
+  "artifact_mode": "illustrative",
+  "revision": 8,
+  "task_id": "TASK-DEMO",
+  "batch_id": "BATCH-001",
+  "run_status": "running",
+  "phase": "delivering",
+  "current_feature_id": null,
+  "spec_version": 1,
+  "spec_digest": "sha256:ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76",
+  "candidate_snapshot_id": "sha256:c3d4d7c2196f01091cfbc3ed595dc12092369f584314c3e8c4fa4cf5beae246a",
+  "counters": [
+    {
+      "feature_id": "F-001",
+      "batch_submissions": 2,
+      "total_submissions": 2,
+      "stalled_rounds": 0,
+      "verified_pass_ids": [
+        "AC-001",
+        "AC-002"
+      ],
+      "closed_blocker_ids": [
+        "DEFECT-001"
+      ]
+    }
+  ],
+  "stop_reason": null,
+  "last_event_id": "EVENT-008",
+  "pending_operations": []
+}

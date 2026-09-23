@@ -1,0 +1,180 @@
+{
+  "task": {
+    "protocol_version": "1.0",
+    "kind": "task",
+    "artifact_mode": "live",
+    "message_id": "task-9c0f3d4f-4b6b-4cb9-9a9c-c7b507c898cb",
+    "task_id": "LIVE-V12",
+    "feature_id": "FINAL",
+    "batch_id": "batch-ea64ab53-f7d9-44bc-8867-aeb8db696786",
+    "spec_version": 1,
+    "spec_digest": "sha256:6e9b09db1e50b36d55934e7967e7c5aa8ee32373ac98159babafd505b95a9a4b",
+    "scope": "final",
+    "expected_round": 0,
+    "baseline_snapshot": {
+      "id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+      "manifest_ref": "baseline-manifest.json",
+      "git_commit": null
+    },
+    "current_snapshot": {
+      "id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+      "manifest_ref": "snapshots/512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe/manifest.json",
+      "git_commit": null
+    },
+    "goal": "执行真实模型故障注入闭环：首次保留错误候选供 Codex 拒绝，返工后实现数值加法",
+    "context_refs": [
+      {
+        "path": "specs/LIVE-V12/FINAL/v1/implementation.md",
+        "sha256": "sha256:7153239acea9cc3c5da84f13c214ce0120f79e4a397fd549df0e9d54776d8a4a",
+        "type": "other"
+      },
+      {
+        "path": "specs/LIVE-V12/FINAL/v1/acceptance.md",
+        "sha256": "sha256:81be44aa3aeb169f2b6dff89f6f8b17e20dae34ef980c47d8c95dec3be6696cb",
+        "type": "other"
+      },
+      {
+        "path": "specs/LIVE-V12/FINAL/v1/test_plan.md",
+        "sha256": "sha256:42924ee93812f57edeeaa9afdac07c1a4251a6a5d5ee97c04a48e69d93fd7794",
+        "type": "other"
+      }
+    ],
+    "document_refs": {
+      "implementation": "specs/LIVE-V12/FINAL/v1/implementation.md",
+      "acceptance": "specs/LIVE-V12/FINAL/v1/acceptance.md",
+      "test_plan": "specs/LIVE-V12/FINAL/v1/test_plan.md"
+    },
+    "allowed_paths": [],
+    "protected_paths": [
+      "check.mjs"
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-SUM",
+        "requirement_ids": [
+          "REQ-SUM"
+        ],
+        "required": true,
+        "behavior": "正确计算四种正数、负数、零和小数的加法",
+        "test_ids": [
+          "TC-SUM"
+        ]
+      }
+    ],
+    "test_cases": [
+      {
+        "id": "TC-SUM",
+        "acceptance_ids": [
+          "AC-SUM"
+        ],
+        "command_id": "test",
+        "expected_result": "四个实际加法断言全部通过，保存4项实测结果",
+        "required_artifact_types": [
+          "log",
+          "report"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "test",
+        "argv": [
+          "D:\\node\\node.exe",
+          "check.mjs"
+        ],
+        "cwd": ".",
+        "timeout_seconds": 30,
+        "purpose": "feature"
+      }
+    ],
+    "previous_rework_id": null
+  },
+  "documents": [
+    {
+      "path": "specs/LIVE-V12/FINAL/v1/implementation.md",
+      "text": "# implementation\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    },
+    {
+      "path": "specs/LIVE-V12/FINAL/v1/acceptance.md",
+      "text": "# acceptance\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    },
+    {
+      "path": "specs/LIVE-V12/FINAL/v1/test_plan.md",
+      "text": "# test_plan\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    }
+  ],
+  "evidence": [
+    {
+      "protocol_version": "1.0",
+      "kind": "verification_evidence",
+      "artifact_mode": "live",
+      "message_id": "evidence-f4ed5228-b63b-4846-94a5-0a7cc0bd64a6",
+      "task_id": "LIVE-V12",
+      "feature_id": "FINAL",
+      "batch_id": "batch-ea64ab53-f7d9-44bc-8867-aeb8db696786",
+      "spec_version": 1,
+      "spec_digest": "sha256:6e9b09db1e50b36d55934e7967e7c5aa8ee32373ac98159babafd505b95a9a4b",
+      "submission_id": "submission-c8577dac-910c-40f0-a3d4-2a8bddf5afd8",
+      "round_number": 0,
+      "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+      "scope": "final",
+      "check_id": "check-213070b1-fcdb-4584-a176-ee08ea6dfbe9",
+      "test_case_id": "TC-SUM",
+      "acceptance_ids": [
+        "AC-SUM"
+      ],
+      "producer": "verifier",
+      "command": {
+        "command_id": "test",
+        "argv": [
+          "D:\\node\\node.exe",
+          "check.mjs"
+        ],
+        "cwd": ".",
+        "environment_id": "env-e3e3466d9fe3f1657963bdd2e262ed0249283ebae40950528259b6d2aa6d00f6"
+      },
+      "started_at": "2026-09-23T01:38:32Z",
+      "finished_at": "2026-09-23T01:38:33Z",
+      "result": "unverified",
+      "exit_code": 0,
+      "artifacts": [
+        {
+          "path": "runs/run-f868df00-e216-4818-805c-6ee94635f645/verification/check-213070b1-fcdb-4584-a176-ee08ea6dfbe9.log",
+          "sha256": "sha256:f7a89e27f67c9d0407dd03649cd25ddec6b1c27bc021476e887565ab291c7fc2",
+          "type": "log"
+        },
+        {
+          "path": "runs/run-f868df00-e216-4818-805c-6ee94635f645/verification/check-213070b1-fcdb-4584-a176-ee08ea6dfbe9.json",
+          "sha256": "sha256:9450bbd5d59ced5e6e70d0824f7c992201b65b4f2450ae91b602c052ea1f0035",
+          "type": "report"
+        },
+        {
+          "path": "runs/run-f868df00-e216-4818-805c-6ee94635f645/verification/check-213070b1-fcdb-4584-a176-ee08ea6dfbe9-artifacts/target/result.json",
+          "sha256": "sha256:20a5d1061eee47acfce694bfa8cff0be2795f610f48e45383b1378d051397720",
+          "type": "report"
+        }
+      ],
+      "observation": "命令已执行且退出码为零；Codex 必须检查实际断言和用户场景后判定业务通过",
+      "logs": [
+        {
+          "path": "runs/run-f868df00-e216-4818-805c-6ee94635f645/verification/check-213070b1-fcdb-4584-a176-ee08ea6dfbe9.log",
+          "text": "STDOUT\nPASS: four addition scenarios\n\nSTDERR\n",
+          "offset": 0,
+          "total_chars": 45,
+          "truncated": false,
+          "next_offset": null
+        }
+      ]
+    }
+  ],
+  "diff": [
+    {
+      "path": "sum.mjs",
+      "before": "export const sum = (a,b) => a*b;\n",
+      "after": "export const sum = (a,b) => a+b;\n"
+    }
+  ],
+  "review": null,
+  "block_reason": null,
+  "review_template": "runs/run-f868df00-e216-4818-805c-6ee94635f645/review.template.json"
+}

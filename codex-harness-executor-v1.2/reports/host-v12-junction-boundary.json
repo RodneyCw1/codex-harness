@@ -1,0 +1,14 @@
+{
+  "profile": "trusted_local",
+  "checks": {
+    "ordinary_read_allowed": true,
+    "write_denied": true
+  },
+  "result": {
+    "exitCode": 0,
+    "stdout": "HARNESS_JUNCTION={\"ordinary_read_allowed\":true,\"write_denied\":true}\n",
+    "stderr": "",
+    "timedOut": false,
+    "aborted": false
+  }
+}

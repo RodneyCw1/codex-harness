@@ -1,0 +1,37 @@
+{
+  "protocol_version": "1.0",
+  "kind": "rework",
+  "artifact_mode": "illustrative",
+  "message_id": "REWORK-001",
+  "task_id": "TASK-DEMO",
+  "feature_id": "F-001",
+  "batch_id": "BATCH-001",
+  "spec_version": 1,
+  "spec_digest": "sha256:ccb4376ae555f53c04cf0a8f6be808ebf2eb6a3d0d29649157c5f873fc25df76",
+  "source_review_id": "REVIEW-001",
+  "source_submission_id": "SUBMIT-001",
+  "next_round": 2,
+  "snapshot_id": "sha256:18f8e475ef0440867a8b52634d2106613a038a1aebca4cd5d097403b485ff280",
+  "issues": [
+    {
+      "defect_id": "DEFECT-001",
+      "acceptance_ids": [
+        "AC-002"
+      ],
+      "actual": "全空格输入返回空串",
+      "expected": "抛出既有ValidationError",
+      "evidence_ids": [
+        "EVID-1-2"
+      ],
+      "reproduction": "执行check_empty，用三个空格作为输入。",
+      "repair_scope": [
+        "src/name.py",
+        "tests/test_name.py"
+      ],
+      "retest_ids": [
+        "TC-002",
+        "TC-001"
+      ]
+    }
+  ]
+}

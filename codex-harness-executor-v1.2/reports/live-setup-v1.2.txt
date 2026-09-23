@@ -1,0 +1,51 @@
+{
+  "location": {
+    "root": "C:\\Users\\Administrator\\Documents\\Codex\\2026-09-17\\w-x20\\work\\harness-runtime\\.test-data\\live-v12-1790127243307",
+    "config": "C:\\Users\\Administrator\\Documents\\Codex\\2026-09-17\\w-x20\\work\\harness-runtime\\.test-data\\live-v12-1790127243307\\config.json"
+  },
+  "doctor": {
+    "sandbox": {
+      "ok": true,
+      "platform": "win32",
+      "node": "v24.21.0",
+      "syntax": [
+        "sandbox"
+      ],
+      "profile": "trusted_local",
+      "network": true,
+      "ordinary_reads": "allowed",
+      "runtime": {
+        "executable": "C:\\Users\\Administrator\\AppData\\Local\\OpenAI\\Codex\\bin\\d375f7df50d3b421\\codex.exe",
+        "sha256": "sha256:97d4d67419d0ac2f71342f9a5e850f9468aa622618de8ea823223edb9a91926a",
+        "version": "codex-cli 0.155.0-alpha.16",
+        "profile": "trusted_local",
+        "network": true
+      },
+      "checks": {
+        "control_read": true,
+        "control_write": true,
+        "source_read": true,
+        "outside_read": true,
+        "outside_write": true,
+        "protected_write": true,
+        "protected_delete": true,
+        "allowed_write": true,
+        "private_read": true,
+        "codex_home_read": true,
+        "secret_env": true,
+        "network_policy": true
+      },
+      "result": {
+        "exitCode": 0,
+        "stdout": "HARNESS_PROBE={\"control_read\":true,\"control_write\":true,\"source_read\":true,\"outside_read\":true,\"outside_write\":true,\"protected_write\":true,\"protected_delete\":true,\"allowed_write\":true,\"private_read\":true,\"codex_home_read\":true,\"secret_env\":true,\"network_policy\":true}\n",
+        "stderr": "",
+        "timedOut": false,
+        "aborted": false
+      }
+    },
+    "model": {
+      "tools": true,
+      "roundtrip": true
+    }
+  }
+}

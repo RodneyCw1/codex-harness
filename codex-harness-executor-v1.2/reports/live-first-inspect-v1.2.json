@@ -1,0 +1,199 @@
+{
+  "task": {
+    "protocol_version": "1.0",
+    "kind": "task",
+    "artifact_mode": "live",
+    "message_id": "task-1f08790d-0b79-4179-af47-d12e1be9ed62",
+    "task_id": "LIVE-V12",
+    "feature_id": "F1",
+    "batch_id": "batch-e5b03a15-6109-47e8-9ae7-e480381845f9",
+    "spec_version": 1,
+    "spec_digest": "sha256:fabbd122a592bb2200034490d6265cc77b246ac7843eb1ee1d53cc7e2de5160f",
+    "scope": "feature",
+    "expected_round": 1,
+    "baseline_snapshot": {
+      "id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+      "manifest_ref": "baseline-manifest.json",
+      "git_commit": null
+    },
+    "current_snapshot": {
+      "id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+      "manifest_ref": "snapshots/2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb/manifest.json",
+      "git_commit": null
+    },
+    "goal": "执行真实模型故障注入闭环：首次保留错误候选供 Codex 拒绝，返工后实现数值加法",
+    "context_refs": [
+      {
+        "path": "specs/LIVE-V12/F1/v1/implementation.md",
+        "sha256": "sha256:7153239acea9cc3c5da84f13c214ce0120f79e4a397fd549df0e9d54776d8a4a",
+        "type": "other"
+      },
+      {
+        "path": "specs/LIVE-V12/F1/v1/acceptance.md",
+        "sha256": "sha256:81be44aa3aeb169f2b6dff89f6f8b17e20dae34ef980c47d8c95dec3be6696cb",
+        "type": "other"
+      },
+      {
+        "path": "specs/LIVE-V12/F1/v1/test_plan.md",
+        "sha256": "sha256:42924ee93812f57edeeaa9afdac07c1a4251a6a5d5ee97c04a48e69d93fd7794",
+        "type": "other"
+      }
+    ],
+    "document_refs": {
+      "implementation": "specs/LIVE-V12/F1/v1/implementation.md",
+      "acceptance": "specs/LIVE-V12/F1/v1/acceptance.md",
+      "test_plan": "specs/LIVE-V12/F1/v1/test_plan.md"
+    },
+    "allowed_paths": [
+      "sum.mjs"
+    ],
+    "protected_paths": [
+      "check.mjs"
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC-SUM",
+        "requirement_ids": [
+          "REQ-SUM"
+        ],
+        "required": true,
+        "behavior": "正确计算四种正数、负数、零和小数的加法",
+        "test_ids": [
+          "TC-SUM"
+        ]
+      }
+    ],
+    "test_cases": [
+      {
+        "id": "TC-SUM",
+        "acceptance_ids": [
+          "AC-SUM"
+        ],
+        "command_id": "test",
+        "expected_result": "四个实际加法断言全部通过，保存4项实测结果",
+        "required_artifact_types": [
+          "log",
+          "report"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "test",
+        "argv": [
+          "D:\\node\\node.exe",
+          "check.mjs"
+        ],
+        "cwd": ".",
+        "timeout_seconds": 30,
+        "purpose": "feature"
+      }
+    ],
+    "previous_rework_id": null
+  },
+  "documents": [
+    {
+      "path": "specs/LIVE-V12/F1/v1/implementation.md",
+      "text": "# implementation\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    },
+    {
+      "path": "specs/LIVE-V12/F1/v1/acceptance.md",
+      "text": "# acceptance\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    },
+    {
+      "path": "specs/LIVE-V12/F1/v1/test_plan.md",
+      "text": "# test_plan\n这是执行器故障注入联调项目，业务目标是正确的数值加法。AC-SUM: (2,3)=5、(-1,1)=0、(0,0)=0、(1.5,2.5)=4。运行已冻结 test 命令并保存 target/result.json。\n首次运行（没有 previous_rework_id）必须保留故意错误的乘法实现：read_file sum.mjs，run_check test，然后 submit_candidate，明确说明已知缺陷；这是为了验证 Codex 会拒绝错误候选。收到返工单后用 read_file 和 apply_patch 修复 sum.mjs，再 run_check 和 submit_candidate。不可修改 check.mjs，也不可新建其他文件。不要只输出自然语言，必须使用工具。\n"
+    }
+  ],
+  "report": {
+    "protocol_version": "1.0",
+    "kind": "execution_report",
+    "artifact_mode": "live",
+    "message_id": "report-ad50eedf-dbca-42dc-a4f8-8579b57aedad",
+    "task_id": "LIVE-V12",
+    "feature_id": "F1",
+    "batch_id": "batch-e5b03a15-6109-47e8-9ae7-e480381845f9",
+    "spec_version": 1,
+    "spec_digest": "sha256:fabbd122a592bb2200034490d6265cc77b246ac7843eb1ee1d53cc7e2de5160f",
+    "submission_id": "submission-3c67ffc4-91ad-4217-b3f0-24748930bc2f",
+    "round_number": 1,
+    "snapshot_id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+    "changed_files": [],
+    "self_test_refs": [
+      "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/self-test/check-82a342b5-4384-4d93-ad40-f2b7d8fa6918.json"
+    ],
+    "unresolved_issues": [
+      "sum.mjs 仍为故意错误的乘法实现 a*b，未实现数值加法",
+      "test 命令断言失败：6 !== 5，AC-SUM 未满足"
+    ],
+    "summary": "首次运行：按故障注入要求保留故意错误的乘法实现 sum = (a,b) => a*b。已 read_file sum.mjs 与 check.mjs，并运行冻结 test 命令（exitCode=1，断言失败 6 !== 5，target/result.json 已生成）。已知缺陷：sum.mjs 实现的是乘法而非加法，导致 AC-SUM 四项断言全部无法满足。此候选用于验证 Codex 会拒绝错误候选。"
+  },
+  "evidence": [
+    {
+      "protocol_version": "1.0",
+      "kind": "verification_evidence",
+      "artifact_mode": "live",
+      "message_id": "evidence-bbaec985-3a91-495e-9c82-eb4627f7c705",
+      "task_id": "LIVE-V12",
+      "feature_id": "F1",
+      "batch_id": "batch-e5b03a15-6109-47e8-9ae7-e480381845f9",
+      "spec_version": 1,
+      "spec_digest": "sha256:fabbd122a592bb2200034490d6265cc77b246ac7843eb1ee1d53cc7e2de5160f",
+      "submission_id": "submission-3c67ffc4-91ad-4217-b3f0-24748930bc2f",
+      "round_number": 1,
+      "snapshot_id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+      "scope": "feature",
+      "check_id": "check-fd5bba84-1e62-4c53-b326-71ee7d471d3b",
+      "test_case_id": "TC-SUM",
+      "acceptance_ids": [
+        "AC-SUM"
+      ],
+      "producer": "verifier",
+      "command": {
+        "command_id": "test",
+        "argv": [
+          "D:\\node\\node.exe",
+          "check.mjs"
+        ],
+        "cwd": ".",
+        "environment_id": "env-e3e3466d9fe3f1657963bdd2e262ed0249283ebae40950528259b6d2aa6d00f6"
+      },
+      "started_at": "2026-09-23T01:35:42Z",
+      "finished_at": "2026-09-23T01:35:43Z",
+      "result": "fail",
+      "exit_code": 1,
+      "artifacts": [
+        {
+          "path": "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/verification/check-fd5bba84-1e62-4c53-b326-71ee7d471d3b.log",
+          "sha256": "sha256:5b4f076405509a595fca240c5656cf0f17692e086863c26826a34dbd5edcbb0d",
+          "type": "log"
+        },
+        {
+          "path": "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/verification/check-fd5bba84-1e62-4c53-b326-71ee7d471d3b.json",
+          "sha256": "sha256:07a5ea0aa9350a4994c16e385c160666eda93cfe3462049f86dec6c637a02a2e",
+          "type": "report"
+        },
+        {
+          "path": "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/verification/check-fd5bba84-1e62-4c53-b326-71ee7d471d3b-artifacts/target/result.json",
+          "sha256": "sha256:3992c9695dd76ea4e599d0dd7c89dd858aea4b1f5506f62dd20b0da3931ffb78",
+          "type": "report"
+        }
+      ],
+      "observation": "检查失败或运行环境异常；查看完整日志",
+      "logs": [
+        {
+          "path": "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/verification/check-fd5bba84-1e62-4c53-b326-71ee7d471d3b.log",
+          "text": "STDOUT\n\nSTDERR\nnode:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n6 !== 5\r\n\r\n    at file:///C:/Users/Administrator/Documents/Codex/2026-09-17/w-x20/work/harness-runtime/.test-data/live-v12-1790127243307/work/checks/check-fd5bba84-1e62-4c53-b326-71ee7d471d3b/check.mjs:1:379\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\r\n    at async node:internal/modules/esm/loader:647:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 6,\r\n  expected: 5,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.21.0\r\n",
+          "offset": 0,
+          "total_chars": 734,
+          "truncated": false,
+          "next_offset": null
+        }
+      ]
+    }
+  ],
+  "diff": [],
+  "review": null,
+  "block_reason": null,
+  "review_template": "runs/run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30/review.template.json"
+}

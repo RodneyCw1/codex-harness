@@ -1,0 +1,46 @@
+# 非秘密配置。复制后由你填写工作 AI，由 Codex 回填项目范围与真实命令。
+schema_version: '1.2'
+# 可选：必须位于 source_root 之外；不要提交到版本库。
+# private_env_file: 'C:/Harness/private/work-ai.env'
+executors:
+  primary:
+    protocol: openai_chat_completions
+    base_url: 'https://your-provider.example/v1'
+    api_key_env: WORK_AI_PRIMARY_KEY
+    model: 'replace-with-your-model'
+    request_timeout_seconds: 120
+    max_request_retries: 3
+    max_tool_calls_per_attempt: 100
+    max_attempt_seconds: 1800
+    max_context_bytes: 1000000
+  backup:
+    protocol: openai_chat_completions
+    base_url: 'https://another-provider.example/v1'
+    api_key_env: WORK_AI_BACKUP_KEY
+    model: 'replace-with-another-model'
+workflow:
+  active_executor: primary
+  concurrency: 1
+  max_rounds_per_feature: 10
+  max_stalled_rounds: 3
+  auto_merge: false
+  auto_publish: false
+project:
+  source_root: 'C:/Projects/your-project'
+  work_root: 'C:/Harness/work/your-project'
+  control_root: 'C:/Harness/control/your-project'
+  read_paths: ['**']
+  allowed_paths: [] # Codex 分析项目后填写，如 ['src/', 'tests/unit/']
+  protected_paths: ['AGENTS.md', 'docs/harness/'] # 加入验收脚本及其可信依赖
+  command_env_allowlist: [] # 只继承必要的非秘密变量；PATH 和系统变量由程序提供
+  commands: [] # Codex 按项目实际工具填写；不可留空开始任务
+  artifacts: {} # 可选：command_id -> [{path: 'artifacts/result.png', type: screenshot}]
+sandbox:
+  profile: trusted_local # 已选择可信项目：普通读取与联网允许
+  codex_path: 'codex' # 必要时填写本机 codex.exe 绝对路径
+  mode: elevated
+  read_roots: [] # 仅可信运行时/只读依赖缓存，不可覆盖项目或控制目录
+  network: true
+  # 有明确网络需求且得到任务授权时，由 Codex 预先登记，例如：
+  # network:
+  #   allow_domains: ['registry.npmjs.org']

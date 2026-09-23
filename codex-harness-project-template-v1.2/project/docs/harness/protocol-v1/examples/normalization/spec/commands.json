@@ -1,0 +1,39 @@
+[
+  {
+    "id": "check_normal",
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "acceptance/test_name.py::test_normal"
+    ],
+    "cwd": ".",
+    "timeout_seconds": 600,
+    "purpose": "feature"
+  },
+  {
+    "id": "check_empty",
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "acceptance/test_name.py::test_empty"
+    ],
+    "cwd": ".",
+    "timeout_seconds": 600,
+    "purpose": "feature"
+  },
+  {
+    "id": "final_regression",
+    "argv": [
+      "python",
+      "-m",
+      "pytest",
+      "tests",
+      "acceptance"
+    ],
+    "cwd": ".",
+    "timeout_seconds": 600,
+    "purpose": "final"
+  }
+]

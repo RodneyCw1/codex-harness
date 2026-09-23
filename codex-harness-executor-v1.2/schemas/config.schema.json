@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex Harness 配置 v1.2",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "enum": [
+        "1.0",
+        "1.1",
+        "1.2"
+      ]
+    },
+    "executor": {
+      "$ref": "#/$defs/executor"
+    },
+    "executors": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/executor"
+      }
+    },
+    "private_env_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "active_executor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "concurrency": {
+          "const": 1
+        },
+        "max_rounds_per_feature": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "max_stalled_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "auto_merge": {
+          "const": false
+        },
+        "auto_publish": {
+          "const": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "source_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "work_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "control_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "read_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "protected_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "generated_dirs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "command_env_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "cwd": {
+                "const": "."
+              },
+              "timeout_seconds": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3600
+              },
+              "purpose": {
+                "enum": [
+                  "init",
+                  "baseline",
+                  "self_test",
+                  "feature",
+                  "final",
+                  "cleanup"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "argv",
+              "purpose"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": {
+                  "enum": [
+                    "log",
+                    "report",
+                    "screenshot",
+                    "manifest",
+                    "other"
+                  ]
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "role": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "path",
+                "type"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "required": [
+        "source_root",
+        "work_root",
+        "control_root"
+      ],
+      "additionalProperties": false
+    },
+    "sandbox": {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "enum": [
+            "strict",
+            "trusted_local"
+          ]
+        },
+        "codex_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "const": "elevated"
+        },
+        "read_roots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "network": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "allow_domains": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "allow_domains"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "project"
+  ],
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "required": [
+        "executors"
+      ]
+    },
+    {
+      "required": [
+        "executor"
+      ]
+    }
+  ],
+  "$defs": {
+    "executor": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "openai_chat_completions"
+        },
+        "base_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_key_env": {
+          "type": "string",
+          "pattern": "^[A-Z_][A-Z0-9_]*$"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_request_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "max_tool_calls_per_attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_attempt_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_context_bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "protocol",
+        "base_url",
+        "api_key_env",
+        "model"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

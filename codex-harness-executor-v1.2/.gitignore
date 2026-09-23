@@ -1,0 +1,4 @@
+node_modules/
+.test-data/
+*.private.env
+*.local.yaml

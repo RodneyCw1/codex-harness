@@ -1,0 +1,14 @@
+✔ Windows native sandbox enforces actual filesystem, environment and network boundaries (2688.7182ms)
+✔ Windows native sandbox command cancellation stops the child process tree (1515.2275ms)
+✔ v1.2 host: hundreds of protected documents do not exceed Windows command limits (4275.8762ms)
+✔ v1.2 host: private environment file is unreadable and an actually loaded API key is absent from project commands (1391.1524ms)
+✔ v1.2 host: native command cannot write through a junction to an ordinary external directory (860.9908ms)
+✔ v1.2 host: worker read_file refuses an existing junction even when ordinary host reads are allowed (474.1271ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11638.9513

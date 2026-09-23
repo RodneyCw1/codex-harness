@@ -1,0 +1,23 @@
+{
+  "task_id": "TASK-DEMO",
+  "feature_id": "F1",
+  "scope": "feature",
+  "spec_version": 1,
+  "goal": "由 Codex 根据真实需求填写",
+  "documents": {
+    "implementation": "inputs/implementation.md",
+    "acceptance": "inputs/acceptance.md",
+    "test_plan": "inputs/test-plan.md"
+  },
+  "context_paths": ["inputs/project-profile.md"],
+  "allowed_paths": ["src/"],
+  "protected_paths": ["tests/acceptance/"],
+  "command_ids": ["feature_verify"],
+  "dependencies": [],
+  "acceptance_criteria": [
+    {"id":"AC-001","requirement_ids":["REQ-001"],"required":true,"behavior":"填写可观察的用户场景","test_ids":["TC-001"]}
+  ],
+  "test_cases": [
+    {"id":"TC-001","acceptance_ids":["AC-001"],"command_id":"feature_verify","expected_result":"填写实际断言与预期结果","required_artifact_types":["log","report"]}
+  ]
+}

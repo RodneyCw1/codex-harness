@@ -1,0 +1,21 @@
+{"run_id":"run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30","phase":"executing","tool":"read_file","count":1}
+{"run_id":"run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30","phase":"executing","tool":"read_file","count":2}
+{"run_id":"run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30","phase":"executing","tool":"run_check","count":3}
+{"run_id":"run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30","phase":"verifying","tool":"submit_candidate","count":4}
+{
+  "run_id": "run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30",
+  "phase": "verifying",
+  "status": "running",
+  "task": "tasks/task-1f08790d-0b79-4179-af47-d12e1be9ed62.json",
+  "candidate": {
+    "submission_id": "submission-3c67ffc4-91ad-4217-b3f0-24748930bc2f",
+    "round_number": 1,
+    "snapshot_id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+    "manifest_ref": "snapshots/2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb/manifest.json",
+    "changed_files": []
+  },
+  "evidence": [],
+  "review": null,
+  "block_reason": null,
+  "next": "verify --run run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30"
+}

@@ -1,0 +1,61 @@
+{
+  "run_id": "run-ad9b0c67-2b42-42e6-af14-ae4c84d79d30",
+  "phase": "reworking",
+  "status": "completed",
+  "task": "tasks/task-1f08790d-0b79-4179-af47-d12e1be9ed62.json",
+  "candidate": {
+    "submission_id": "submission-3c67ffc4-91ad-4217-b3f0-24748930bc2f",
+    "round_number": 1,
+    "snapshot_id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+    "manifest_ref": "snapshots/2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb/manifest.json",
+    "changed_files": []
+  },
+  "evidence": [
+    {
+      "id": "evidence-bbaec985-3a91-495e-9c82-eb4627f7c705",
+      "ref": "evidence/evidence-bbaec985-3a91-495e-9c82-eb4627f7c705.json",
+      "digest": "sha256:a5eb5de2f586d0693becc527bdf37bb1857fdf18c018e2658c3eaa252d49c409"
+    }
+  ],
+  "review": {
+    "protocol_version": "1.0",
+    "kind": "review",
+    "artifact_mode": "live",
+    "message_id": "review-1e406683-11cf-4e71-abf9-755174f53190",
+    "task_id": "LIVE-V12",
+    "feature_id": "F1",
+    "batch_id": "batch-e5b03a15-6109-47e8-9ae7-e480381845f9",
+    "spec_version": 1,
+    "spec_digest": "sha256:fabbd122a592bb2200034490d6265cc77b246ac7843eb1ee1d53cc7e2de5160f",
+    "submission_id": "submission-3c67ffc4-91ad-4217-b3f0-24748930bc2f",
+    "round_number": 1,
+    "snapshot_id": "sha256:2a43d9e552fb0bd556cbdad51dbf3d106b69af807fce5727aa48bacb174eafcb",
+    "scope": "feature",
+    "producer": "codex",
+    "decision": "REVISE",
+    "checks": [
+      {
+        "acceptance_id": "AC-SUM",
+        "verdict": "fail",
+        "evidence_ids": [
+          "evidence-bbaec985-3a91-495e-9c82-eb4627f7c705"
+        ],
+        "explanation": "独立 test 退出1，断言实际6不等于5；check.mjs 未改。"
+      }
+    ],
+    "hard_gates": {
+      "scope_ok": true,
+      "standards_intact": true,
+      "handoff_ready": true
+    },
+    "unresolved_blockers": [
+      "BUG-SUM"
+    ],
+    "summary": "Codex 已检查独立日志：实际 2*3=6，预期加法为5，错误候选不可通过。",
+    "next_action": "rework",
+    "rework_id": "rework-9c88ed5d-132f-4893-977c-d0b013147de4",
+    "block_reason": null
+  },
+  "block_reason": null,
+  "next": "携带返工单重新 prepare"
+}

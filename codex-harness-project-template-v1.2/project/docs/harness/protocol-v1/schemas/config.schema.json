@@ -1,0 +1,206 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "executor": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "openai_chat_completions"
+        },
+        "base_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_key_env": {
+          "type": "string",
+          "pattern": "^[A-Z_][A-Z0-9_]*$"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_request_retries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_tool_calls_per_attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_attempt_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "protocol",
+        "base_url",
+        "api_key_env",
+        "model",
+        "request_timeout_seconds",
+        "max_request_retries",
+        "max_tool_calls_per_attempt",
+        "max_attempt_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "concurrency": {
+          "const": 1
+        },
+        "max_rounds_per_feature": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_stalled_rounds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "auto_merge": {
+          "const": false
+        },
+        "auto_publish": {
+          "const": false
+        }
+      },
+      "required": [
+        "concurrency",
+        "max_rounds_per_feature",
+        "max_stalled_rounds",
+        "auto_merge",
+        "auto_publish"
+      ],
+      "additionalProperties": false
+    },
+    "project": {
+      "type": "object",
+      "properties": {
+        "source_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "work_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "control_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "read_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "protected_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "command_env_allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+              },
+              "argv": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "cwd": {
+                "type": "string",
+                "minLength": 1
+              },
+              "timeout_seconds": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "purpose": {
+                "enum": [
+                  "init",
+                  "baseline",
+                  "self_test",
+                  "feature",
+                  "final",
+                  "cleanup"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "argv",
+              "cwd",
+              "timeout_seconds",
+              "purpose"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "source_root",
+        "work_root",
+        "control_root",
+        "read_paths",
+        "allowed_paths",
+        "protected_paths",
+        "command_env_allowlist",
+        "commands"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "executor",
+    "workflow",
+    "project"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codex-harness:config:1.0",
+  "title": "Codex Harness v1 配置模板结构"
+}

@@ -1,0 +1,15 @@
+✔ v1.2: verification cannot repair a wrong candidate in its disposable copy (2165.5866ms)
+✔ v1.2: initialization cannot rewrite verification input before the real test (1612.8993ms)
+✔ v1.2: add within a protected directory invalidates evidence (1761.1604ms)
+✔ v1.2: delete within a protected directory invalidates evidence (1755.7515ms)
+✔ v1.2: the executor wrapper report cannot substitute for a missing required test report (1677.3503ms)
+✔ v1.2: a real required report in generated output is collected without changing source input (1731.7916ms)
+✔ v1.2: Maven, CodeGraph and configured generated directories never change candidate input (301.0672ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11298.7743

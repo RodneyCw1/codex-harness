@@ -1,0 +1,3 @@
+SIMULATED EXAMPLE — NOT EXECUTED
+TC-002: FAIL
+预期全空格抛出ValidationError；模拟实际返回空串。

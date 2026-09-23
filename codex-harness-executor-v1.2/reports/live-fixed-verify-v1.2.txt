@@ -1,0 +1,27 @@
+{"run_id":"run-429f4b6d-c2e1-4ace-a1fc-e00f62d93981","phase":"verifying","test_case":"TC-SUM","exit_code":0}
+{
+  "run_id": "run-429f4b6d-c2e1-4ace-a1fc-e00f62d93981",
+  "phase": "reviewing",
+  "status": "running",
+  "task": "tasks/task-95597438-e3d1-411f-87cd-28a4cd2665d2.json",
+  "candidate": {
+    "submission_id": "submission-a36cd535-f965-46d9-a7d1-ed069255997c",
+    "round_number": 2,
+    "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+    "manifest_ref": "snapshots/512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe/manifest.json",
+    "changed_files": [
+      "sum.mjs"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "evidence-d732538b-a3b1-4a5d-b865-9da1932bb016",
+      "ref": "evidence/evidence-d732538b-a3b1-4a5d-b865-9da1932bb016.json",
+      "digest": "sha256:698c365d65c82d6deeb9301d412ba7e48c7050db90f7cc05781b78a4b6d9f767"
+    }
+  ],
+  "review": null,
+  "block_reason": null,
+  "next": "Codex 读取证据并生成 review，然后 decide",
+  "review_template": "runs/run-429f4b6d-c2e1-4ace-a1fc-e00f62d93981/review.template.json"
+}

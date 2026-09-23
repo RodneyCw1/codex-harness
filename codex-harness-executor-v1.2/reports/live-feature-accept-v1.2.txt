@@ -1,0 +1,61 @@
+{
+  "run_id": "run-429f4b6d-c2e1-4ace-a1fc-e00f62d93981",
+  "phase": "delivering",
+  "status": "completed",
+  "task": "tasks/task-95597438-e3d1-411f-87cd-28a4cd2665d2.json",
+  "candidate": {
+    "submission_id": "submission-a36cd535-f965-46d9-a7d1-ed069255997c",
+    "round_number": 2,
+    "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+    "manifest_ref": "snapshots/512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe/manifest.json",
+    "changed_files": [
+      "sum.mjs"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "evidence-d732538b-a3b1-4a5d-b865-9da1932bb016",
+      "ref": "evidence/evidence-d732538b-a3b1-4a5d-b865-9da1932bb016.json",
+      "digest": "sha256:698c365d65c82d6deeb9301d412ba7e48c7050db90f7cc05781b78a4b6d9f767"
+    }
+  ],
+  "review": {
+    "protocol_version": "1.0",
+    "kind": "review",
+    "artifact_mode": "live",
+    "message_id": "review-887d1509-4694-4002-9663-ef37a049995d",
+    "task_id": "LIVE-V12",
+    "feature_id": "F1",
+    "batch_id": "batch-e5b03a15-6109-47e8-9ae7-e480381845f9",
+    "spec_version": 1,
+    "spec_digest": "sha256:fabbd122a592bb2200034490d6265cc77b246ac7843eb1ee1d53cc7e2de5160f",
+    "submission_id": "submission-a36cd535-f965-46d9-a7d1-ed069255997c",
+    "round_number": 2,
+    "snapshot_id": "sha256:512cbf5be10eae093bae7c76d8282cce9b9f9b4b0fd32cd7f5b112a1ea51dffe",
+    "scope": "feature",
+    "producer": "codex",
+    "decision": "ACCEPT",
+    "checks": [
+      {
+        "acceptance_id": "AC-SUM",
+        "verdict": "pass",
+        "evidence_ids": [
+          "evidence-d732538b-a3b1-4a5d-b865-9da1932bb016"
+        ],
+        "explanation": "已读取独立验证日志和4项实际结果，正数、负数、零、小数加法符合冻结标准。"
+      }
+    ],
+    "hard_gates": {
+      "scope_ok": true,
+      "standards_intact": true,
+      "handoff_ready": true
+    },
+    "unresolved_blockers": [],
+    "summary": "Codex 已核对实际候选使用 a+b、冻结检查脚本未改、四个真实断言全部通过且输入摘要一致。",
+    "next_action": "next_feature",
+    "rework_id": null,
+    "block_reason": null
+  },
+  "block_reason": null,
+  "next": "准备下一个功能或 FINAL"
+}

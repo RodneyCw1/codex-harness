@@ -1,0 +1,41 @@
+# 模板：REPLACE_... 和环境变量必须填写；此文件本身不会启动执行器。
+schema_version: '1.0'
+executor:
+  protocol: openai_chat_completions
+  base_url: '${EXECUTOR_BASE_URL}'
+  api_key_env: EXECUTOR_API_KEY
+  model: '${EXECUTOR_MODEL}'
+  request_timeout_seconds: 120
+  max_request_retries: 3
+  max_tool_calls_per_attempt: 100
+  max_attempt_seconds: 1800
+workflow:
+  concurrency: 1
+  max_rounds_per_feature: 10
+  max_stalled_rounds: 3
+  auto_merge: false
+  auto_publish: false
+project:
+  source_root: '${PROJECT_ROOT}'
+  work_root: '${HARNESS_WORK_ROOT}'
+  control_root: '${HARNESS_CONTROL_ROOT}'
+  read_paths: ['REPLACE_READ_DIRECTORY/']
+  allowed_paths: ['REPLACE_IMPLEMENTATION_DIRECTORY/', 'REPLACE_TEST_DIRECTORY/']
+  protected_paths: ['AGENTS.md', 'REPLACE_FROZEN_SPEC_DIRECTORY/', 'REPLACE_ACCEPTANCE_TEST_DIRECTORY/']
+  command_env_allowlist: ['PATH']
+  commands:
+    - id: baseline
+      argv: ['REPLACE_EXECUTABLE', 'REPLACE_ARGUMENT']
+      cwd: '.'
+      timeout_seconds: 600
+      purpose: baseline
+    - id: feature_verify
+      argv: ['REPLACE_EXECUTABLE', 'REPLACE_ARGUMENT']
+      cwd: '.'
+      timeout_seconds: 600
+      purpose: feature
+    - id: final_verify
+      argv: ['REPLACE_EXECUTABLE', 'REPLACE_ARGUMENT']
+      cwd: '.'
+      timeout_seconds: 600
+      purpose: final
