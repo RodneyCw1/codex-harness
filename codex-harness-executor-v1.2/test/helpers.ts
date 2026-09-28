@@ -10,7 +10,9 @@ import { processRun } from "../src/process.ts";
 import { common } from "../src/protocol.ts";
 import { id } from "../src/files.ts";
 import type { CheckRunner } from "../src/sandbox.ts";
-export async function fixture() {
+export async function fixture(
+  options: { reasoning?: boolean; reports?: boolean } = {},
+) {
   // A non-Git fixture must be outside the checkout, even in an unsandboxed host run.
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "harness-e2e-"));
   await fs.mkdir(path.join(root, "source"), { recursive: true });
@@ -23,10 +25,12 @@ export async function fixture() {
     "import assert from 'node:assert/strict';import {sum} from './sum.mjs';assert.equal(sum(2,3),5);assert.equal(sum(-1,1),0);console.log('SCENARIO sum passed');\n",
   );
   let correct = false;
+  const requests: any[] = [];
   const server = http.createServer(async (req, res) => {
     let data = "";
     for await (const chunk of req) data += chunk;
     const body = JSON.parse(data);
+    requests.push(body);
     const previous = body.messages.findLast((m: any) => m.role === "assistant")
       ?.tool_calls?.[0]?.function.name;
     const last = body.messages.at(-1);
@@ -62,6 +66,12 @@ export async function fixture() {
             message: {
               role: "assistant",
               content: null,
+              ...(options.reasoning
+                ? {
+                    reasoning_content:
+                      "Fixture public reasoning: inspect the implementation before applying the requested change.",
+                  }
+                : {}),
               tool_calls: [
                 {
                   id: id("tool"),
@@ -93,6 +103,18 @@ export async function fixture() {
         control_root: path.join(root, "control"),
         allowed_paths: ["sum.mjs"],
         protected_paths: ["check.mjs"],
+        ...(options.reports
+          ? {
+              generated_dirs: ["target"],
+              artifacts: {
+                test: ["xml", "json", "html"].map((extension) => ({
+                  path: `target/test.${extension}`,
+                  type: "report",
+                  required: true,
+                })),
+              },
+            }
+          : {}),
         commands: [
           {
             id: "test",
@@ -118,13 +140,26 @@ export async function fixture() {
     },
     async run(command, cwd, protectedPaths, signal, logs) {
       assert.deepEqual(command.argv, [process.execPath, "check.mjs"]);
-      return processRun(command.argv, {
+      const result = await processRun(command.argv, {
         cwd,
         env: commandEnvironment(config, vars, path.join(cwd, "tmp")),
         timeoutMs: 10000,
         signal,
         logs,
       });
+      if (options.reports) {
+        await fs.mkdir(path.join(cwd, "target"), { recursive: true });
+        await fs.writeFile(
+          path.join(cwd, "target/test.xml"),
+          '<?xml version="1.0"?><testsuite tests="1" skipped="1"><testcase name="live"><skipped/></testcase></testsuite>',
+        );
+        await fs.writeFile(
+          path.join(cwd, "target/test.json"),
+          '{"tests":1,"skipped":1}',
+        );
+        await fs.writeFile(path.join(cwd, "target/test.html"), "<p>Test report</p>");
+      }
+      return result;
     },
   };
   await initialize(config, secrets);
@@ -169,6 +204,7 @@ export async function fixture() {
     config,
     engine,
     draft,
+    requests,
     setCorrect() {
       correct = true;
     },

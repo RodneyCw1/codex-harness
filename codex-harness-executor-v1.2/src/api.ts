@@ -83,13 +83,13 @@ export class ModelClient {
   executor: Executor;
   key: string;
   secrets: Secrets;
-  event: (v: unknown) => void;
+  event: (v: any) => void | Promise<void>;
   observeUsage: UsageObserver;
   constructor(
     executor: Executor,
     key: string,
     secrets: Secrets,
-    event: (v: unknown) => void = () => {},
+    event: (v: any) => void | Promise<void> = () => {},
     observeUsage: UsageObserver = async () => {},
   ) {
     this.executor = executor;
@@ -128,6 +128,11 @@ export class ModelClient {
         usage: normalizeUsage(undefined),
       };
       await this.observeUsage(record);
+      await this.event({
+        phase: "model_request_started",
+        request_id: record.request_id,
+        attempt,
+      });
       try {
         const deadline = AbortSignal.timeout(
           this.executor.request_timeout_seconds * 1000,
@@ -163,6 +168,11 @@ export class ModelClient {
             "API 请求失败 HTTP " + response.status + "；未记录响应体以防泄密",
           );
         }
+        await this.event({
+          phase: "model_response_received",
+          request_id: record.request_id,
+          http_status: response.status,
+        });
         const reader = response.body?.getReader();
         ensure(reader, "API_PROTOCOL", "API 响应为空");
         let data = "";
@@ -232,8 +242,19 @@ export class ModelClient {
           msg.reasoning_content = m.reasoning_content;
         }
         this.secrets.assertSafe(JSON.stringify(msg));
+        await this.event({
+          phase: "model_request_finished",
+          request_id: record.request_id,
+          http_status: response.status,
+        });
         return msg;
       } catch (e) {
+        await this.event({
+          phase: "model_request_failed",
+          request_id: record.request_id,
+          http_status: record.http_status,
+          error: e instanceof Block ? e.code : "NETWORK_ERROR",
+        });
         if (signal?.aborted) throw new Block("STOPPED", "运行已停止");
         const retry =
           e instanceof Block
@@ -241,7 +262,12 @@ export class ModelClient {
             : e instanceof TypeError || (e as Error).name === "TimeoutError";
         if (!retry || attempt >= this.executor.max_request_retries) throw e;
         const ms = (retryAfter || 2 ** attempt) * 1000;
-        this.event({ phase: "api_retry", retry: attempt + 1, delay_ms: ms });
+        await this.event({
+          phase: "api_retry",
+          request_id: record.request_id,
+          retry: attempt + 1,
+          delay_ms: ms,
+        });
         await new Promise<void>((resolve, reject) => {
           const abort = () => {
             clearTimeout(t);

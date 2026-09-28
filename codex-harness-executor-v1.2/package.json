@@ -10,15 +10,20 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test --test-concurrency=1 test/*.test.ts",
-    "test:host": "node --test --test-concurrency=1 test/host/*.test.ts"
+    "test:host": "node --test --test-concurrency=1 test/host/*.test.ts",
+    "test:ui": "npm run build && node --test --test-concurrency=1 test/ui/*.test.ts"
   },
   "dependencies": {
     "ajv": "^8.20.0",
+    "lucide": "^1.48.0",
+    "markdown-it": "^15.0.2",
     "saxes": "6.0.0",
     "tap-parser": "18.3.4",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/markdown-it": "^14.2.0",
     "@types/node": "^24.0.0",
     "esbuild": "^0.25.0",
     "prettier": "^3.9.7",

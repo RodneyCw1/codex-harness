@@ -12,8 +12,10 @@ import { buildReport, refreshReports } from "./reporting.ts";
 import { storageStats, usageStats } from "./telemetry.ts";
 import { initialize } from "./workspace.ts";
 import { Engine } from "./engine.ts";
+import { startConsole } from "./console/server.ts";
 const help = `Codex Harness 1.3.0 — Node.js 24 / Windows
 用法：harness <命令> --config <项目配置.yaml> [参数]
+  ui [--config <路径>] [--port <端口>] [--no-open]  本机多项目工作台
   init --project <目录>          创建项目事实清单与独立工作区
   doctor [--live] [--executor ID] 实测沙箱，--live 探测模型工具往返
   onboard [--input <JSON>] [--dry-run]  交互或参数接入；默认预检、初始化及基线
@@ -43,6 +45,8 @@ async function main() {
     strict: true,
     options: {
       config: { type: "string" },
+      port: { type: "string" },
+      "no-open": { type: "boolean" },
       input: { type: "string" },
       template: { type: "string" },
       "work-root": { type: "string" },
@@ -86,6 +90,23 @@ async function main() {
     "NODE_VERSION",
     "需要 Node.js 24",
   );
+  if (positionals[0] === "ui") {
+    const consoleServer = await startConsole({
+      configFile: values.config,
+      port: values.port === undefined ? undefined : Number(values.port),
+      open: !values["no-open"],
+    });
+    console.error("Harness 工作台：" + consoleServer.url);
+    console.log(
+      JSON.stringify({ ok: true, command: "ui", url: consoleServer.url }),
+    );
+    const stop = () => {
+      void consoleServer.close().then(() => process.exit(0));
+    };
+    process.once("SIGINT", stop);
+    process.once("SIGTERM", stop);
+    return;
+  }
   if (positionals[0] === "onboard") {
     let input: OnboardInput = values.input ? await readJson(values.input) : {};
     if (!input.config && values.config)
@@ -165,8 +186,9 @@ async function main() {
     );
   const runner = new WindowsSandbox(config, vars, secrets);
   const engine = new Engine(config, vars, secrets, runner, (e) =>
-    console.error(JSON.stringify(secrets.clean(e))),
+    console.error(JSON.stringify(engine.secrets.clean(e))),
   );
+  engine.configFile = path.resolve(values.config);
   const command = positionals[0];
   let result: unknown;
   const need = (name: "run" | "task" | "review") => {
@@ -203,6 +225,7 @@ async function main() {
     }
     case "prepare":
       result = await engine.prepare(await readJson(need("task")), values.docs);
+      secrets = engine.secrets;
       break;
     case "run": {
       let task = need("task");
@@ -217,6 +240,7 @@ async function main() {
           .replaceAll("\\", "/");
       }
       result = await engine.start(task, values.executor);
+      secrets = engine.secrets;
       break;
     }
     case "verify":

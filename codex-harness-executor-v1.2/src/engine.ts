@@ -3,7 +3,8 @@ import path from "node:path";
 import Ajv from "ajv";
 import type { Config, Command } from "./config.ts";
 import { Secrets, commandEnvironment } from "./config.ts";
-import { type CheckRunner } from "./sandbox.ts";
+import { WindowsSandbox, type CheckRunner } from "./sandbox.ts";
+import { applyPendingExecutors } from "./console/settings.ts";
 import { Store } from "./store.ts";
 import {
   Block,
@@ -77,6 +78,7 @@ export class Engine {
   store: Store;
   mode: string;
   event: (v: unknown) => void;
+  configFile?: string;
   constructor(
     config: Config,
     vars: NodeJS.ProcessEnv,
@@ -97,6 +99,29 @@ export class Engine {
       ? this.store.read("db.json")
       : { revision: 0, active_run: null, features: {}, runs: {} };
   }
+  async refreshDispatchConfig() {
+    if (!this.configFile) return;
+    const loaded = await applyPendingExecutors(
+      this.configFile,
+      this.config.project,
+    );
+    for (const name of ["source_root", "work_root", "control_root"] as const)
+      ensure(
+        loaded.config.project[name] === this.config.project[name],
+        "CONFIG_CONFLICT",
+        "项目目录已变化，请重新运行命令",
+      );
+    this.config = loaded.config;
+    this.vars = loaded.vars;
+    this.secrets = loaded.secrets;
+    if (this.runner.kind === "codex-windows")
+      this.runner = new WindowsSandbox(this.config, this.vars, this.secrets);
+  }
+  async activity(type: string, data: Doc) {
+    const cleaned = this.secrets.clean(data);
+    await this.store.event(type, cleaned);
+    this.event({ phase: type, ...cleaned });
+  }
   async policyDigest() {
     return digest({
       runtime: await this.runtimeFingerprint(),
@@ -112,6 +137,8 @@ export class Engine {
     );
   }
   async save(db: Database, type: string, data: unknown) {
+    const runId = (data as Doc)?.run_id;
+    if (runId && db.runs[runId]) db.runs[runId].updated_at = now();
     const actual = await this.db();
     ensure(actual.revision === db.revision, "STATE_CONFLICT", "状态版本冲突");
     const next = { ...db, revision: db.revision + 1 };
@@ -263,6 +290,7 @@ export class Engine {
       const project = await this.project();
       const db = await this.db();
       ensure(!db.active_run, "ACTIVE_RUN", "请先评审或恢复当前运行");
+      await this.refreshDispatchConfig();
       for (const n of ["task_id", "feature_id"])
         ensure(
           /^[A-Za-z][A-Za-z0-9_.-]*$/.test(draft[n]),
@@ -546,6 +574,7 @@ export class Engine {
         "ACTIVE_RUN",
         "已有运行，请先 verify/decide 或 resume",
       );
+      await this.refreshDispatchConfig();
       const task = await this.store.read(taskRef);
       validateTask(task, this.mode);
       const project = await this.project();
@@ -595,6 +624,7 @@ export class Engine {
         run_id: runId,
         task_ref: taskRef,
         executor: name,
+        executor_snapshot: { ...executor },
         usage_tracking: 1,
         executor_digest: digest(executor),
         policy_digest: await this.policyDigest(),
@@ -712,7 +742,9 @@ export class Engine {
       this.config.executors[run.executor],
       this.vars[this.config.executors[run.executor].api_key_env] ?? "",
       this.secrets,
-      this.event,
+      async (event: any) => {
+        await this.activity(event.phase, { ...event, run_id: run.run_id });
+      },
       usageRecorder(this.store.root, {
         executor: run.executor,
         model: this.config.executors[run.executor].model,
@@ -782,9 +814,20 @@ export class Engine {
           "工具调用次数达到上限",
         );
         let result;
+        await this.activity("tool_started", {
+          run_id: run.run_id,
+          tool_id: call.id,
+          name: call.function.name,
+        });
         try {
           result = await this.tool(db, run, task, call, signal);
         } catch (e) {
+          await this.activity("tool_failed", {
+            run_id: run.run_id,
+            tool_id: call.id,
+            name: call.function.name,
+            error: e instanceof Block ? e.code : "UNEXPECTED",
+          });
           if (
             e instanceof Block &&
             [
@@ -1081,6 +1124,12 @@ export class Engine {
   ) {
     const s = await this.freeze(root);
     const checkId = id("check");
+    await this.activity("check_started", {
+      run_id: run.run_id,
+      check_id: checkId,
+      command_id: command.id,
+      category,
+    });
     const copy = path.join(this.config.project.work_root, "checks", checkId);
     await copySnapshot(s.tree, copy, s);
     // Preserve directory rules: expanding every protected document exceeds the
@@ -1123,7 +1172,31 @@ export class Engine {
         budget,
         secrets: this.secrets.values,
       };
-      const r = await this.runner.run(c, copy, protectedPaths, signal, options);
+      await this.activity("command_started", {
+        run_id: run.run_id,
+        check_id: checkId,
+        command_id: c.id,
+        category,
+      });
+      let r;
+      try {
+        r = await this.runner.run(c, copy, protectedPaths, signal, options);
+      } catch (error) {
+        await this.activity("command_failed", {
+          run_id: run.run_id,
+          check_id: checkId,
+          command_id: c.id,
+          error: error instanceof Block ? error.code : "UNEXPECTED",
+        });
+        throw error;
+      }
+      await this.activity("command_finished", {
+        run_id: run.run_id,
+        check_id: checkId,
+        command_id: c.id,
+        category,
+        exit_code: r.exitCode,
+      });
       // Small deterministic test doubles may still return captured output.
       // Production must always use the native streaming runner.
       if (!r.logs) {

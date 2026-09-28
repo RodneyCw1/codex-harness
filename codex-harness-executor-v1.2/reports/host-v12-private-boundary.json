@@ -9,9 +9,9 @@
   "network": true,
   "ordinary_reads": "allowed",
   "runtime": {
-    "executable": "C:\\Users\\Administrator\\AppData\\Local\\OpenAI\\Codex\\bin\\d375f7df50d3b421\\codex.exe",
-    "sha256": "sha256:97d4d67419d0ac2f71342f9a5e850f9468aa622618de8ea823223edb9a91926a",
-    "version": "codex-cli 0.155.0-alpha.16",
+    "executable": "C:\\Users\\Administrator\\AppData\\Local\\OpenAI\\Codex\\bin\\faa963e871dd422c\\codex.exe",
+    "sha256": "sha256:8f0554ede25bbc5450921897c468b2e84635aa513c5017457997af0954581f49",
+    "version": "codex-cli 0.158.0-alpha.2.1",
     "profile": "trusted_local",
     "network": true
   },
