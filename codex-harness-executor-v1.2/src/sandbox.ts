@@ -1,4 +1,5 @@
 import { probeProgram } from "./probe.ts";
+import { resolveCodexExecutable } from "./codex-cli.ts";
 import fs from "node:fs/promises";
 import path from "node:path";
 import net from "node:net";
@@ -94,29 +95,10 @@ export class WindowsSandbox implements CheckRunner {
       this.vars,
       path.join(this.config.project.work_root, "tmp"),
     );
-    const configured = this.config.sandbox.codex_path;
-    const lookup = await processRun(
-      [
-        path.join(
-          this.vars.SystemRoot ?? "C:\\Windows",
-          "System32",
-          "WindowsPowerShell",
-          "v1.0",
-          "powershell.exe",
-        ),
-        "-NoProfile",
-        "-NonInteractive",
-        "-Command",
-        `(Get-Command -Name '${configured.replace(/'/g, "''")}' -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source`,
-      ],
-      { cwd: this.config.project.control_root, env, timeoutMs: 15000 },
+    const executable = await resolveCodexExecutable(
+      this.config.sandbox.codex_path,
+      env,
     );
-    ensure(
-      lookup.exitCode === 0 && lookup.stdout.trim(),
-      "SANDBOX_UNAVAILABLE",
-      "无法解析 Codex CLI 路径",
-    );
-    const executable = lookup.stdout.trim();
     const sha256 = hash(await fs.readFile(executable));
     if (this.executableHash !== sha256 || this.executable !== executable)
       this.syntax = null;

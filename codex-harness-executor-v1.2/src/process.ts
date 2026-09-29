@@ -46,6 +46,7 @@ export function processRun(
     timeoutMs: number;
     signal?: AbortSignal;
     maxOutput?: number;
+    windowsHide?: boolean;
     logs?: ProcessLogOptions;
   },
 ): Promise<ProcessResult> {
@@ -66,7 +67,7 @@ export function processRun(
     const p = spawn(argv[0], argv.slice(1), {
       cwd: options.cwd,
       env: options.env,
-      windowsHide: true,
+      windowsHide: options.windowsHide ?? true,
       detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
       shell: false,

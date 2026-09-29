@@ -8,11 +8,21 @@ v1.3 提供自动接入、项目文档直接冻结、过程报告、JUnit/TAP �
 
 ## 安装与配置
 
+普通用户双击发行目录的 `启动工作台.cmd`，在页面选择项目文件夹、工作 AI 并确认接入。`scripts/install-desktop-shortcut.ps1` 可创建桌面“Harness 工作台”。重复启动复用健康服务；重启电脑后再次双击即可。页面可导入旧 YAML，并在“项目设置”切换同一项目下的配置。完整步骤见 [工作台说明](CONSOLE.zh-CN.md)，验证记录见 [工作台接入验证](VALIDATION-WORKBENCH.md)。
+
+**前端已打包在 `dist/ui/`，由执行器提供服务，不需要独立前端部署、`npm install` 或 `npm run dev`。** 保留完整执行器目录，不只复制 HTML；Node.js 24 需自行安装。命令行可从本目录运行：
+
+```powershell
+.\harness.cmd ui --reuse
+```
+
+默认本机地址 `http://127.0.0.1:4317/`，端口占用时会变化，以启动入口打开的页面为准。双击脚本后台启动；直接用命令行启动新服务时保留终端。只允许本机访问，不能当作 GitHub Pages 静态站点发布。升级前等作业结束并退出旧 Harness 服务，再启动新版；浏览器刷新不会升级旧后台。
+
 执行器解压到项目外的工具目录；规范模板包先解压到临时目录，让 Codex 按 CODEX-SETUP.md 合并进项目。已有 AGENTS.md 和 docs/harness 不直接覆盖。
 
 需要 Windows、Node.js 24、可调用的 Codex CLI、已完成设置的 elevated 沙箱；Git 项目还需 Git。包内 dist/harness.mjs 已编译并包含运行依赖，日常使用无需 npm install 或自行编译。项目使用的 JDK/Maven 等运行时另外按项目检查。
 
-复制 examples/harness.config.yaml 到项目外，填写 executors 下的 base_url、model 和 api_key_env。Key 只填项目外 private_env_file 或本机环境变量；不要发到聊天、写进 YAML、提示词或版本库。base_url 为供应商兼容前缀，例如 https://provider.example/v1，执行器追加 /chat/completions。
+需要手工配置时，复制 examples/harness.config.yaml 到项目外，填写 executors 下的 base_url、model 和 api_key_env；页面接入用户不必重复此步骤。Key 只填项目外 private_env_file 或本机环境变量；不要发到聊天、写进 YAML、提示词或版本库。base_url 为供应商兼容前缀，例如 https://provider.example/v1，执行器追加 /chat/completions。
 
 多执行者在 executors 下增加命名配置，workflow.active_executor 指定默认，run --executor 明确选择；串行执行，不自动换服务。
 
@@ -26,13 +36,13 @@ v1.3 提供自动接入、项目文档直接冻结、过程报告、JUnit/TAP �
 
 发送：请阅读此执行器的 COORDINATOR.md，使用我的配置文件接入目标项目；先 doctor --live、分析代码与规范、运行基线，再按我的需求完成文档、派发、独立验收和返工。没有业务需求时只完成接入。
 
-命令入口为 harness.cmd；所有业务命令使用 --config <项目外配置路径>。`onboard` 整合规范合并及 doctor → init → baseline；随后 prepare --docs → run → verify → inspect → decide。REVISE 后自动重派发，全部功能通过后 FINAL → verify → decide → export。原单步接入命令继续可用。
+命令入口为 harness.cmd；页面登记的项目优先使用 `--project-id <ID>`，每次启动读取当前绑定；与显式 `--config <项目外配置路径>` 互斥。旧固定 YAML 脚本保留，不跟随页面切换。`onboard` 整合规范合并及 doctor → init → baseline；随后 prepare --docs → run → verify → inspect → decide。REVISE 后自动重派发，全部功能通过后 FINAL → verify → decide → export。原单步接入命令继续可用。
 
 Codex 桌面外层沙箱可能无法嵌套启动原生沙箱。必要时只为可信 harness 协调者申请宿主执行权限；项目检查仍由执行器进入原生沙箱。用户不需要逐轮搬运 JSON。
 
 ## 文件与证据
 
-source_root、work_root、control_root 必须互不包含。规范保存在项目 docs/harness；本轮冻结副本、状态和证据保存在控制目录。执行器包不含 protocol-v1，规范模板包中的固定 1.0 协议副本随项目保存。
+source_root、work_root、control_root 必须互不包含。规范保存在项目 docs/harness；本轮冻结副本、状态和证据保存在控制目录。执行器内附完整接入模板与校验清单，固定 1.0 协议副本随接入规范保存。
 
 v1.2 核对初始化后、测试前后的受测源码摘要。检查改动输入、缺失必需报告、证据过期时均不能通过。构建目录如 target 不进入候选；不能借排除规则删去任务源码或标准。成功退出只产生 unverified，Codex 仍须核对实际断言和场景，零用例不等于业务通过。
 

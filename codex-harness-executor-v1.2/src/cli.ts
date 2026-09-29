@@ -13,9 +13,11 @@ import { storageStats, usageStats } from "./telemetry.ts";
 import { initialize } from "./workspace.ts";
 import { Engine } from "./engine.ts";
 import { startConsole } from "./console/server.ts";
+import { launchConsole } from "./console/launcher.ts";
+import { Projects } from "./console/projects.ts";
 const help = `Codex Harness 1.3.0 — Node.js 24 / Windows
-用法：harness <命令> --config <项目配置.yaml> [参数]
-  ui [--config <路径>] [--port <端口>] [--no-open]  本机多项目工作台
+用法：harness <命令> (--config <项目配置.yaml> | --project-id <项目ID>) [参数]
+  ui [--reuse] [--config <路径>] [--port <端口>] [--no-open]  本机多项目工作台
   init --project <目录>          创建项目事实清单与独立工作区
   doctor [--live] [--executor ID] 实测沙箱，--live 探测模型工具往返
   onboard [--input <JSON>] [--dry-run]  交互或参数接入；默认预检、初始化及基线
@@ -45,8 +47,10 @@ async function main() {
     strict: true,
     options: {
       config: { type: "string" },
+      "project-id": { type: "string" },
       port: { type: "string" },
       "no-open": { type: "boolean" },
+      reuse: { type: "boolean" },
       input: { type: "string" },
       template: { type: "string" },
       "work-root": { type: "string" },
@@ -86,20 +90,36 @@ async function main() {
     return;
   }
   ensure(
+    !(values.config && values["project-id"]),
+    "ARGUMENT",
+    "--config 和 --project-id 不能同时使用",
+  );
+  let registered: Awaited<ReturnType<Projects["get"]>> | undefined;
+  if (values["project-id"]) {
+    ensure(
+      !["onboard", "init", "ui"].includes(positionals[0]),
+      "ARGUMENT",
+      "已登记项目不使用 --project-id 重新初始化",
+    );
+    registered = await new Projects().get(values["project-id"]);
+    values.config = registered.project.config_file;
+  }
+  ensure(
     Number(process.versions.node.split(".")[0]) === 24,
     "NODE_VERSION",
     "需要 Node.js 24",
   );
   if (positionals[0] === "ui") {
-    const consoleServer = await startConsole({
+    const consoleServer = await (values.reuse ? launchConsole : startConsole)({
       configFile: values.config,
       port: values.port === undefined ? undefined : Number(values.port),
       open: !values["no-open"],
     });
-    console.error("Harness 工作台：" + consoleServer.url);
+    console.error("Harness 工作台：" + consoleServer.origin);
     console.log(
-      JSON.stringify({ ok: true, command: "ui", url: consoleServer.url }),
+      JSON.stringify({ ok: true, command: "ui", url: consoleServer.origin }),
     );
+    if ("reused" in consoleServer && consoleServer.reused) return;
     const stop = () => {
       void consoleServer.close().then(() => process.exit(0));
     };
@@ -173,7 +193,7 @@ async function main() {
     return;
   }
   ensure(values.config, "CONFIG", "请指定 --config");
-  const loaded = await loadConfig(values.config);
+  const loaded = registered ?? (await loadConfig(values.config));
   secrets = loaded.secrets;
   const { config, vars } = loaded;
   if (values.project) config.project.source_root = path.resolve(values.project);
@@ -189,6 +209,7 @@ async function main() {
     console.error(JSON.stringify(engine.secrets.clean(e))),
   );
   engine.configFile = path.resolve(values.config);
+  engine.environmentOverrides = registered?.environmentOverrides ?? {};
   const command = positionals[0];
   let result: unknown;
   const need = (name: "run" | "task" | "review") => {

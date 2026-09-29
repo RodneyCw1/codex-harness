@@ -2,7 +2,7 @@
 
 **由当前 Codex 会话协调的本地执行与独立验收工作流。**
 
-[English](README.md) | 简体中文 | [从零开始的安装使用教程](docs/GETTING-STARTED.zh-CN.md)
+[English](README.md) | 简体中文 | [工作台使用说明](docs/CONSOLE.zh-CN.md) | [安装与进阶教程](docs/GETTING-STARTED.zh-CN.md)
 
 Codex Harness 在 Windows 上把项目需求、外部工作模型和独立验证串成完整流程。当前 Codex 会话负责分析项目、编写实现与验收文档、派发任务、审查证据和安排返工；本地执行器提供受限文件工具、原生沙箱检查、快照和状态恢复。无需额外接入一个决策模型 API；外部工作模型仍需要单独配置兼容的 API。
 
@@ -10,10 +10,12 @@ Codex Harness 在 Windows 上把项目需求、外部工作模型和独立验证
 
 为兼容已有启动路径，两个组件目录名仍保留 `v1.2`。新增 `onboard` 接入向导、`prepare --docs` 文档冻结、`report` 过程报告和 `stats` 用量/空间统计；JUnit XML/TAP 支持真实测试计数，零执行或无效报告不能支持验收。详见[更新记录](CHANGELOG.md)、[v1.3 用法与迁移](codex-harness-executor-v1.2/MIGRATION-1.3.md)和[本版验证记录](codex-harness-executor-v1.2/VALIDATION-V1.3.md)。
 
+**第一次使用：安装 Node.js 24，完整解压仓库，双击 `codex-harness-executor-v1.2\启动工作台.cmd`。前端已打包，无需单独安装或运行前端开发服务器。**
+
 ## 可以做什么
 
-- 通过本机可视化工作台管理多个项目的工作 AI，并查看任务、公开推理、工具调用、测试和验收全过程。运行 `harness.cmd ui`，详见[控制台说明](docs/CONSOLE.zh-CN.md)。
-
+- 通过本机可视化工作台选择项目文件夹、检测环境并确认接入，无需新用户手工编写 YAML。
+- 在页面管理多个项目的工作 AI、密钥与下轮模型，查看任务、公开推理、工具调用、测试和验收记录。
 - 在派发任务前冻结实现文档、验收文档和测试文档。
 - 向工作模型提供文件读取、代码搜索、补丁、已登记检查和候选提交工具。
 - 在全新检查副本中验证冻结候选，由 Codex 审查真实断言、代码差异和证据。
@@ -62,9 +64,9 @@ flowchart TD
 
 ## 快速开始
 
-已编译的 `dist/harness.mjs` 包含运行依赖，**使用执行器无需 `npm install` 或自行构建**。需要开发执行器时，在执行器目录先运行 `npm ci`，再使用已提供的 `typecheck`、`test`、`test:host` 和 `build` 脚本。
+前端页面由执行器的本机 HTTP 服务提供，**不需要另装前端项目、运行 `npm run dev` 或部署 GitHub Pages**。发行目录已包含 `dist/harness.mjs`、`dist/ui/`、`dist/harness-picker.exe` 和完整接入模板，普通使用无需 `npm install` 或构建。Node.js 24 需要自行安装，未随包附带。
 
-1. 在本仓库点击 **Code → Download ZIP**，解压后将两个组件目录保留在目标项目之外。在解压后的仓库目录打开 PowerShell。
+1. 在本仓库点击 **Code → Download ZIP**，完整解压到目标项目之外，例如 `C:\Tools\codex-harness`。不要只下载 HTML 或 `harness.mjs`，也不要直接在 ZIP 内运行。
 2. 检查 Node.js 和执行器：
 
    ```powershell
@@ -76,25 +78,60 @@ flowchart TD
 
    Node.js 应显示 `v24.x.x`，执行器应显示 `1.3.0`。帮助和版本输出正常，不代表沙箱或模型连接已经通过验证。
 
-3. 按[新手教程](docs/GETTING-STARTED.zh-CN.md)在项目外创建专用 YAML 配置，填写 `base_url`、`model` 和 `api_key_env`。真实 Key 只在本机填写到 `private_env_file` 指向的项目外文件，不粘贴到聊天或 YAML。执行器会在 `base_url` 后追加 `/chat/completions`。
-4. 在 Codex 中打开**目标项目**，替换下面所有尖括号内容后发送：
+3. 双击 `codex-harness-executor-v1.2\启动工作台.cmd`。它在后台启动本地服务，并自动打开浏览器。也可在仓库根目录执行：
 
-   ```text
-   目标项目：<项目绝对路径>
-   规范模板包：<codex-harness-project-template-v1.2 的绝对路径>
-   执行器包：<codex-harness-executor-v1.2 的绝对路径>
-   本机配置：<项目外 YAML 文件的绝对路径>
-
-   请阅读模板包 CODEX-SETUP.md 和执行器 COORDINATOR.md。
-   保留已有规则和改动，合并项目规范；分析项目，登记真实检查命令，
-   保护验收输入，并核对原生 Codex CLI 路径。不要读取或打印私有 Key 文件。
-   运行 doctor --live，通过后初始化并记录基线。
-   本次只完成接入，报告实际通过的检查。
+   ```powershell
+   .\codex-harness-executor-v1.2\harness.cmd ui --reuse
    ```
 
-5. 接入完成后向 Codex 提出具体需求。任务文档、派发、候选验证和返工由当前会话协调，无需你在模型之间搬运 JSON。
+   默认地址为 `http://127.0.0.1:4317/`；端口占用时可能使用其他端口，以自动打开的页面为准。启动入口会处理本机会话，勿收藏带令牌的链接或沿用旧服务页面。命令行首次启动时需要保留终端；双击脚本使用后台方式。
 
-第一次使用建议按教程复制自带加法示例。它初始失败是故意设计的，应与发行包原件及真实项目分开放置。
+4. 在页面点击 **添加项目 → 接入项目文件夹**，选择自己的项目目录，填写工作 AI 的 API 地址、模型和密钥，点击 **检测项目**。核对 JDK/Maven 或 Node.js 工具、文件变更及拟执行命令后，勾选用量与脚本执行确认，再点 **一键接入**。Java Maven、Node.js 支持自动检测；已有项目可通过 **导入现有配置** 选择 YAML。模型预检会产生供应商用量，依赖安装和项目脚本也会实际执行。密钥保存在本机项目外的私有文件，不写入仓库。
+5. 在 Codex 中打开**目标项目**，补齐项目画像与真实规范，再提出需求。例如：
+
+   ```text
+   项目已通过 Harness 工作台接入：<项目绝对路径>
+   执行器包：<codex-harness-executor-v1.2 的绝对路径>
+   项目 ID：<在工作台项目设置中查看>
+
+   请先读取 AGENTS.md、docs/harness/README.md 和 COORDINATOR.md，
+   分析真实代码并补齐项目画像，保留已有规则和改动，不重复初始化。
+   按项目 ID 使用当前配置，不读取或打印私有密钥。
+   我的需求是：<描述目标和约束>。
+   请编写实现、验收和测试文档，再派发工作 AI，并独立验证实际结果。
+   ```
+
+初始化成功不等于业务验收通过。接入只安装通用规范框架，项目专属内容和每次需求的三份文档仍由 Codex 编写。零测试、全部跳过或缺失报告不会显示测试通过；不要靠反复接入补出测试。工作台可查看后续任务的独立验收，最终导出仍需单独审查和合并。
+
+需要手工 YAML 配置或加法示例时，查看[进阶教程](docs/GETTING-STARTED.zh-CN.md)。
+
+## 下次如何打开
+
+- 关闭浏览器或重启电脑后，再次双击 `启动工作台.cmd`；已有健康服务会复用，已登记项目仍保存在本机。关闭浏览器不会停止正在执行的后台接入作业。
+- 可选桌面快捷方式：在仓库根目录执行下方命令，以后双击桌面 **Harness 工作台**。移动安装目录后需重新创建快捷方式。
+
+  ```powershell
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\codex-harness-executor-v1.2\scripts\install-desktop-shortcut.ps1
+  ```
+
+- 本工具不配置开机自启。升级前等任务结束，确认并退出旧 Harness 后台，再用新目录的入口启动；刷新浏览器不会升级仍在运行的旧服务。不要批量结束所有 Node.js 进程。
+- 只允许本机 `127.0.0.1` 访问，不需要云服务器或域名。另一台电脑须自行安装环境、配置 AI、接入项目；下载工具仓库不会带上你的本机密钥和项目历史。
+
+更多启动、端口、会话、接入及恢复说明见[工作台说明](docs/CONSOLE.zh-CN.md)。
+
+## 开发工作台
+
+只有修改工具源码时才需要安装依赖并重建：
+
+```powershell
+cd .\codex-harness-executor-v1.2
+npm ci
+npm run typecheck
+npm run build
+.\harness.cmd ui --reuse
+```
+
+前端源码位于 `src/console/web/`，构建产物位于 `dist/ui/`，由同一服务提供；没有独立前端端口。已有后台必须在空闲时退出后再启动，才能加载修改后的服务端代码。测试命令为 `npm test`、`npm run test:ui`、`npm run test:host`，主机沙箱套件需在 Windows 宿主执行。
 
 ## 日常流程
 
@@ -118,7 +155,7 @@ $Config = 'C:\Harness\config\demo.yaml'
 & $Harness status --config $Config
 ```
 
-先替换成自己的实际路径。`doctor --live` 会执行沙箱探针并真实调用工作模型 API，可能产生供应商用量。`status` 用于初始化之后。所有业务命令都需要 `--config`；参数和恢复命令见[运行接口说明](codex-harness-executor-v1.2/RUNTIME.md)。
+先替换成自己的实际路径。`doctor --live` 会执行沙箱探针并真实调用工作模型 API，可能产生供应商用量。`status` 用于初始化之后。业务命令使用 `--project-id <ID>` 或显式 `--config <路径>`，两者互斥；项目 ID 跟随页面当前配置，固定 YAML 路径不会。参数和恢复命令见[运行接口说明](codex-harness-executor-v1.2/RUNTIME.md)。
 
 最终通过的成果导出到 `control_root/exports/<run-id>/`，包含 `changes.patch`、`before/`、`after/`、`delivery.json` 及评审和证据记录。应用前先与当前源码比较。Harness 不会自动合并、提交、推送或发布。
 
@@ -140,6 +177,8 @@ v1.2.1 的 `resume` 只接受当前可恢复运行，历史、已取消和已完
 
 | 文档 | 用途 |
 |---|---|
+| [工作台使用说明](docs/CONSOLE.zh-CN.md) | 启动页面、可视化接入、工作 AI、任务与验收、配置切换 |
+| [发布检查清单](docs/PUBLISHING.zh-CN.md) | 上传 GitHub 前的文件、隐私及发行验证检查 |
 | [新手使用教程](docs/GETTING-STARTED.zh-CN.md) | 安装、配置、第一个示例、日常使用和排错 |
 | [项目接入步骤](codex-harness-project-template-v1.2/CODEX-SETUP.md) | 交给 Codex 执行的接入说明 |
 | [新电脑说明](codex-harness-project-template-v1.2/NEW-COMPUTER.md) | 换电脑时重新绑定路径与环境 |

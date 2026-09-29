@@ -79,6 +79,7 @@ export class Engine {
   mode: string;
   event: (v: unknown) => void;
   configFile?: string;
+  environmentOverrides: NodeJS.ProcessEnv = {};
   constructor(
     config: Config,
     vars: NodeJS.ProcessEnv,
@@ -112,7 +113,7 @@ export class Engine {
         "项目目录已变化，请重新运行命令",
       );
     this.config = loaded.config;
-    this.vars = loaded.vars;
+    this.vars = { ...loaded.vars, ...this.environmentOverrides };
     this.secrets = loaded.secrets;
     if (this.runner.kind === "codex-windows")
       this.runner = new WindowsSandbox(this.config, this.vars, this.secrets);
@@ -1177,6 +1178,7 @@ export class Engine {
         check_id: checkId,
         command_id: c.id,
         category,
+        logs: ["stdout", "stderr"].map((stream) => ({ path: prefix + `.${stream}.log`, stream, command_id: c.id })),
       });
       let r;
       try {

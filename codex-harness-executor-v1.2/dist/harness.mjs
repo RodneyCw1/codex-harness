@@ -109,17 +109,17 @@ var require_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    function visit_(key2, node, visitor, path19) {
-      const ctrl = callVisitor(key2, node, visitor, path19);
+    function visit_(key2, node, visitor, path26) {
+      const ctrl = callVisitor(key2, node, visitor, path26);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key2, path19, ctrl);
-        return visit_(key2, ctrl, visitor, path19);
+        replaceNode(key2, path26, ctrl);
+        return visit_(key2, ctrl, visitor, path26);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path19 = Object.freeze(path19.concat(node));
+          path26 = Object.freeze(path26.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = visit_(i, node.items[i], visitor, path19);
+            const ci = visit_(i, node.items[i], visitor, path26);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -130,13 +130,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path19 = Object.freeze(path19.concat(node));
-          const ck = visit_("key", node.key, visitor, path19);
+          path26 = Object.freeze(path26.concat(node));
+          const ck = visit_("key", node.key, visitor, path26);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = visit_("value", node.value, visitor, path19);
+          const cv = visit_("value", node.value, visitor, path26);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -157,17 +157,17 @@ var require_visit = __commonJS({
     visitAsync.BREAK = BREAK;
     visitAsync.SKIP = SKIP;
     visitAsync.REMOVE = REMOVE;
-    async function visitAsync_(key2, node, visitor, path19) {
-      const ctrl = await callVisitor(key2, node, visitor, path19);
+    async function visitAsync_(key2, node, visitor, path26) {
+      const ctrl = await callVisitor(key2, node, visitor, path26);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key2, path19, ctrl);
-        return visitAsync_(key2, ctrl, visitor, path19);
+        replaceNode(key2, path26, ctrl);
+        return visitAsync_(key2, ctrl, visitor, path26);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path19 = Object.freeze(path19.concat(node));
+          path26 = Object.freeze(path26.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = await visitAsync_(i, node.items[i], visitor, path19);
+            const ci = await visitAsync_(i, node.items[i], visitor, path26);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -178,13 +178,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path19 = Object.freeze(path19.concat(node));
-          const ck = await visitAsync_("key", node.key, visitor, path19);
+          path26 = Object.freeze(path26.concat(node));
+          const ck = await visitAsync_("key", node.key, visitor, path26);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = await visitAsync_("value", node.value, visitor, path19);
+          const cv = await visitAsync_("value", node.value, visitor, path26);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -211,23 +211,23 @@ var require_visit = __commonJS({
       }
       return visitor;
     }
-    function callVisitor(key2, node, visitor, path19) {
+    function callVisitor(key2, node, visitor, path26) {
       if (typeof visitor === "function")
-        return visitor(key2, node, path19);
+        return visitor(key2, node, path26);
       if (identity.isMap(node))
-        return visitor.Map?.(key2, node, path19);
+        return visitor.Map?.(key2, node, path26);
       if (identity.isSeq(node))
-        return visitor.Seq?.(key2, node, path19);
+        return visitor.Seq?.(key2, node, path26);
       if (identity.isPair(node))
-        return visitor.Pair?.(key2, node, path19);
+        return visitor.Pair?.(key2, node, path26);
       if (identity.isScalar(node))
-        return visitor.Scalar?.(key2, node, path19);
+        return visitor.Scalar?.(key2, node, path26);
       if (identity.isAlias(node))
-        return visitor.Alias?.(key2, node, path19);
+        return visitor.Alias?.(key2, node, path26);
       return void 0;
     }
-    function replaceNode(key2, path19, node) {
-      const parent = path19[path19.length - 1];
+    function replaceNode(key2, path26, node) {
+      const parent = path26[path26.length - 1];
       if (identity.isCollection(parent)) {
         parent.items[key2] = node;
       } else if (identity.isPair(parent)) {
@@ -324,13 +324,13 @@ var require_directives = __commonJS({
               onError(0, "%YAML directive should contain exactly one part");
               return false;
             }
-            const [version] = parts;
-            if (version === "1.1" || version === "1.2") {
-              this.yaml.version = version;
+            const [version2] = parts;
+            if (version2 === "1.1" || version2 === "1.2") {
+              this.yaml.version = version2;
               return true;
             } else {
-              const isValid = /^\d+\.\d+$/.test(version);
-              onError(6, `Unsupported YAML version ${version}`, isValid);
+              const isValid = /^\d+\.\d+$/.test(version2);
+              onError(6, `Unsupported YAML version ${version2}`, isValid);
               return false;
             }
           }
@@ -839,10 +839,10 @@ var require_Collection = __commonJS({
     var createNode = require_createNode();
     var identity = require_identity();
     var Node = require_Node();
-    function collectionFromPath(schema2, path19, value) {
+    function collectionFromPath(schema2, path26, value) {
       let v = value;
-      for (let i = path19.length - 1; i >= 0; --i) {
-        const k = path19[i];
+      for (let i = path26.length - 1; i >= 0; --i) {
+        const k = path26[i];
         if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -861,7 +861,7 @@ var require_Collection = __commonJS({
         sourceObjects: /* @__PURE__ */ new Map()
       });
     }
-    var isEmptyPath = (path19) => path19 == null || typeof path19 === "object" && !!path19[Symbol.iterator]().next().done;
+    var isEmptyPath = (path26) => path26 == null || typeof path26 === "object" && !!path26[Symbol.iterator]().next().done;
     var Collection = class extends Node.NodeBase {
       constructor(type, schema2) {
         super(type);
@@ -891,11 +891,11 @@ var require_Collection = __commonJS({
        * be a Pair instance or a `{ key, value }` object, which may not have a key
        * that already exists in the map.
        */
-      addIn(path19, value) {
-        if (isEmptyPath(path19))
+      addIn(path26, value) {
+        if (isEmptyPath(path26))
           this.add(value);
         else {
-          const [key2, ...rest] = path19;
+          const [key2, ...rest] = path26;
           const node = this.get(key2, true);
           if (identity.isCollection(node))
             node.addIn(rest, value);
@@ -909,8 +909,8 @@ var require_Collection = __commonJS({
        * Removes a value from the collection.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path19) {
-        const [key2, ...rest] = path19;
+      deleteIn(path26) {
+        const [key2, ...rest] = path26;
         if (rest.length === 0)
           return this.delete(key2);
         const node = this.get(key2, true);
@@ -924,8 +924,8 @@ var require_Collection = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path19, keepScalar) {
-        const [key2, ...rest] = path19;
+      getIn(path26, keepScalar) {
+        const [key2, ...rest] = path26;
         const node = this.get(key2, true);
         if (rest.length === 0)
           return !keepScalar && identity.isScalar(node) ? node.value : node;
@@ -943,8 +943,8 @@ var require_Collection = __commonJS({
       /**
        * Checks if the collection includes a value with the key `key`.
        */
-      hasIn(path19) {
-        const [key2, ...rest] = path19;
+      hasIn(path26) {
+        const [key2, ...rest] = path26;
         if (rest.length === 0)
           return this.has(key2);
         const node = this.get(key2, true);
@@ -954,8 +954,8 @@ var require_Collection = __commonJS({
        * Sets a value in this collection. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path19, value) {
-        const [key2, ...rest] = path19;
+      setIn(path26, value) {
+        const [key2, ...rest] = path26;
         if (rest.length === 0) {
           this.set(key2, value);
         } else {
@@ -1502,7 +1502,7 @@ var require_stringify = __commonJS({
         props.push(doc.directives.tagString(tag));
       return props.join(" ");
     }
-    function stringify4(item, ctx, onComment, onChompKeep) {
+    function stringify5(item, ctx, onComment, onChompKeep) {
       if (identity.isPair(item))
         return item.toString(ctx, onComment, onChompKeep);
       if (identity.isAlias(item)) {
@@ -1531,7 +1531,7 @@ var require_stringify = __commonJS({
 ${ctx.indent}${str}`;
     }
     exports.createStringifyContext = createStringifyContext;
-    exports.stringify = stringify4;
+    exports.stringify = stringify5;
   }
 });
 
@@ -1541,7 +1541,7 @@ var require_stringifyPair = __commonJS({
     "use strict";
     var identity = require_identity();
     var Scalar = require_Scalar();
-    var stringify4 = require_stringify();
+    var stringify5 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyPair({ key: key2, value }, ctx, onComment, onChompKeep) {
       const { allNullValues, doc, indent, indentStep, options: { commentString, indentSeq, simpleKeys } } = ctx;
@@ -1563,7 +1563,7 @@ var require_stringifyPair = __commonJS({
       });
       let keyCommentDone = false;
       let chompKeep = false;
-      let str = stringify4.stringify(key2, ctx, () => keyCommentDone = true, () => chompKeep = true);
+      let str = stringify5.stringify(key2, ctx, () => keyCommentDone = true, () => chompKeep = true);
       if (!explicitKey && !ctx.inFlow && str.length > 1024) {
         if (simpleKeys)
           throw new Error("With simple keys, single line scalar must not span more than 1024 characters");
@@ -1615,7 +1615,7 @@ ${indent}:`;
         ctx.indent = ctx.indent.substring(2);
       }
       let valueCommentDone = false;
-      const valueStr = stringify4.stringify(value, ctx, () => valueCommentDone = true, () => chompKeep = true);
+      const valueStr = stringify5.stringify(value, ctx, () => valueCommentDone = true, () => chompKeep = true);
       let ws = " ";
       if (keyComment || vsb || vcb) {
         ws = vsb ? "\n" : "";
@@ -1756,7 +1756,7 @@ var require_addPairToJSMap = __commonJS({
     "use strict";
     var log = require_log();
     var merge = require_merge();
-    var stringify4 = require_stringify();
+    var stringify5 = require_stringify();
     var identity = require_identity();
     var toJS = require_toJS();
     function addPairToJSMap(ctx, map, { key: key2, value }) {
@@ -1792,7 +1792,7 @@ var require_addPairToJSMap = __commonJS({
       if (typeof jsKey !== "object")
         return String(jsKey);
       if (identity.isNode(key2) && ctx?.doc) {
-        const strCtx = stringify4.createStringifyContext(ctx.doc, {});
+        const strCtx = stringify5.createStringifyContext(ctx.doc, {});
         strCtx.anchors = /* @__PURE__ */ new Set();
         for (const node of ctx.anchors.keys())
           strCtx.anchors.add(node.anchor);
@@ -1859,12 +1859,12 @@ var require_stringifyCollection = __commonJS({
   "node_modules/yaml/dist/stringify/stringifyCollection.js"(exports) {
     "use strict";
     var identity = require_identity();
-    var stringify4 = require_stringify();
+    var stringify5 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyCollection(collection, ctx, options) {
       const flow = ctx.inFlow ?? collection.flow;
-      const stringify5 = flow ? stringifyFlowCollection : stringifyBlockCollection;
-      return stringify5(collection, ctx, options);
+      const stringify6 = flow ? stringifyFlowCollection : stringifyBlockCollection;
+      return stringify6(collection, ctx, options);
     }
     function stringifyBlockCollection({ comment, items }, ctx, { blockItemPrefix, flowChars, itemIndent, onChompKeep, onComment }) {
       const { indent, options: { commentString } } = ctx;
@@ -1889,7 +1889,7 @@ var require_stringifyCollection = __commonJS({
           }
         }
         chompKeep = false;
-        let str2 = stringify4.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
+        let str2 = stringify5.stringify(item, itemCtx, () => comment2 = null, () => chompKeep = true);
         if (comment2)
           str2 += stringifyComment.lineComment(str2, itemIndent, commentString(comment2));
         if (chompKeep && comment2)
@@ -1956,7 +1956,7 @@ ${indent}${line}` : "\n";
         }
         if (comment)
           reqNewline = true;
-        let str = stringify4.stringify(item, itemCtx, () => comment = null);
+        let str = stringify5.stringify(item, itemCtx, () => comment = null);
         reqNewline || (reqNewline = lines.length > linesAtValue || str.includes("\n"));
         if (i < items.length - 1) {
           str += ",";
@@ -3317,7 +3317,7 @@ var require_stringifyDocument = __commonJS({
   "node_modules/yaml/dist/stringify/stringifyDocument.js"(exports) {
     "use strict";
     var identity = require_identity();
-    var stringify4 = require_stringify();
+    var stringify5 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyDocument(doc, options) {
       const lines = [];
@@ -3332,7 +3332,7 @@ var require_stringifyDocument = __commonJS({
       }
       if (hasDirectives)
         lines.push("---");
-      const ctx = stringify4.createStringifyContext(doc, options);
+      const ctx = stringify5.createStringifyContext(doc, options);
       const { commentString } = ctx.options;
       if (doc.commentBefore) {
         if (lines.length !== 1)
@@ -3354,7 +3354,7 @@ var require_stringifyDocument = __commonJS({
           contentComment = doc.contents.comment;
         }
         const onChompKeep = contentComment ? void 0 : () => chompKeep = true;
-        let body2 = stringify4.stringify(doc.contents, ctx, () => contentComment = null, onChompKeep);
+        let body2 = stringify5.stringify(doc.contents, ctx, () => contentComment = null, onChompKeep);
         if (contentComment)
           body2 += stringifyComment.lineComment(body2, "", commentString(contentComment));
         if ((body2[0] === "|" || body2[0] === ">") && lines[lines.length - 1] === "---") {
@@ -3362,7 +3362,7 @@ var require_stringifyDocument = __commonJS({
         } else
           lines.push(body2);
       } else {
-        lines.push(stringify4.stringify(doc.contents, ctx));
+        lines.push(stringify5.stringify(doc.contents, ctx));
       }
       if (doc.directives?.docEnd) {
         if (doc.comment) {
@@ -3432,14 +3432,14 @@ var require_Document = __commonJS({
           version: "1.2"
         }, options);
         this.options = opt;
-        let { version } = opt;
+        let { version: version2 } = opt;
         if (options?._directives) {
           this.directives = options._directives.atDocument();
           if (this.directives.yaml.explicit)
-            version = this.directives.yaml.version;
+            version2 = this.directives.yaml.version;
         } else
-          this.directives = new directives.Directives({ version });
-        this.setSchema(version, options);
+          this.directives = new directives.Directives({ version: version2 });
+        this.setSchema(version2, options);
         this.contents = value === void 0 ? null : this.createNode(value, _replacer, options);
       }
       /**
@@ -3470,9 +3470,9 @@ var require_Document = __commonJS({
           this.contents.add(value);
       }
       /** Adds a value to the document. */
-      addIn(path19, value) {
+      addIn(path26, value) {
         if (assertCollection(this.contents))
-          this.contents.addIn(path19, value);
+          this.contents.addIn(path26, value);
       }
       /**
        * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -3547,14 +3547,14 @@ var require_Document = __commonJS({
        * Removes a value from the document.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path19) {
-        if (Collection.isEmptyPath(path19)) {
+      deleteIn(path26) {
+        if (Collection.isEmptyPath(path26)) {
           if (this.contents == null)
             return false;
           this.contents = null;
           return true;
         }
-        return assertCollection(this.contents) ? this.contents.deleteIn(path19) : false;
+        return assertCollection(this.contents) ? this.contents.deleteIn(path26) : false;
       }
       /**
        * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -3569,10 +3569,10 @@ var require_Document = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path19, keepScalar) {
-        if (Collection.isEmptyPath(path19))
+      getIn(path26, keepScalar) {
+        if (Collection.isEmptyPath(path26))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
-        return identity.isCollection(this.contents) ? this.contents.getIn(path19, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path26, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
@@ -3583,10 +3583,10 @@ var require_Document = __commonJS({
       /**
        * Checks if the document includes a value at `path`.
        */
-      hasIn(path19) {
-        if (Collection.isEmptyPath(path19))
+      hasIn(path26) {
+        if (Collection.isEmptyPath(path26))
           return this.contents !== void 0;
-        return identity.isCollection(this.contents) ? this.contents.hasIn(path19) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path26) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -3603,13 +3603,13 @@ var require_Document = __commonJS({
        * Sets a value in this document. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path19, value) {
-        if (Collection.isEmptyPath(path19)) {
+      setIn(path26, value) {
+        if (Collection.isEmptyPath(path26)) {
           this.contents = value;
         } else if (this.contents == null) {
-          this.contents = Collection.collectionFromPath(this.schema, Array.from(path19), value);
+          this.contents = Collection.collectionFromPath(this.schema, Array.from(path26), value);
         } else if (assertCollection(this.contents)) {
-          this.contents.setIn(path19, value);
+          this.contents.setIn(path26, value);
         }
       }
       /**
@@ -3619,11 +3619,11 @@ var require_Document = __commonJS({
        *
        * Overrides all previously set schema options.
        */
-      setSchema(version, options = {}) {
-        if (typeof version === "number")
-          version = String(version);
+      setSchema(version2, options = {}) {
+        if (typeof version2 === "number")
+          version2 = String(version2);
         let opt;
-        switch (version) {
+        switch (version2) {
           case "1.1":
             if (this.directives)
               this.directives.yaml.version = "1.1";
@@ -3634,9 +3634,9 @@ var require_Document = __commonJS({
           case "1.2":
           case "next":
             if (this.directives)
-              this.directives.yaml.version = version;
+              this.directives.yaml.version = version2;
             else
-              this.directives = new directives.Directives({ version });
+              this.directives = new directives.Directives({ version: version2 });
             opt = { resolveKnownTags: true, schema: "core" };
             break;
           case null:
@@ -3645,7 +3645,7 @@ var require_Document = __commonJS({
             opt = null;
             break;
           default: {
-            const sv = JSON.stringify(version);
+            const sv = JSON.stringify(version2);
             throw new Error(`Expected '1.1', '1.2' or null as first argument, but found: ${sv}`);
           }
         }
@@ -5498,7 +5498,7 @@ var require_cst_scalar = __commonJS({
 var require_cst_stringify = __commonJS({
   "node_modules/yaml/dist/parse/cst-stringify.js"(exports) {
     "use strict";
-    var stringify4 = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
+    var stringify5 = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
     function stringifyToken(token) {
       switch (token.type) {
         case "block-scalar": {
@@ -5551,7 +5551,7 @@ var require_cst_stringify = __commonJS({
         res += stringifyToken(value);
       return res;
     }
-    exports.stringify = stringify4;
+    exports.stringify = stringify5;
   }
 });
 
@@ -5570,9 +5570,9 @@ var require_cst_visit = __commonJS({
     visit.BREAK = BREAK;
     visit.SKIP = SKIP;
     visit.REMOVE = REMOVE;
-    visit.itemAtPath = (cst, path19) => {
+    visit.itemAtPath = (cst, path26) => {
       let item = cst;
-      for (const [field, index] of path19) {
+      for (const [field, index] of path26) {
         const tok = item?.[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
@@ -5581,23 +5581,23 @@ var require_cst_visit = __commonJS({
       }
       return item;
     };
-    visit.parentCollection = (cst, path19) => {
-      const parent = visit.itemAtPath(cst, path19.slice(0, -1));
-      const field = path19[path19.length - 1][0];
+    visit.parentCollection = (cst, path26) => {
+      const parent = visit.itemAtPath(cst, path26.slice(0, -1));
+      const field = path26[path26.length - 1][0];
       const coll = parent?.[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
     };
-    function _visit(path19, item, visitor) {
-      let ctrl = visitor(item, path19);
+    function _visit(path26, item, visitor) {
+      let ctrl = visitor(item, path26);
       if (typeof ctrl === "symbol")
         return ctrl;
       for (const field of ["key", "value"]) {
         const token = item[field];
         if (token && "items" in token) {
           for (let i = 0; i < token.items.length; ++i) {
-            const ci = _visit(Object.freeze(path19.concat([[field, i]])), token.items[i], visitor);
+            const ci = _visit(Object.freeze(path26.concat([[field, i]])), token.items[i], visitor);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -5608,10 +5608,10 @@ var require_cst_visit = __commonJS({
             }
           }
           if (typeof ctrl === "function" && field === "key")
-            ctrl = ctrl(item, path19);
+            ctrl = ctrl(item, path26);
         }
       }
-      return typeof ctrl === "function" ? ctrl(item, path19) : ctrl;
+      return typeof ctrl === "function" ? ctrl(item, path26) : ctrl;
     }
     exports.visit = visit;
   }
@@ -6913,14 +6913,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs20 = this.flowScalar(this.type);
+              const fs25 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs20, sep: [] });
+                map.items.push({ start, key: fs25, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs20);
+                this.stack.push(fs25);
               } else {
-                Object.assign(it, { key: fs20, sep: [] });
+                Object.assign(it, { key: fs25, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -7048,13 +7048,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs20 = this.flowScalar(this.type);
+              const fs25 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs20, sep: [] });
+                fc.items.push({ start: [], key: fs25, sep: [] });
               else if (it.sep)
-                this.stack.push(fs20);
+                this.stack.push(fs25);
               else
-                Object.assign(it, { key: fs20, sep: [] });
+                Object.assign(it, { key: fs25, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -7262,7 +7262,7 @@ var require_public_api = __commonJS({
       }
       return doc;
     }
-    function parse7(src, reviver, options) {
+    function parse8(src, reviver, options) {
       let _reviver = void 0;
       if (typeof reviver === "function") {
         _reviver = reviver;
@@ -7281,7 +7281,7 @@ var require_public_api = __commonJS({
       }
       return doc.toJS(Object.assign({ reviver: _reviver }, options));
     }
-    function stringify4(value, replacer, options) {
+    function stringify5(value, replacer, options) {
       let _replacer = null;
       if (typeof replacer === "function" || Array.isArray(replacer)) {
         _replacer = replacer;
@@ -7303,10 +7303,10 @@ var require_public_api = __commonJS({
         return value.toString(options);
       return new Document.Document(value, _replacer, options).toString(options);
     }
-    exports.parse = parse7;
+    exports.parse = parse8;
     exports.parseAllDocuments = parseAllDocuments;
     exports.parseDocument = parseDocument2;
-    exports.stringify = stringify4;
+    exports.stringify = stringify5;
   }
 });
 
@@ -7490,10 +7490,10 @@ var require_code = __commonJS({
     function interpolate(x) {
       return typeof x == "number" || typeof x == "boolean" || x === null ? x : safeStringify(Array.isArray(x) ? x.join(",") : x);
     }
-    function stringify4(x) {
+    function stringify5(x) {
       return new _Code(safeStringify(x));
     }
-    exports.stringify = stringify4;
+    exports.stringify = stringify5;
     function safeStringify(x) {
       return JSON.stringify(x).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
     }
@@ -10591,8 +10591,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path19) {
-      let input = path19;
+    function removeDotSegments(path26) {
+      let input = path26;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -11001,8 +11001,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path19 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path19 && path19 !== "/" ? path19 : void 0;
+        const path26 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path26 && path26 !== "/" ? path26 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -11166,7 +11166,7 @@ var require_fast_uri = __commonJS({
         normalizeString(uri, options);
       } else if (typeof uri === "object") {
         uri = /** @type {T} */
-        parse7(serialize(uri, options), options);
+        parse8(serialize(uri, options), options);
       }
       return uri;
     }
@@ -11206,8 +11206,8 @@ var require_fast_uri = __commonJS({
     function resolveComponent(base, relative, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
-        base = parse7(serialize(base, options), options);
-        relative = parse7(serialize(relative, options), options);
+        base = parse8(serialize(base, options), options);
+        relative = parse8(serialize(relative, options), options);
       }
       options = options || {};
       if (!options.tolerant && relative.scheme) {
@@ -11506,7 +11506,7 @@ var require_fast_uri = __commonJS({
       }
       return { parsed, malformedAuthorityOrPort, malformedPercentEncoding, malformedSchemeSpecific, malformedHost, malformedScheme };
     }
-    function parse7(uri, opts) {
+    function parse8(uri, opts) {
       return parseWithStatus(uri, opts).parsed;
     }
     function normalizeString(uri, opts) {
@@ -11543,7 +11543,7 @@ var require_fast_uri = __commonJS({
       resolveComponent,
       equal,
       serialize,
-      parse: parse7
+      parse: parse8
     };
     module.exports = fastUri;
     module.exports.default = fastUri;
@@ -14500,7 +14500,7 @@ var require_saxes = __commonJS({
       end: "endHandler",
       ready: "readyHandler"
     };
-    var SaxesParser2 = class {
+    var SaxesParser3 = class {
       /**
        * @param opt The parser options.
        */
@@ -14993,9 +14993,9 @@ var require_saxes = __commonJS({
           }
         }
       }
-      setXMLVersion(version) {
-        this.currentXMLVersion = version;
-        if (version === "1.0") {
+      setXMLVersion(version2) {
+        this.currentXMLVersion = version2;
+        if (version2 === "1.0") {
           this.isChar = isChar10;
           this.getCode = this.getCode10;
         } else {
@@ -15472,12 +15472,12 @@ var require_saxes = __commonJS({
         switch (this.name) {
           case "version": {
             this.xmlDeclExpects = ["encoding", "standalone"];
-            const version = value;
-            this.xmlDecl.version = version;
-            if (!/^1\.[0-9]+$/.test(version)) {
+            const version2 = value;
+            this.xmlDecl.version = version2;
+            if (!/^1\.[0-9]+$/.test(version2)) {
               this.fail("version number must match /^1\\.[0-9]+$/.");
             } else if (!this.opt.forceXMLVersion) {
-              this.setXMLVersion(version);
+              this.setXMLVersion(version2);
             }
             break;
           }
@@ -16115,7 +16115,7 @@ var require_saxes = __commonJS({
         return String.fromCodePoint(num);
       }
     };
-    exports.SaxesParser = SaxesParser2;
+    exports.SaxesParser = SaxesParser3;
   }
 });
 
@@ -17324,8 +17324,8 @@ var require__ = __commonJS({
 });
 
 // src/cli.ts
-import path18 from "node:path";
-import fs19 from "node:fs/promises";
+import path25 from "node:path";
+import fs24 from "node:fs/promises";
 import { parseArgs } from "node:util";
 
 // src/config.ts
@@ -17924,11 +17924,11 @@ function commandEnvironment(config, vars, temp) {
 }
 
 // src/cli.ts
-var import_yaml8 = __toESM(require_dist(), 1);
+var import_yaml9 = __toESM(require_dist(), 1);
 
 // src/probe.ts
 function probeProgram(p) {
-  const fs20 = process.getBuiltinModule("fs"), net2 = process.getBuiltinModule("net");
+  const fs25 = process.getBuiltinModule("fs"), net2 = process.getBuiltinModule("net");
   const out = {};
   const attempt = (fn) => {
     try {
@@ -17938,20 +17938,20 @@ function probeProgram(p) {
       return false;
     }
   };
-  out.control_read = !attempt(() => fs20.readFileSync(p.control));
-  out.control_write = !attempt(() => fs20.writeFileSync(p.control, "BAD"));
-  out.source_read = !attempt(() => fs20.readdirSync(p.source));
-  out.outside_read = attempt(() => fs20.readFileSync(p.outside)) === p.allowRead;
-  out.outside_write = !attempt(() => fs20.writeFileSync(p.outside, "BAD"));
+  out.control_read = !attempt(() => fs25.readFileSync(p.control));
+  out.control_write = !attempt(() => fs25.writeFileSync(p.control, "BAD"));
+  out.source_read = !attempt(() => fs25.readdirSync(p.source));
+  out.outside_read = attempt(() => fs25.readFileSync(p.outside)) === p.allowRead;
+  out.outside_write = !attempt(() => fs25.writeFileSync(p.outside, "BAD"));
   out.protected_write = !attempt(
-    () => fs20.writeFileSync("protected.txt", "BAD")
+    () => fs25.writeFileSync("protected.txt", "BAD")
   );
-  out.protected_delete = !attempt(() => fs20.unlinkSync("protected-delete.txt"));
-  out.allowed_write = attempt(() => fs20.writeFileSync("allowed.txt", "OK"));
+  out.protected_delete = !attempt(() => fs25.unlinkSync("protected-delete.txt"));
+  out.allowed_write = attempt(() => fs25.writeFileSync("allowed.txt", "OK"));
   if (p.privateFile)
-    out.private_read = !attempt(() => fs20.readFileSync(p.privateFile));
+    out.private_read = !attempt(() => fs25.readFileSync(p.privateFile));
   if (p.codexHome)
-    out.codex_home_read = !attempt(() => fs20.readdirSync(p.codexHome));
+    out.codex_home_read = !attempt(() => fs25.readdirSync(p.codexHome));
   out.secret_env = !Object.keys(process.env).some(
     (k) => p.secretNames.some((n) => n.toLowerCase() === k.toLowerCase())
   );
@@ -17970,19 +17970,86 @@ function probeProgram(p) {
   setTimeout(() => finish(false), 2e3);
 }
 
+// src/codex-cli.ts
+import fs3 from "node:fs/promises";
+import path3 from "node:path";
+var variable = (env, key2) => Object.entries(env).find(
+  ([name]) => name.toLowerCase() === key2.toLowerCase()
+)?.[1];
+async function executable(file) {
+  if (!path3.isAbsolute(file) || !file.toLowerCase().endsWith(".exe"))
+    return null;
+  const stat = await fs3.stat(file).catch(() => null);
+  return stat?.isFile() ? fs3.realpath(file) : null;
+}
+async function resolveCodexExecutable(configured, env) {
+  ensure(
+    typeof configured === "string" && !!configured.trim(),
+    "SANDBOX_UNAVAILABLE",
+    "Codex CLI \u8DEF\u5F84\u4E3A\u7A7A"
+  );
+  const name = configured.trim();
+  if (path3.isAbsolute(name)) {
+    const found = await executable(name);
+    ensure(
+      found,
+      "SANDBOX_UNAVAILABLE",
+      `\u914D\u7F6E\u7684 Codex CLI \u4E0D\u5B58\u5728\u6216\u4E0D\u662F .exe\uFF1A${name}`
+    );
+    return found;
+  }
+  ensure(
+    !/[\\/]/.test(name),
+    "SANDBOX_UNAVAILABLE",
+    "Codex CLI \u8BF7\u4F7F\u7528\u7EDD\u5BF9\u8DEF\u5F84\u6216 PATH \u4E2D\u7684\u7A0B\u5E8F\u540D"
+  );
+  for (const entry of (variable(env, "PATH") ?? "").split(path3.delimiter)) {
+    const directory = entry.replace(/^"|"$/g, "");
+    if (!path3.isAbsolute(directory)) continue;
+    const found = await executable(
+      path3.join(directory, /\.exe$/i.test(name) ? name : name + ".exe")
+    );
+    if (found) return found;
+  }
+  if (/^codex(?:\.exe)?$/i.test(name)) {
+    const local = variable(env, "LOCALAPPDATA");
+    if (local && path3.isAbsolute(local)) {
+      const root = path3.join(local, "OpenAI", "Codex", "bin");
+      const entries = await fs3.readdir(root, { withFileTypes: true }).catch((e) => {
+        if (e.code === "ENOENT") return [];
+        throw e;
+      });
+      const candidates = [];
+      for (const entry of entries.filter((e) => e.isDirectory() && /^[a-f0-9]{16,64}$/i.test(e.name)).slice(0, 64)) {
+        const file = await executable(path3.join(root, entry.name, "codex.exe"));
+        if (file)
+          candidates.push({ file, modified: (await fs3.stat(file)).mtimeMs });
+      }
+      candidates.sort(
+        (a, b) => b.modified - a.modified || a.file.localeCompare(b.file)
+      );
+      if (candidates.length) return candidates[0].file;
+    }
+  }
+  throw new Block(
+    "SANDBOX_UNAVAILABLE",
+    "\u65E0\u6CD5\u627E\u5230 Codex CLI\u3002\u8BF7\u5B89\u88C5 Codex CLI\uFF0C\u6216\u5C06 sandbox.codex_path \u914D\u7F6E\u4E3A\u6709\u6548\u7684 codex.exe \u7EDD\u5BF9\u8DEF\u5F84\uFF1B\u540E\u53F0\u5DE5\u4F5C\u53F0\u7684 PATH \u53EF\u80FD\u4E0E\u7EC8\u7AEF\u4E0D\u540C\u3002"
+  );
+}
+
 // src/sandbox.ts
-import fs4 from "node:fs/promises";
-import path5 from "node:path";
+import fs5 from "node:fs/promises";
+import path6 from "node:path";
 import net from "node:net";
 
 // src/process.ts
 import { spawn } from "node:child_process";
-import path4 from "node:path";
+import path5 from "node:path";
 
 // src/logs.ts
-import fs3 from "node:fs/promises";
+import fs4 from "node:fs/promises";
 import { createReadStream } from "node:fs";
-import path3 from "node:path";
+import path4 from "node:path";
 import crypto3 from "node:crypto";
 var LOG_PREVIEW_BYTES = 64 * 1024;
 var DEFAULT_LOG_BYTES = 256 * 1024 * 1024;
@@ -18064,8 +18131,8 @@ var LogSink = class {
   }
   async open() {
     try {
-      await fs3.mkdir(path3.dirname(this.file), { recursive: true });
-      this.handle = await fs3.open(this.file, "wx");
+      await fs4.mkdir(path4.dirname(this.file), { recursive: true });
+      this.handle = await fs4.open(this.file, "wx");
     } catch {
       this.fail();
     }
@@ -18123,7 +18190,7 @@ var LogSink = class {
     };
     if (this.handle) {
       try {
-        meta.bytes = (await fs3.stat(this.file)).size;
+        meta.bytes = (await fs4.stat(this.file)).size;
         meta.sha256 = await fileHash(this.file);
       } catch {
         this.fail();
@@ -18138,7 +18205,7 @@ async function readLogPage(file, offset) {
     "OFFSET",
     "\u5B57\u8282\u504F\u79FB\u5FC5\u987B\u4E3A\u975E\u8D1F\u5B89\u5168\u6574\u6570"
   );
-  const h = await fs3.open(file, "r");
+  const h = await fs4.open(file, "r");
   try {
     const size = (await h.stat()).size;
     const bytes = Buffer.alloc(LOG_PREVIEW_BYTES + 4);
@@ -18184,7 +18251,7 @@ async function killTree(pid) {
   if (process.platform === "win32") {
     await new Promise((resolve) => {
       const p = spawn(
-        path4.join(
+        path5.join(
           process.env.SystemRoot ?? "C:\\Windows",
           "System32",
           "taskkill.exe"
@@ -18222,7 +18289,7 @@ function processRun(argv, options) {
     const p = spawn(argv[0], argv.slice(1), {
       cwd: options.cwd,
       env: options.env,
-      windowsHide: true,
+      windowsHide: options.windowsHide ?? true,
       detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
       shell: false
@@ -18310,7 +18377,7 @@ async function processRunLogged(argv, options) {
   await stderr.open();
   let exitCode = null;
   if (!config.budget.error) {
-    const child = spawn(argv[0], argv.slice(1), {
+    const child2 = spawn(argv[0], argv.slice(1), {
       cwd: options.cwd,
       env: options.env,
       windowsHide: true,
@@ -18318,13 +18385,13 @@ async function processRunLogged(argv, options) {
       stdio: ["ignore", "pipe", "pipe"],
       shell: false
     });
-    pid = child.pid;
+    pid = child2.pid;
     let startError;
     const closed = new Promise((resolve) => {
-      child.once("error", (error3) => {
+      child2.once("error", (error3) => {
         startError = error3;
       });
-      child.once("close", resolve);
+      child2.once("close", resolve);
     });
     const abort = () => {
       aborted = true;
@@ -18348,8 +18415,8 @@ async function processRunLogged(argv, options) {
     try {
       const result = await Promise.all([
         closed,
-        consume(child.stdout, stdout),
-        consume(child.stderr, stderr)
+        consume(child2.stdout, stdout),
+        consume(child2.stderr, stderr)
       ]);
       exitCode = result[0];
     } finally {
@@ -18407,7 +18474,7 @@ var WindowsSandbox = class {
       env: commandEnvironment(
         this.config,
         this.vars,
-        path5.join(this.config.project.work_root, "tmp")
+        path6.join(this.config.project.work_root, "tmp")
       ),
       timeoutMs: 15e3
     });
@@ -18428,7 +18495,7 @@ var WindowsSandbox = class {
           env: commandEnvironment(
             this.config,
             this.vars,
-            path5.join(this.config.project.work_root, "tmp")
+            path6.join(this.config.project.work_root, "tmp")
           ),
           timeoutMs: 1e4
         }
@@ -18444,62 +18511,43 @@ var WindowsSandbox = class {
     return this.syntax;
   }
   async fingerprint() {
-    await fs4.mkdir(this.config.project.control_root, { recursive: true });
+    await fs5.mkdir(this.config.project.control_root, { recursive: true });
     const env = commandEnvironment(
       this.config,
       this.vars,
-      path5.join(this.config.project.work_root, "tmp")
+      path6.join(this.config.project.work_root, "tmp")
     );
-    const configured = this.config.sandbox.codex_path;
-    const lookup = await processRun(
-      [
-        path5.join(
-          this.vars.SystemRoot ?? "C:\\Windows",
-          "System32",
-          "WindowsPowerShell",
-          "v1.0",
-          "powershell.exe"
-        ),
-        "-NoProfile",
-        "-NonInteractive",
-        "-Command",
-        `(Get-Command -Name '${configured.replace(/'/g, "''")}' -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source`
-      ],
-      { cwd: this.config.project.control_root, env, timeoutMs: 15e3 }
+    const executable3 = await resolveCodexExecutable(
+      this.config.sandbox.codex_path,
+      env
     );
-    ensure(
-      lookup.exitCode === 0 && lookup.stdout.trim(),
-      "SANDBOX_UNAVAILABLE",
-      "\u65E0\u6CD5\u89E3\u6790 Codex CLI \u8DEF\u5F84"
-    );
-    const executable = lookup.stdout.trim();
-    const sha256 = hash(await fs4.readFile(executable));
-    if (this.executableHash !== sha256 || this.executable !== executable)
+    const sha256 = hash(await fs5.readFile(executable3));
+    if (this.executableHash !== sha256 || this.executable !== executable3)
       this.syntax = null;
-    this.executable = executable;
+    this.executable = executable3;
     this.executableHash = sha256;
-    const version = await processRun([executable, "--version"], {
+    const version2 = await processRun([executable3, "--version"], {
       cwd: this.config.project.control_root,
       env,
       timeoutMs: 15e3
     });
     ensure(
-      version.exitCode === 0,
+      version2.exitCode === 0,
       "SANDBOX_UNAVAILABLE",
       "Codex CLI \u7248\u672C\u68C0\u67E5\u5931\u8D25"
     );
     return {
-      executable,
+      executable: executable3,
       sha256,
-      version: version.stdout.trim(),
+      version: version2.stdout.trim(),
       profile: this.config.sandbox.profile,
       network: this.config.sandbox.network
     };
   }
   async run(command, cwd, protectedPaths, signal, logs) {
     const syntax = await this.detect();
-    const temp = path5.join(cwd, ".harness-tmp");
-    await fs4.mkdir(temp, { recursive: true });
+    const temp = path6.join(cwd, ".harness-tmp");
+    await fs5.mkdir(temp, { recursive: true });
     const files = {
       ":root": this.config.sandbox.profile === "trusted_local" ? "read" : "deny",
       ":minimal": "read",
@@ -18507,7 +18555,7 @@ var WindowsSandbox = class {
       ":slash_tmp": "deny",
       [this.config.project.source_root]: "deny",
       [this.config.project.control_root]: "deny",
-      [path5.dirname(process.execPath)]: "read"
+      [path6.dirname(process.execPath)]: "read"
     };
     for (const root of this.config.sandbox.read_roots) {
       ensure(
@@ -18518,13 +18566,13 @@ var WindowsSandbox = class {
       files[root] = "read";
     }
     files[cwd] = "write";
-    for (const p of protectedPaths) files[path5.join(cwd, p)] = "read";
-    files[path5.join(cwd, ".git")] = "deny";
-    files[path5.join(cwd, ".codex")] = "deny";
-    files[path5.join(cwd, ".agents")] = "deny";
+    for (const p of protectedPaths) files[path6.join(cwd, p)] = "read";
+    files[path6.join(cwd, ".git")] = "deny";
+    files[path6.join(cwd, ".codex")] = "deny";
+    files[path6.join(cwd, ".agents")] = "deny";
     if (this.config.private_env_file)
       files[this.config.private_env_file] = "deny";
-    const realHome = this.vars.CODEX_HOME ?? (this.vars.USERPROFILE ? path5.join(this.vars.USERPROFILE, ".codex") : void 0);
+    const realHome = this.vars.CODEX_HOME ?? (this.vars.USERPROFILE ? path6.join(this.vars.USERPROFILE, ".codex") : void 0);
     if (realHome) files[realHome] = "deny";
     const env = commandEnvironment(this.config, this.vars, temp);
     if (realHome) env.CODEX_HOME = realHome;
@@ -18568,22 +18616,22 @@ var WindowsSandbox = class {
     return this.secrets.clean(r);
   }
   async probe(signal) {
-    await fs4.mkdir(this.config.project.control_root, { recursive: true });
-    const root = path5.join(
+    await fs5.mkdir(this.config.project.control_root, { recursive: true });
+    const root = path6.join(
       this.config.project.work_root,
       "probes",
       id("probe")
     );
-    await fs4.mkdir(root, { recursive: true });
-    const secret = path5.join(this.config.project.control_root, id("canary"));
-    await fs4.writeFile(secret, "PRIVATE_CANARY");
-    await fs4.writeFile(path5.join(root, "protected.txt"), "ORIGINAL");
-    await fs4.writeFile(path5.join(root, "protected-delete.txt"), "ORIGINAL");
-    const outside = path5.join(
+    await fs5.mkdir(root, { recursive: true });
+    const secret = path6.join(this.config.project.control_root, id("canary"));
+    await fs5.writeFile(secret, "PRIVATE_CANARY");
+    await fs5.writeFile(path6.join(root, "protected.txt"), "ORIGINAL");
+    await fs5.writeFile(path6.join(root, "protected-delete.txt"), "ORIGINAL");
+    const outside = path6.join(
       this.config.project.work_root,
       id("outside-canary")
     );
-    await fs4.writeFile(outside, "OUTSIDE");
+    await fs5.writeFile(outside, "OUTSIDE");
     const server = net.createServer((socket) => {
       socket.on("error", () => {
       });
@@ -18601,7 +18649,7 @@ var WindowsSandbox = class {
       allowNetwork: this.config.sandbox.network === true,
       port,
       privateFile: this.config.private_env_file,
-      codexHome: this.vars.CODEX_HOME ?? (this.vars.USERPROFILE ? path5.join(this.vars.USERPROFILE, ".codex") : null),
+      codexHome: this.vars.CODEX_HOME ?? (this.vars.USERPROFILE ? path6.join(this.vars.USERPROFILE, ".codex") : null),
       secretNames: [
         "HARNESS_DOCTOR_SECRET",
         ...Object.values(this.config.executors).map((e) => e.api_key_env)
@@ -18622,7 +18670,7 @@ var WindowsSandbox = class {
       );
       const m = /HARNESS_PROBE=(\{[^\r\n]+\})/.exec(result.stdout);
       const checks = m ? JSON.parse(m[1]) : null;
-      const ok = result.exitCode === 0 && checks && Object.values(checks).every((x) => x === true) && await fs4.readFile(outside, "utf8") === "OUTSIDE" && await fs4.readFile(path5.join(root, "protected.txt"), "utf8").catch(() => "<missing>") === "ORIGINAL";
+      const ok = result.exitCode === 0 && checks && Object.values(checks).every((x) => x === true) && await fs5.readFile(outside, "utf8") === "OUTSIDE" && await fs5.readFile(path6.join(root, "protected.txt"), "utf8").catch(() => "<missing>") === "ORIGINAL";
       const report = {
         ok: !!ok,
         platform: process.platform,
@@ -18636,7 +18684,7 @@ var WindowsSandbox = class {
         result
       };
       await atomic(
-        path5.join(this.config.project.control_root, "doctor-sandbox.json"),
+        path6.join(this.config.project.control_root, "doctor-sandbox.json"),
         report
       );
       ensure(
@@ -18647,18 +18695,18 @@ var WindowsSandbox = class {
       return report;
     } finally {
       server.close();
-      await fs4.unlink(secret).catch(() => {
+      await fs5.unlink(secret).catch(() => {
       });
     }
   }
 };
 
 // src/doctor.ts
-import fs6 from "node:fs/promises";
+import fs7 from "node:fs/promises";
 
 // src/telemetry.ts
-import fs5 from "node:fs/promises";
-import path6 from "node:path";
+import fs6 from "node:fs/promises";
+import path7 from "node:path";
 function normalizeUsage(raw) {
   if (raw === void 0 || raw === null)
     return { status: "missing", values: {} };
@@ -18716,7 +18764,7 @@ async function usageStats(root, runId) {
   }
   let files;
   try {
-    files = await fs5.readdir(await safePath(root, "usage"));
+    files = await fs6.readdir(await safePath(root, "usage"));
   } catch (e) {
     if (e.code !== "ENOENT")
       warnings.push(e.message);
@@ -18775,15 +18823,15 @@ async function storageStats(work, control) {
   );
   const warnings = [], skipped = [];
   async function walk(root, rel, area) {
-    const full = path6.join(root, rel);
+    const full = path7.join(root, rel);
     try {
-      const stat = await fs5.lstat(full);
+      const stat = await fs6.lstat(full);
       if (stat.isSymbolicLink()) {
         skipped.push(full);
         return;
       }
       if (stat.isDirectory()) {
-        for (const name of await fs5.readdir(full))
+        for (const name of await fs6.readdir(full))
           await walk(root, rel ? rel + "/" + name : name, area);
       } else if (stat.isFile()) {
         const category = area === "work" ? rel.startsWith("checks/") ? "checks" : rel.startsWith("workspace-") ? "workspace" : "other_work" : rel.startsWith("exports/") ? "exports" : rel.startsWith("snapshots/") ? "snapshots" : /\.(log|jsonl)$/.test(rel) ? "logs" : "other_control";
@@ -18800,7 +18848,7 @@ async function storageStats(work, control) {
     [control, "control"]
   ]) {
     try {
-      await safePath(path6.dirname(root), path6.basename(root));
+      await safePath(path7.dirname(root), path7.basename(root));
       await walk(root, "", area);
     } catch (e) {
       warnings.push(root + ": " + e.message);
@@ -19096,7 +19144,7 @@ var ModelClient = class {
 // src/doctor.ts
 async function doctor(engine, live = false, executor) {
   const { config, vars, secrets: secrets2, runner } = engine;
-  await fs6.mkdir(config.project.work_root, { recursive: true });
+  await fs7.mkdir(config.project.work_root, { recursive: true });
   const sandbox = await engine.store.lock(() => runner.probe()).catch((e) => ({
     ok: false,
     error: secrets2.clean({
@@ -19152,33 +19200,33 @@ async function doctor(engine, live = false, executor) {
 
 // src/onboarding.ts
 var import_yaml7 = __toESM(require_dist(), 1);
-import fs15 from "node:fs/promises";
-import path14 from "node:path";
+import fs16 from "node:fs/promises";
+import path15 from "node:path";
 import { fileURLToPath } from "node:url";
 import { createInterface } from "node:readline/promises";
 
 // src/engine.ts
 var import_ajv = __toESM(require_ajv(), 1);
-import fs13 from "node:fs/promises";
-import path12 from "node:path";
+import fs14 from "node:fs/promises";
+import path13 from "node:path";
 
 // src/console/settings.ts
 var import_yaml2 = __toESM(require_dist(), 1);
+import fs9 from "node:fs/promises";
+import path10 from "node:path";
+
+// src/store.ts
 import fs8 from "node:fs/promises";
 import path9 from "node:path";
 
-// src/store.ts
-import fs7 from "node:fs/promises";
-import path8 from "node:path";
-
 // src/mutex.ts
 import { spawn as spawn2 } from "node:child_process";
-import path7 from "node:path";
+import path8 from "node:path";
 async function windowsMutex(root) {
   const name = "Global\\CodexHarness-" + hash(root.toLowerCase()).slice(7);
   const script = `$ErrorActionPreference='Stop';$m=[Threading.Mutex]::new($false,'${name}');$held=$false;try {try {$held=$m.WaitOne(0)} catch [Threading.AbandonedMutexException] {$held=$true};if(!$held){[Console]::Out.WriteLine('LOCKED');exit 2};[Console]::Out.WriteLine('READY');[Console]::Out.Flush();[Console]::In.ReadLine() | Out-Null} finally {if($held){$m.ReleaseMutex()};$m.Dispose()}`;
-  const child = spawn2(
-    path7.join(
+  const child2 = spawn2(
+    path8.join(
       process.env.SystemRoot ?? "C:\\Windows",
       "System32",
       "WindowsPowerShell",
@@ -19200,7 +19248,7 @@ async function windowsMutex(root) {
   const controller = new AbortController();
   let releasing = false;
   const closed = new Promise(
-    (resolve) => child.once("close", () => {
+    (resolve) => child2.once("close", () => {
       if (!releasing) controller.abort();
       resolve();
     })
@@ -19208,18 +19256,18 @@ async function windowsMutex(root) {
   await new Promise((resolve, reject) => {
     let output = "";
     const timeout = setTimeout(() => {
-      child.kill();
+      child2.kill();
       reject(new Block("LOCK_UNAVAILABLE", "Windows \u4E92\u65A5\u9501\u542F\u52A8\u8D85\u65F6"));
     }, 15e3);
-    child.once("error", (e) => {
+    child2.once("error", (e) => {
       clearTimeout(timeout);
       reject(new Block("LOCK_UNAVAILABLE", e.message));
     });
-    child.once("close", () => {
+    child2.once("close", () => {
       clearTimeout(timeout);
       reject(new Block("LOCK_UNAVAILABLE", "Windows \u6301\u9501\u8FDB\u7A0B\u672A\u5C31\u7EEA"));
     });
-    child.stdout.on("data", (chunk) => {
+    child2.stdout.on("data", (chunk) => {
       output += chunk.toString();
       if (output.includes("READY")) {
         clearTimeout(timeout);
@@ -19241,7 +19289,7 @@ async function windowsMutex(root) {
     },
     async release() {
       releasing = true;
-      child.stdin.end("release\n");
+      child2.stdin.end("release\n");
       await closed;
     }
   };
@@ -19256,7 +19304,7 @@ var Store = class {
   }
   file(p) {
     relativeName(p);
-    return path8.join(this.root, p);
+    return path9.join(this.root, p);
   }
   async read(p) {
     return readJson(this.file(p));
@@ -19267,14 +19315,14 @@ var Store = class {
   }
   async event(type, data) {
     this.lease?.assert();
-    await fs7.mkdir(this.root, { recursive: true });
+    await fs8.mkdir(this.root, { recursive: true });
     const e = {
       event_id: id("event"),
       at: (/* @__PURE__ */ new Date()).toISOString(),
       type,
       data
     };
-    const h = await fs7.open(this.file("events.jsonl"), "a");
+    const h = await fs8.open(this.file("events.jsonl"), "a");
     try {
       await h.writeFile(JSON.stringify(e) + "\n");
       await h.sync();
@@ -19284,10 +19332,10 @@ var Store = class {
     return e.event_id;
   }
   async lock(fn) {
-    await fs7.mkdir(this.root, { recursive: true });
+    await fs8.mkdir(this.root, { recursive: true });
     if (process.platform === "win32") {
       ensure(!this.lease, "LOCKED", "\u540C\u4E00\u63A7\u5236\u76EE\u5F55\u5DF2\u6709\u5199\u5165\u64CD\u4F5C");
-      const lease = await windowsMutex(await fs7.realpath(this.root));
+      const lease = await windowsMutex(await fs8.realpath(this.root));
       this.lease = lease;
       let ownsMetadata = false;
       try {
@@ -19314,7 +19362,7 @@ var Store = class {
         return result;
       } finally {
         if (ownsMetadata && !lease.signal.aborted)
-          await fs7.unlink(this.file("writer.lock")).catch(() => {
+          await fs8.unlink(this.file("writer.lock")).catch(() => {
           });
         this.lease = null;
         await lease.release();
@@ -19323,7 +19371,7 @@ var Store = class {
     const lock = this.file("writer.lock");
     let h;
     try {
-      h = await fs7.open(lock, "wx");
+      h = await fs8.open(lock, "wx");
     } catch (e) {
       if (e.code === "EEXIST")
         throw new Block(
@@ -19345,7 +19393,7 @@ var Store = class {
       return await fn();
     } finally {
       if ((await readJson(lock).catch(() => null))?.token === token)
-        await fs7.unlink(lock);
+        await fs8.unlink(lock);
     }
   }
   async recoverLock() {
@@ -19371,7 +19419,7 @@ var Store = class {
         "\u65E0\u6CD5\u786E\u8BA4\u539F\u8FDB\u7A0B\u662F\u5426\u505C\u6B62"
       );
     }
-    await fs7.unlink(p);
+    await fs8.unlink(p);
     await this.event("recovered_lock", { previous_pid: l.pid });
   }
   async commitState(current, next, type, data) {
@@ -19414,7 +19462,7 @@ var Store = class {
     );
     await this.put(`transactions/${t2.transaction_id}.json`, t2);
     await this.put("db.json", t2.next);
-    const log = await fs7.readFile(this.file("events.jsonl"), "utf8").catch(() => "");
+    const log = await fs8.readFile(this.file("events.jsonl"), "utf8").catch(() => "");
     if (!log.split("\n").some((line) => {
       try {
         return JSON.parse(line).data?.transaction_id === t2.transaction_id;
@@ -19423,7 +19471,7 @@ var Store = class {
       }
     })) {
       if (log && !log.endsWith("\n"))
-        await fs7.appendFile(this.file("events.jsonl"), "\n");
+        await fs8.appendFile(this.file("events.jsonl"), "\n");
       await this.event(t2.type, {
         ...t2.data,
         transaction_id: t2.transaction_id,
@@ -19431,7 +19479,7 @@ var Store = class {
         state_digest: t2.state_digest
       });
     }
-    await fs7.unlink(this.file("transaction.json"));
+    await fs8.unlink(this.file("transaction.json"));
   }
   async update(p, current, next) {
     const actual = await this.read(p);
@@ -19464,8 +19512,8 @@ async function optional(file) {
   });
 }
 async function context(file) {
-  file = await fs8.realpath(file);
-  const source = await fs8.readFile(file, "utf8");
+  file = await fs9.realpath(file);
+  const source = await fs9.readFile(file, "utf8");
   const document = (0, import_yaml2.parseDocument)(source);
   ensure(!document.errors.length, "CONFIG", "\u914D\u7F6E YAML \u65E0\u6548");
   const loaded = await loadConfigValue(document.toJS(), file);
@@ -19491,8 +19539,8 @@ async function credentials(root, pending) {
     await safePath(root, pending.credentials_ref)
   );
 }
-var pendingPath = (root) => path9.join(root, "pending.json");
-var publicationPath = (root) => path9.join(root, "publication.json");
+var pendingPath = (root) => path10.join(root, "pending.json");
+var publicationPath = (root) => path10.join(root, "publication.json");
 var revision = (source, pending) => hash(source + "\n" + (pending?.revision ?? ""));
 async function getExecutorSettings(file) {
   const c = await context(file);
@@ -19526,7 +19574,7 @@ async function getExecutorSettings(file) {
 }
 async function stageExecutors(file, input) {
   const initial = await context(file);
-  const lock = new Store(path9.join(initial.root, "settings-lock"));
+  const lock = new Store(path10.join(initial.root, "settings-lock"));
   await lock.lock(async () => {
     const c = await context(file);
     ensure(
@@ -19580,7 +19628,7 @@ async function stageExecutors(file, input) {
     delete raw.executor;
     raw.executors = executors;
     raw.workflow = { ...raw.workflow, active_executor: input.active_executor };
-    const config = normalizeConfig(raw, path9.dirname(c.file), {
+    const config = normalizeConfig(raw, path10.dirname(c.file), {
       ...c.loaded.vars,
       ...keys
     });
@@ -19602,7 +19650,7 @@ async function stageExecutors(file, input) {
 }
 async function discardPendingExecutors(file, expected) {
   const c = await context(file);
-  await new Store(path9.join(c.root, "settings-lock")).lock(async () => {
+  await new Store(path10.join(c.root, "settings-lock")).lock(async () => {
     const current = await context(file);
     const pending = await optional(pendingPath(c.root));
     ensure(
@@ -19610,7 +19658,7 @@ async function discardPendingExecutors(file, expected) {
       "CONFIG_CONFLICT",
       "\u914D\u7F6E\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5"
     );
-    await fs8.unlink(pendingPath(c.root)).catch((e) => {
+    await fs9.unlink(pendingPath(c.root)).catch((e) => {
       if (e.code !== "ENOENT") throw e;
     });
   });
@@ -19638,10 +19686,10 @@ async function applyPendingExecutors(file, expected) {
     "\u9879\u76EE\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u8FD0\u884C\u547D\u4EE4"
   );
   const db = await optional(
-    path9.join(initial.loaded.config.project.control_root, "db.json")
+    path10.join(initial.loaded.config.project.control_root, "db.json")
   );
   ensure(!db?.active_run, "ACTIVE_RUN", "\u5F53\u524D\u8F6E\u7ED3\u675F\u524D\u4E0D\u80FD\u5E94\u7528 AI \u914D\u7F6E");
-  await new Store(path9.join(initial.root, "settings-lock")).lock(async () => {
+  await new Store(path10.join(initial.root, "settings-lock")).lock(async () => {
     const c = await context(file);
     ensure(
       c.root === initial.root,
@@ -19673,7 +19721,7 @@ async function applyPendingExecutors(file, expected) {
         pending.active_executor
       );
       if (Object.keys(keys).length) {
-        const previousEnv = c.loaded.config.private_env_file ? await fs8.readFile(c.loaded.config.private_env_file, "utf8") : "";
+        const previousEnv = c.loaded.config.private_env_file ? await fs9.readFile(c.loaded.config.private_env_file, "utf8") : "";
         const env = await safePath(
           c.root,
           "active-" + crypto.randomUUID() + ".env"
@@ -19695,17 +19743,17 @@ async function applyPendingExecutors(file, expected) {
       "CONFIG_CONFLICT",
       "\u914D\u7F6E\u53D1\u5E03\u8BB0\u5F55\u635F\u574F\uFF0C\u5DF2\u6682\u505C\u6062\u590D"
     );
-    const actual = hash(await fs8.readFile(c.file, "utf8"));
+    const actual = hash(await fs9.readFile(c.file, "utf8"));
     ensure(
       actual === publication.before || actual === publication.after,
       "CONFIG_CONFLICT",
       "\u914D\u7F6E\u5DF2\u53D8\u5316\uFF0C\u53D1\u5E03\u6062\u590D\u5DF2\u6682\u505C"
     );
     if (actual !== publication.after) await atomic(c.file, publication.yaml);
-    await fs8.unlink(pendingPath(c.root)).catch((e) => {
+    await fs9.unlink(pendingPath(c.root)).catch((e) => {
       if (e.code !== "ENOENT") throw e;
     });
-    await fs8.unlink(publicationPath(c.root));
+    await fs9.unlink(publicationPath(c.root));
   });
   return loadConfig(file);
 }
@@ -19727,7 +19775,7 @@ async function probeConfiguration(file, name) {
 }
 
 // src/patch.ts
-import fs9 from "node:fs/promises";
+import fs10 from "node:fs/promises";
 async function applyTextPatch(root, patch, expected, allowed, protectedPaths, generatedDirs = []) {
   ensure(
     (await snapshot(root, generatedDirs)).id === expected,
@@ -19872,7 +19920,7 @@ async function applyTextPatch(root, patch, expected, allowed, protectedPaths, ge
   ensure(edits.length > 0, "PATCH_EMPTY", "\u8865\u4E01\u4E3A\u7A7A");
   for (const e of edits) {
     const f = await safePath(root, e.p);
-    if (e.next === null) await fs9.unlink(f);
+    if (e.next === null) await fs10.unlink(f);
     else await atomic(f, e.next);
   }
   return edits.map((x) => x.p);
@@ -19880,8 +19928,8 @@ async function applyTextPatch(root, patch, expected, allowed, protectedPaths, ge
 
 // src/documents.ts
 var import_yaml3 = __toESM(require_dist(), 1);
-import fs10 from "node:fs/promises";
-import path10 from "node:path";
+import fs11 from "node:fs/promises";
+import path11 from "node:path";
 async function collectDocuments(config, secrets2, draft, specRoot, directory) {
   const files = [];
   const refs = [], documents = {}, sources = [];
@@ -19954,12 +20002,12 @@ async function publishDocuments(store, config, specRoot, inputs, manifest) {
   if (await exists(target)) {
     for (const f of inputs.files)
       ensure(
-        await exists(path10.join(target, f.name)) && await fs10.readFile(path10.join(target, f.name), "utf8") === f.content,
+        await exists(path11.join(target, f.name)) && await fs11.readFile(path11.join(target, f.name), "utf8") === f.content,
         "SPEC_VERSION",
         "\u89C4\u8303\u5185\u5BB9\u53D8\u5316\u5FC5\u987B\u589E\u52A0\u7248\u672C: " + f.name
       );
     ensure(
-      await exists(path10.join(target, "manifest.json")) && digest(await store.read(specRoot + "/manifest.json")) === digest(manifest),
+      await exists(path11.join(target, "manifest.json")) && digest(await store.read(specRoot + "/manifest.json")) === digest(manifest),
       "SPEC_VERSION",
       "\u89C4\u8303\u5185\u5BB9\u53D8\u5316\u6216\u53D1\u5E03\u4E0D\u5B8C\u6574\uFF0C\u5FC5\u987B\u589E\u52A0\u7248\u672C"
     );
@@ -19967,22 +20015,22 @@ async function publishDocuments(store, config, specRoot, inputs, manifest) {
   }
   const staging = await safePath(store.root, "spec-staging/" + id("spec"));
   for (const f of inputs.files)
-    await atomic(path10.join(staging, f.name), f.content);
-  await atomic(path10.join(staging, "manifest.json"), manifest);
-  await fs10.mkdir(path10.dirname(target), { recursive: true });
+    await atomic(path11.join(staging, f.name), f.content);
+  await atomic(path11.join(staging, "manifest.json"), manifest);
+  await fs11.mkdir(path11.dirname(target), { recursive: true });
   for (const s of inputs.sources)
     ensure(
       hash(await textFile(config.project.source_root, s.path)) === s.sha256,
       "SOURCE_CHANGED",
       "\u53D1\u5E03\u524D\u6587\u6863\u53D8\u5316: " + s.path
     );
-  await fs10.rename(staging, target);
+  await fs11.rename(staging, target);
 }
 
 // src/verification.ts
 var import_saxes = __toESM(require_saxes(), 1);
-import fs11 from "node:fs/promises";
-import path11 from "node:path";
+import fs12 from "node:fs/promises";
+import path12 from "node:path";
 
 // node_modules/tap-parser/dist/esm/index.js
 import { EventEmitter } from "events";
@@ -20259,12 +20307,12 @@ var stringify2 = (msg, { flat = false, indent = "", id: id2 = getId() }) => {
     switch (item[0]) {
       case "child":
         const comment = item[1][0];
-        const child = item[1].slice(1);
+        const child2 = item[1].slice(1);
         return Parser.stringify([comment], {
           flat,
           indent: "",
           id: id2
-        }) + Parser.stringify(child, {
+        }) + Parser.stringify(child2, {
           flat,
           indent: "    ",
           id: id2
@@ -20644,11 +20692,11 @@ var Parser = class _Parser extends EventEmitter {
       this.emit("close");
     }
   }
-  version(version, line) {
-    if (version >= 13 && this.planStart === -1 && this.count === 0 && !this.#current) {
+  version(version2, line) {
+    if (version2 >= 13 && this.planStart === -1 && this.count === 0 && !this.#current) {
       this.#sawVersion = true;
       this.emit("line", line);
-      this.emit("version", version);
+      this.emit("version", version2);
     } else
       this.nonTap(line);
   }
@@ -20938,8 +20986,8 @@ var Parser = class _Parser extends EventEmitter {
       return;
     }
     if (type[0] === "version") {
-      const version = type[1];
-      this.version(parseInt(String(version[1]), 10), line);
+      const version2 = type[1];
+      this.version(parseInt(String(version2[1]), 10), line);
       return;
     }
     if (type[0] === "plan") {
@@ -21113,9 +21161,9 @@ function parseTestReport(format, text) {
       const listen = (p) => {
         const branch = { counts: emptyCounts(), children: [] };
         branches.set(p, branch);
-        p.on("child", (child) => {
-          branch.children.push(child);
-          listen(child);
+        p.on("child", (child2) => {
+          branch.children.push(child2);
+          listen(child2);
         });
         p.on("extra", () => {
           malformed = true;
@@ -21148,7 +21196,7 @@ function parseTestReport(format, text) {
         } else
           for (const k of Object.keys(counts))
             counts[k] += branch.counts[k];
-        for (const child of branch.children) add(child, skipped);
+        for (const child2 of branch.children) add(child2, skipped);
       };
       add(parser);
       ensure(
@@ -21178,13 +21226,13 @@ async function reportFiles(root, rules) {
   const result = [];
   let visited = 0;
   async function walk(dir, prefix) {
-    for (const entry of await fs11.readdir(dir, { withFileTypes: true })) {
+    for (const entry of await fs12.readdir(dir, { withFileTypes: true })) {
       ensure(++visited <= 2e5, "TEST_REPORT", "\u6D4B\u8BD5\u62A5\u544A\u76EE\u5F55\u626B\u63CF\u8D85\u9650");
       const rel = prefix + entry.name;
       if (entry.isSymbolicLink()) continue;
       if (entry.isDirectory())
-        await walk(path11.join(dir, entry.name), rel + "/");
-      else if (entry.isFile() && rules?.kind === "test" && rules.files.some((pattern) => path11.matchesGlob(rel, pattern))) {
+        await walk(path12.join(dir, entry.name), rel + "/");
+      else if (entry.isFile() && rules?.kind === "test" && rules.files.some((pattern) => path12.matchesGlob(rel, pattern))) {
         await safePath(root, rel);
         result.push(rel);
       }
@@ -21221,7 +21269,7 @@ async function collectTestResults(rules, previous, files) {
 }
 
 // src/reporting.ts
-import fs12 from "node:fs/promises";
+import fs13 from "node:fs/promises";
 function summarizeChecks(checks) {
   const counts = emptyCounts();
   let unknown = 0, invalid = 0, nonTest = 0;
@@ -21419,7 +21467,7 @@ async function syncProject(engine, report) {
   ]) {
     try {
       const target = await safePath(engine.config.project.source_root, rel);
-      const before = await fs12.readFile(target, "utf8").catch((e) => {
+      const before = await fs13.readFile(target, "utf8").catch((e) => {
         if (e.code === "ENOENT") return "";
         throw e;
       });
@@ -21437,7 +21485,7 @@ async function syncProject(engine, report) {
       );
       const next = old ? before.slice(0, a) + body2 + before.slice(b + END.length) : before + (before.endsWith("\n") || !before ? "" : "\n") + "\n" + body2 + "\n";
       ensure(
-        await fs12.readFile(target, "utf8").catch((e) => {
+        await fs13.readFile(target, "utf8").catch((e) => {
           if (e.code === "ENOENT") return "";
           throw e;
         }) === before,
@@ -22963,6 +23011,7 @@ var Engine = class {
   mode;
   event;
   configFile;
+  environmentOverrides = {};
   constructor(config, vars, secrets2, runner, event = () => {
   }) {
     this.config = config;
@@ -22989,7 +23038,7 @@ var Engine = class {
         "\u9879\u76EE\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u8FD0\u884C\u547D\u4EE4"
       );
     this.config = loaded.config;
-    this.vars = loaded.vars;
+    this.vars = { ...loaded.vars, ...this.environmentOverrides };
     this.secrets = loaded.secrets;
     if (this.runner.kind === "codex-windows")
       this.runner = new WindowsSandbox(this.config, this.vars, this.secrets);
@@ -23052,7 +23101,7 @@ var Engine = class {
   async project() {
     const project = await this.store.read("project.json");
     ensure(
-      path12.resolve(project.source_root).toLowerCase() === this.config.project.source_root.toLowerCase(),
+      path13.resolve(project.source_root).toLowerCase() === this.config.project.source_root.toLowerCase(),
       "SOURCE_CONFIG_CHANGED",
       "\u5F53\u524D\u914D\u7F6E source_root \u4E0E\u5DF2\u63A5\u5165\u9879\u76EE\u4E0D\u540C\uFF1B\u8BF7\u4F7F\u7528\u521D\u59CB\u5316\u65F6\u7684\u914D\u7F6E"
     );
@@ -23063,14 +23112,14 @@ var Engine = class {
     const candidates = [
       process.execPath,
       ...this.config.project.commands.flatMap((c) => c.argv),
-      ...this.vars.JAVA_HOME ? [path12.join(this.vars.JAVA_HOME, "bin", "java.exe")] : []
+      ...this.vars.JAVA_HOME ? [path13.join(this.vars.JAVA_HOME, "bin", "java.exe")] : []
     ];
     for (const p of [
-      ...new Set(candidates.filter((p2) => path12.isAbsolute(p2)))
+      ...new Set(candidates.filter((p2) => path13.isAbsolute(p2)))
     ]) {
       try {
-        if ((await fs13.stat(p)).isFile())
-          executables[p] = hash(await fs13.readFile(p));
+        if ((await fs14.stat(p)).isFile())
+          executables[p] = hash(await fs14.readFile(p));
       } catch (e) {
         if (!["ENOENT", "ENOTDIR"].includes(e.code)) throw e;
       }
@@ -23818,12 +23867,12 @@ var Engine = class {
       if (after.files.some((f) => f.path === p))
         await atomic(
           target,
-          await fs13.readFile(
+          await fs14.readFile(
             this.store.file("snapshots/" + op.after.slice(7) + "/tree/" + p),
             "utf8"
           )
         );
-      else if (await exists(target)) await fs13.unlink(target);
+      else if (await exists(target)) await fs14.unlink(target);
     }
     ensure(
       (await this.snapshot(root)).id === op.after,
@@ -23905,7 +23954,7 @@ var Engine = class {
       command_id: command.id,
       category
     });
-    const copy = path12.join(this.config.project.work_root, "checks", checkId);
+    const copy = path13.join(this.config.project.work_root, "checks", checkId);
     await copySnapshot(s.tree, copy, s);
     const protectedPaths = task.protected_paths.map((p) => p === "**" ? "." : p.replace(/\/\*\*$|\/$/, "")).filter(
       (p, i, all) => all.indexOf(p) === i && !all.some(
@@ -23941,7 +23990,8 @@ var Engine = class {
         run_id: run.run_id,
         check_id: checkId,
         command_id: c.id,
-        category
+        category,
+        logs: ["stdout", "stderr"].map((stream) => ({ path: prefix + `.${stream}.log`, stream, command_id: c.id }))
       });
       let r;
       try {
@@ -24077,14 +24127,14 @@ var Engine = class {
     for (const item of this.config.project.artifacts[command.id] ?? []) {
       try {
         const src = await safePath(copy, item.path);
-        const bytes = await fs13.readFile(src);
+        const bytes = await fs14.readFile(src);
         ensure(bytes.length <= 20 * 1024 * 1024, "ARTIFACT_SIZE", "\u4EA7\u7269\u8FC7\u5927");
         this.secrets.assertSafe(bytes.toString("utf8"));
         const target = `runs/${run.run_id}/${category}/${checkId}-artifacts/${item.path}`;
-        await fs13.mkdir(path12.dirname(this.store.file(target)), {
+        await fs14.mkdir(path13.dirname(this.store.file(target)), {
           recursive: true
         });
-        await fs13.writeFile(this.store.file(target), bytes);
+        await fs14.writeFile(this.store.file(target), bytes);
         collected.push(
           await artifact(this.config.project.control_root, target, item.type)
         );
@@ -24114,7 +24164,7 @@ var Engine = class {
           );
           reports.push({
             path: stdout.path,
-            text: await fs13.readFile(this.store.file(stdout.path), "utf8")
+            text: await fs14.readFile(this.store.file(stdout.path), "utf8")
           });
           testSources.push({
             path: stdout.path,
@@ -24125,11 +24175,11 @@ var Engine = class {
           for (const p of await reportFiles(copy, verification)) {
             const src = await safePath(copy, p);
             ensure(
-              (await fs13.stat(src)).size <= 20 * 1024 * 1024,
+              (await fs14.stat(src)).size <= 20 * 1024 * 1024,
               "TEST_REPORT",
               "\u6D4B\u8BD5\u62A5\u544A\u8D85\u8FC7 20 MiB"
             );
-            const bytes = await fs13.readFile(src);
+            const bytes = await fs14.readFile(src);
             ensure(
               bytes.length <= 20 * 1024 * 1024,
               "TEST_REPORT",
@@ -24923,7 +24973,7 @@ var Engine = class {
           next: "\u4FEE\u590D\u963B\u585E\u539F\u56E0\u540E\u91CD\u65B0 prepare\uFF1B\u4FDD\u7559\u539F\u6279\u6B21\u8BA1\u6570"
         };
       }
-      await fs13.unlink(this.store.file("runs/" + runId + "/stop.json")).catch(() => {
+      await fs14.unlink(this.store.file("runs/" + runId + "/stop.json")).catch(() => {
       });
       run.status = "running";
       run.block_reason = null;
@@ -24962,9 +25012,9 @@ var Engine = class {
       );
       await this.checkEvidence(task, run, run.review);
       const output = this.store.file("exports/" + runId);
-      if (await exists(path12.join(output, "delivery.json")))
+      if (await exists(path13.join(output, "delivery.json")))
         return { run_id: runId, directory: output };
-      await fs13.mkdir(output, { recursive: true });
+      await fs14.mkdir(output, { recursive: true });
       const baseline = await this.store.read(
         "baseline-manifest.json"
       );
@@ -24973,12 +25023,12 @@ var Engine = class {
       );
       await copySnapshot(
         this.store.file("baseline"),
-        path12.join(output, "before"),
+        path13.join(output, "before"),
         baseline
       );
       await copySnapshot(
         this.store.file("snapshots/" + candidate.id.slice(7) + "/tree"),
-        path12.join(output, "after"),
+        path13.join(output, "after"),
         candidate
       );
       const diff = await processRun(
@@ -25010,34 +25060,34 @@ var Engine = class {
         "Git \u751F\u6210\u5DEE\u5F02\u5931\u8D25"
       );
       await atomic(
-        path12.join(output, "changes.patch"),
+        path13.join(output, "changes.patch"),
         normalizeDiffHeaders(diff.stdout)
       );
       const reports = Object.values(db.runs).filter((r) => !!r.candidate);
       for (const r of reports) {
         const t2 = await this.store.read(r.task_ref);
         if (t2.task_id !== task.task_id) continue;
-        await atomic(path12.join(output, "history", r.run_id, "task.json"), t2);
-        await atomic(path12.join(output, "history", r.run_id, "run.json"), {
+        await atomic(path13.join(output, "history", r.run_id, "task.json"), t2);
+        await atomic(path13.join(output, "history", r.run_id, "run.json"), {
           ...r,
           messages: void 0
         });
         for (const e of r.evidence) {
           const doc = await this.store.read(e.ref);
-          await atomic(path12.join(output, e.ref), doc);
+          await atomic(path13.join(output, e.ref), doc);
           for (const a of doc.artifacts) {
-            const dest = path12.join(output, a.path);
-            await fs13.mkdir(path12.dirname(dest), { recursive: true });
-            await fs13.copyFile(
+            const dest = path13.join(output, a.path);
+            await fs14.mkdir(path13.dirname(dest), { recursive: true });
+            await fs14.copyFile(
               await safePath(this.config.project.control_root, a.path),
               dest
             );
           }
         }
         for (const a of t2.context_refs) {
-          const dest = path12.join(output, a.path);
-          await fs13.mkdir(path12.dirname(dest), { recursive: true });
-          await fs13.copyFile(
+          const dest = path13.join(output, a.path);
+          await fs14.mkdir(path13.dirname(dest), { recursive: true });
+          await fs14.copyFile(
             await safePath(this.config.project.control_root, a.path),
             dest
           );
@@ -25054,9 +25104,9 @@ var Engine = class {
         auto_merge: false,
         auto_publish: false
       };
-      await atomic(path12.join(output, "delivery.json"), delivery);
+      await atomic(path13.join(output, "delivery.json"), delivery);
       await atomic(
-        path12.join(output, "RECOVERY.md"),
+        path13.join(output, "RECOVERY.md"),
         "# \u5F85\u5408\u5E76\u4EA4\u4ED8\n\n\u5728\u76EE\u6807\u4ED3\u5E93\u5148\u68C0\u67E5\u7528\u6237\u6539\u52A8\u4E0E\u57FA\u7EBF\u5DEE\u5F02\uFF0C\u518D\u7531\u7528\u6237\u6216 Codex \u663E\u5F0F\u6267\u884C\u5408\u5E76\u3002changes.patch \u4EE5\u539F\u59CB\u5305\u542B\u672A\u63D0\u4EA4\u6539\u52A8\u7684\u57FA\u7EBF\u4E3A\u8D77\u70B9\u3002after/ \u662F\u5B8C\u6574\u5019\u9009\u6587\u672C\u53CA\u4E8C\u8FDB\u5236\u6587\u4EF6\u3002\u672A\u81EA\u52A8\u63D0\u4EA4\u3001\u63A8\u9001\u6216\u53D1\u5E03\u3002\n\n\u6062\u590D\u4F4D\u7F6E\uFF1A" + this.config.project.control_root + "\n\u8FD0\u884C\uFF1A" + runId + "\n"
       );
       await this.store.event("exported", { run_id: runId, directory: output });
@@ -25067,25 +25117,25 @@ var Engine = class {
 };
 
 // src/workspace.ts
-import fs14 from "node:fs/promises";
-import path13 from "node:path";
+import fs15 from "node:fs/promises";
+import path14 from "node:path";
 async function initialize(config, secrets2) {
   const p = config.project;
-  await safePath(path13.dirname(p.source_root), path13.basename(p.source_root));
+  await safePath(path14.dirname(p.source_root), path14.basename(p.source_root));
   for (const root of [p.work_root, p.control_root])
-    await safePath(path13.dirname(root), path13.basename(root));
+    await safePath(path14.dirname(root), path14.basename(root));
   const store = new Store(p.control_root);
   return store.lock(async () => {
     if (await exists(store.file("project.json"))) {
       const project2 = await store.read("project.json");
       ensure(
-        path13.resolve(project2.source_root).toLowerCase() === p.source_root.toLowerCase(),
+        path14.resolve(project2.source_root).toLowerCase() === p.source_root.toLowerCase(),
         "SOURCE_CONFIG_CHANGED",
         "\u914D\u7F6E\u4E0E\u5DF2\u521D\u59CB\u5316\u9879\u76EE\u4E0D\u540C"
       );
       return project2;
     }
-    await fs14.mkdir(p.work_root, { recursive: true });
+    await fs15.mkdir(p.work_root, { recursive: true });
     const base = await snapshot(p.source_root, p.generated_dirs);
     const oldIntent = await exists(store.file("initialization.json")) ? await store.read("initialization.json") : null;
     const rootsDigest = digest({
@@ -25099,7 +25149,7 @@ async function initialize(config, secrets2) {
       "INIT_BASELINE_CHANGED",
       "\u521D\u59CB\u5316\u4E2D\u65AD\u540E\u6E90\u6587\u4EF6\u6216\u76EE\u5F55\u914D\u7F6E\u53D8\u5316\uFF1B\u4FDD\u7559\u539F\u5DE5\u4F5C\u533A\uFF0C\u9700\u534F\u8C03\u8005\u6838\u5BF9"
     );
-    const workspace = oldIntent?.workspace ?? path13.join(p.work_root, "workspace-" + id("ws"));
+    const workspace = oldIntent?.workspace ?? path14.join(p.work_root, "workspace-" + id("ws"));
     const intent = oldIntent ?? {
       operation_id: id("init"),
       workspace,
@@ -25125,7 +25175,7 @@ async function initialize(config, secrets2) {
     ).catch(() => null);
     if (git?.exitCode === 0) {
       ensure(
-        path13.resolve(git.stdout.trim()).toLowerCase() === p.source_root.toLowerCase(),
+        path14.resolve(git.stdout.trim()).toLowerCase() === p.source_root.toLowerCase(),
         "GIT_ROOT",
         "\u8BF7\u6307\u5B9A Git \u4ED3\u5E93\u6839\u76EE\u5F55"
       );
@@ -25142,7 +25192,7 @@ async function initialize(config, secrets2) {
       );
       intent.git_commit = gitCommit;
       await store.put("initialization.json", intent);
-      if (await exists(path13.join(workspace, ".git"))) {
+      if (await exists(path14.join(workspace, ".git"))) {
         const existing = await processRun(
           ["git", "-C", workspace, "rev-parse", "HEAD"],
           { cwd: workspace, env: gitEnv, timeoutMs: 1e4 }
@@ -25195,12 +25245,12 @@ async function initialize(config, secrets2) {
     await copySnapshot(p.source_root, store.file("baseline"), base);
     await store.put("baseline-manifest.json", base);
     const files = base.files.map((f) => f.path);
-    const codegraph = await exists(path13.join(p.source_root, ".codegraph"));
+    const codegraph = await exists(path14.join(p.source_root, ".codegraph"));
     const ancestorInstructions = [];
-    for (let dir = path13.dirname(p.source_root); ; dir = path13.dirname(dir)) {
-      const file = path13.join(dir, "AGENTS.md");
+    for (let dir = path14.dirname(p.source_root); ; dir = path14.dirname(dir)) {
+      const file = path14.join(dir, "AGENTS.md");
       if (await exists(file)) {
-        const content = await fs14.readFile(file, "utf8");
+        const content = await fs15.readFile(file, "utf8");
         secrets2.assertSafe(content);
         ancestorInstructions.unshift({
           path: file,
@@ -25208,7 +25258,7 @@ async function initialize(config, secrets2) {
           content
         });
       }
-      if (path13.dirname(dir) === dir) break;
+      if (path14.dirname(dir) === dir) break;
     }
     const facts = {
       artifact_mode: "live",
@@ -25239,7 +25289,7 @@ async function initialize(config, secrets2) {
       active_run: null
     };
     await store.put("features.json", {});
-    await fs14.mkdir(store.file("inputs"), { recursive: true });
+    await fs15.mkdir(store.file("inputs"), { recursive: true });
     await atomic(
       store.file("inputs/project-profile.md"),
       "# \u9879\u76EE\u753B\u50CF\uFF08\u7531 Codex \u56DE\u586B\uFF09\n\n\u57FA\u4E8E ../inventory.json\uFF0C\u5206\u6790\u67B6\u6784\u3001\u9879\u76EE\u7EA6\u675F\u3001\u521D\u59CB\u5316\u547D\u4EE4\u53CA\u9A8C\u8BC1\u57FA\u7EBF\u3002\n\n" + (codegraph ? "\u53D1\u73B0 .codegraph/\uFF1B\u7406\u89E3\u548C\u5B9A\u4F4D\u4EE3\u7801\u524D\u5148\u7528 CodeGraph\u3002\n" : "\u672A\u53D1\u73B0 .codegraph/\uFF0C\u4F7F\u7528\u5E38\u89C4\u4EE3\u7801\u641C\u7D22\uFF1B\u4E0D\u81EA\u52A8\u5EFA\u7D22\u5F15\u3002\n")
@@ -25257,26 +25307,65 @@ async function initialize(config, secrets2) {
 }
 
 // src/onboarding.ts
-async function connect(file) {
+async function connect(file, progress) {
   const { config, vars, secrets: secrets2 } = await loadConfig(file);
+  let activity = Promise.resolve();
   const engine = new Engine(
     config,
     vars,
     secrets2,
-    new WindowsSandbox(config, vars, secrets2)
+    new WindowsSandbox(config, vars, secrets2),
+    (event) => {
+      if (![
+        "check_started",
+        "command_started",
+        "command_finished",
+        "command_failed"
+      ].includes(event.phase))
+        return;
+      activity = activity.then(async () => {
+        await progress?.("activity", event);
+      });
+      void activity.catch(() => {
+      });
+    }
   );
+  await progress?.("doctor");
   const preflight = await doctor(engine, true);
+  await progress?.("doctor_result", preflight);
   if (!preflight.ok)
     return { doctor: preflight, initialized: false, baseline: null };
+  await progress?.("initializing");
   const project = await initialize(config, secrets2);
+  await progress?.("initialized", { workspace: project.workspace });
   const cached = await engine.store.read("baseline-results.json").catch((e) => {
     if (e.code === "ENOENT") return null;
     throw e;
   });
   const policy = await engine.policyDigest();
-  const baseline = cached?.baseline_snapshot === project.baseline_snapshot && cached.results?.length && cached.results.every((r) => r.policy_digest === policy) ? cached : await engine.baseline();
+  await progress?.("baseline");
+  let baseline;
+  try {
+    baseline = cached?.passed === true && cached?.baseline_snapshot === project.baseline_snapshot && cached.results?.length && cached.results.every((r) => r.policy_digest === policy) ? cached : await engine.baseline();
+  } finally {
+    await activity;
+  }
   await engine.store.lock(() => refreshReports(engine, true));
   return { doctor: preflight, initialized: true, baseline };
+}
+async function onboardingTemplate() {
+  const bundled = fileURLToPath(
+    new URL(
+      path15.basename(fileURLToPath(import.meta.url)) === "harness.mjs" ? "./onboarding-template/" : "../dist/onboarding-template/",
+      import.meta.url
+    )
+  );
+  if (await exists(path15.join(bundled, "project/AGENTS.fragment.md")))
+    return bundled;
+  return path15.resolve(
+    path15.dirname(fileURLToPath(import.meta.url)),
+    "../../codex-harness-project-template-v1.2"
+  );
 }
 async function promptOnboard(file, input) {
   ensure(
@@ -25309,10 +25398,10 @@ async function promptOnboard(file, input) {
     rl.close();
   }
 }
-async function onboard(configFile, input = {}, dryRun = false, runtime = connect, operationRoot) {
-  configFile = path14.resolve(configFile);
-  await safePath(path14.dirname(configFile), path14.basename(configFile));
-  const existing = await fs15.readFile(configFile, "utf8").catch((e) => {
+async function onboard(configFile, input = {}, dryRun = false, runtime = connect, operationRoot, progress) {
+  configFile = path15.resolve(configFile);
+  await safePath(path15.dirname(configFile), path15.basename(configFile));
+  const existing = await fs16.readFile(configFile, "utf8").catch((e) => {
     if (e.code === "ENOENT") return null;
     throw e;
   });
@@ -25331,23 +25420,23 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     "ONBOARD_INPUT",
     "\u8BF7\u6307\u5B9A\u9879\u76EE source_root \u6216 --project"
   );
-  const base = path14.dirname(configFile), project = raw.project;
-  project.source_root = path14.resolve(base, project.source_root);
-  const name = path14.basename(project.source_root);
-  project.work_root = path14.resolve(
+  const base = path15.dirname(configFile), project = raw.project;
+  project.source_root = path15.resolve(base, project.source_root);
+  const name = path15.basename(project.source_root);
+  project.work_root = path15.resolve(
     base,
-    project.work_root ?? path14.join("work", name)
+    project.work_root ?? path15.join("work", name)
   );
-  project.control_root = path14.resolve(
+  project.control_root = path15.resolve(
     base,
-    project.control_root ?? path14.join("control", name)
+    project.control_root ?? path15.join("control", name)
   );
   for (const a of [
     project.source_root,
     project.work_root,
     project.control_root
   ]) {
-    await safePath(path14.dirname(a), path14.basename(a));
+    await safePath(path15.dirname(a), path15.basename(a));
     for (const b of [
       project.source_root,
       project.work_root,
@@ -25371,15 +25460,22 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     "\u672C\u673A\u914D\u7F6E\u5FC5\u987B\u4F4D\u4E8E\u9879\u76EE\u3001\u5DE5\u4F5C\u548C\u63A7\u5236\u76EE\u5F55\u4E4B\u5916"
   );
   ensure(
-    (await fs15.stat(project.source_root)).isDirectory(),
+    (await fs16.stat(project.source_root)).isDirectory(),
     "PROJECT",
     "\u9879\u76EE\u76EE\u5F55\u4E0D\u5B58\u5728"
   );
   if (!dryRun && !operationRoot)
     return new Store(
-      path14.join(project.control_root, "onboarding-operation")
+      path15.join(project.control_root, "onboarding-operation")
     ).lock(
-      () => onboard(configFile, input, false, runtime, project.control_root)
+      () => onboard(
+        configFile,
+        input,
+        false,
+        runtime,
+        project.control_root,
+        progress
+      )
     );
   ensure(
     !operationRoot || operationRoot === project.control_root,
@@ -25404,11 +25500,8 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
   project.commands ??= [];
   project.verification ??= {};
   raw.sandbox ??= { profile: "trusted_local", network: true };
-  const template = path14.resolve(
-    input.template_root ?? path14.join(
-      path14.dirname(fileURLToPath(import.meta.url)),
-      "../../codex-harness-project-template-v1.2"
-    )
+  const template = path15.resolve(
+    input.template_root ?? await onboardingTemplate()
   );
   ensure(
     !within(project.source_root, template),
@@ -25418,10 +25511,26 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
   const inventory = await readJson(
     await safePath(template, "project/docs/harness/protocol-source.json")
   );
+  const fullInventory = await readJson(
+    path15.join(template, "inventory.json")
+  ).catch((e) => {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  });
+  if (fullInventory)
+    for (const file of fullInventory.files) {
+      ensure(
+        hash(
+          await fs16.readFile(await safePath(template, "project/" + file.path))
+        ).slice(7) === file.sha256,
+        "TEMPLATE_HASH",
+        "\u63A5\u5165\u6A21\u677F\u6821\u9A8C\u5931\u8D25: " + file.path
+      );
+    }
   for (const f of inventory.files)
     ensure(
       hash(
-        await fs15.readFile(
+        await fs16.readFile(
           await safePath(
             template,
             "project/docs/harness/protocol-v1/" + f.path
@@ -25456,10 +25565,35 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     throw e;
   });
   const managed = { ...previous.managed_files };
+  const publication = await store.read("onboarding-publication.json").catch((e) => {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  });
+  const publicationDigest = digest({ configFile, raw, template: inventory });
+  if (publication) {
+    ensure(
+      publication.digest === publicationDigest,
+      "ONBOARD_CONFLICT",
+      "\u4E2D\u65AD\u7684\u63A5\u5165\u8BA1\u5212\u4E0E\u5F53\u524D\u8F93\u5165\u4E0D\u540C\uFF0C\u8BF7\u4FDD\u7559\u73B0\u573A\u5E76\u6838\u5BF9"
+    );
+    for (const file of publication.files) {
+      const actual = await fs16.readFile(await safePath(project.source_root, file.rel), "utf8").catch((e) => {
+        if (e.code === "ENOENT") return null;
+        throw e;
+      });
+      ensure(
+        actual === file.before || actual === file.after,
+        "ONBOARD_CONFLICT",
+        "\u4E2D\u65AD\u540E\u89C4\u8303\u6587\u4EF6\u88AB\u4FEE\u6539: " + file.rel
+      );
+      if (actual === file.after)
+        managed[file.rel] = publication.managed_files[file.rel];
+    }
+  }
   const changes = [], conflicts = [], todos = [];
   const planned = [];
   const candidates = [];
-  if (await exists(path14.join(project.source_root, "package.json"))) {
+  if (await exists(path15.join(project.source_root, "package.json"))) {
     const pkg = await readJson(
       await safePath(project.source_root, "package.json")
     );
@@ -25471,7 +25605,7 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
           reason: "package.json scripts." + script
         });
   }
-  if (await exists(path14.join(project.source_root, "pom.xml")))
+  if (await exists(path15.join(project.source_root, "pom.xml")))
     candidates.push({
       id: "maven-test",
       argv: ["cmd.exe", "/d", "/c", "mvn", "test"],
@@ -25479,7 +25613,7 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     });
   async function plan(rel, text, block = false) {
     const target = await safePath(project.source_root, rel);
-    const before = await fs15.readFile(target, "utf8").catch((e) => {
+    const before = await fs16.readFile(target, "utf8").catch((e) => {
       if (e.code === "ENOENT") return null;
       throw e;
     });
@@ -25516,14 +25650,14 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     managed[rel] = hash(comparable);
   }
   async function walk(dir, prefix) {
-    for (const e of await fs15.readdir(dir, { withFileTypes: true })) {
+    for (const e of await fs16.readdir(dir, { withFileTypes: true })) {
       const rel = prefix + e.name;
       ensure(!e.isSymbolicLink(), "TEMPLATE_LINK", "\u6A21\u677F\u4E0D\u80FD\u5305\u542B\u94FE\u63A5");
-      if (e.isDirectory()) await walk(path14.join(dir, e.name), rel + "/");
+      if (e.isDirectory()) await walk(path15.join(dir, e.name), rel + "/");
       else
         await plan(
           "docs/harness/" + rel,
-          await fs15.readFile(
+          await fs16.readFile(
             await safePath(template, "project/docs/harness/" + rel),
             "utf8"
           )
@@ -25533,7 +25667,7 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
   await walk(await safePath(template, "project/docs/harness"), "");
   await plan(
     "AGENTS.md",
-    await fs15.readFile(
+    await fs16.readFile(
       await safePath(template, "project/AGENTS.fragment.md"),
       "utf8"
     ),
@@ -25544,7 +25678,7 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     todos.push("\u8865\u5145\u5DE5\u4F5C AI\uFF1Abase_url\u3001model\u3001api_key_env");
   else
     try {
-      await loadConfigValue(raw, configFile);
+      await loadConfigValue(structuredClone(raw), configFile);
       valid = true;
     } catch (e) {
       todos.push(e.message);
@@ -25572,7 +25706,7 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
   toolEnv.GIT_CONFIG_NOSYSTEM = "1";
   toolEnv.GIT_CONFIG_GLOBAL = process.platform === "win32" ? "NUL" : "/dev/null";
   const git = await processRun(["git", "--version"], {
-    cwd: path14.dirname(process.execPath),
+    cwd: path15.dirname(process.execPath),
     env: toolEnv,
     timeoutMs: 1e4
   }).catch(() => null);
@@ -25598,6 +25732,16 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
     managed_files: managed
   };
   if (dryRun) return result;
+  if (conflicts.length) {
+    await store.lock(
+      () => store.put("onboarding.json", {
+        ...result,
+        managed_files: previous.managed_files ?? {}
+      })
+    );
+    return result;
+  }
+  await progress?.("standards");
   await store.lock(async () => {
     const current = await store.read("db.json").catch((e) => {
       if (e.code === "ENOENT") return null;
@@ -25613,10 +25757,15 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
       "SOURCE_CONFIG_CHANGED",
       "\u63A7\u5236\u76EE\u5F55\u5F52\u5C5E\u5DF2\u53D8\u5316"
     );
+    await store.put("onboarding-publication.json", {
+      digest: publicationDigest,
+      files: planned,
+      managed_files: managed
+    });
     for (const f of planned) {
       const target = await safePath(project.source_root, f.rel);
       ensure(
-        await fs15.readFile(target, "utf8").catch((e) => {
+        await fs16.readFile(target, "utf8").catch((e) => {
           if (e.code === "ENOENT") return null;
           throw e;
         }) === f.before,
@@ -25624,10 +25773,11 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
         "\u63A5\u5165\u671F\u95F4\u6587\u4EF6\u53D8\u5316: " + f.rel
       );
       await atomic(target, f.after);
+      await progress?.("standards_file", { path: f.rel });
     }
     const configText = (0, import_yaml7.stringify)(raw);
     ensure(
-      await fs15.readFile(configFile, "utf8").catch((e) => {
+      await fs16.readFile(configFile, "utf8").catch((e) => {
         if (e.code === "ENOENT") return null;
         throw e;
       }) === existing,
@@ -25638,12 +25788,12 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
       if (existing) {
         const backup = await safePath(
           base,
-          path14.basename(configFile) + ".previous-" + hash(existing).slice(7)
+          path15.basename(configFile) + ".previous-" + hash(existing).slice(7)
         );
-        await fs15.writeFile(backup, existing, { flag: "wx" }).catch(async (e) => {
+        await fs16.writeFile(backup, existing, { flag: "wx" }).catch(async (e) => {
           if (e.code !== "EEXIST") throw e;
           ensure(
-            await fs15.readFile(backup, "utf8") === existing,
+            await fs16.readFile(backup, "utf8") === existing,
             "ONBOARD_CONFLICT",
             "\u914D\u7F6E\u5907\u4EFD\u51B2\u7A81"
           );
@@ -25652,10 +25802,12 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
       await atomic(configFile, configText);
     }
     await store.put("onboarding.json", result);
+    await fs16.unlink(store.file("onboarding-publication.json"));
   });
+  await progress?.("standards_ready");
   if (valid && !todos.length && !conflicts.length) {
     try {
-      Object.assign(result, await runtime(configFile));
+      Object.assign(result, await runtime(configFile, progress));
     } catch (e) {
       todos.push("\u63A5\u5165\u8FD0\u884C\u5931\u8D25: " + e.message);
     }
@@ -25667,105 +25819,2230 @@ async function onboard(configFile, input = {}, dryRun = false, runtime = connect
 
 // src/console/server.ts
 import http from "node:http";
-import fs18 from "node:fs/promises";
-import path17 from "node:path";
-import { fileURLToPath as fileURLToPath2 } from "node:url";
-import { spawn as spawn3 } from "node:child_process";
+import fs23 from "node:fs/promises";
+import path23 from "node:path";
+import { fileURLToPath as fileURLToPath5 } from "node:url";
 import { timingSafeEqual, randomBytes } from "node:crypto";
 
 // src/console/projects.ts
-import fs16 from "node:fs/promises";
+import fs17 from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import os from "node:os";
-import path15 from "node:path";
-var defaultRegistryRoot = () => path15.join(
-  process.env.LOCALAPPDATA ?? path15.join(os.homedir(), ".local", "share"),
+import path16 from "node:path";
+var defaultRegistryRoot = () => process.env.HARNESS_CONSOLE_ROOT ?? path16.join(
+  process.env.LOCALAPPDATA ?? path16.join(os.homedir(), ".local", "share"),
   "CodexHarness",
   "console"
 );
-var canonical2 = (p) => process.platform === "win32" ? p.toLowerCase() : p;
+var realLocation = (p) => {
+  const resolved = path16.resolve(p);
+  let ancestor = resolved;
+  for (; ; ) {
+    try {
+      return path16.join(
+        realpathSync.native(ancestor),
+        path16.relative(ancestor, resolved)
+      );
+    } catch {
+      const parent = path16.dirname(ancestor);
+      if (parent === ancestor) return resolved;
+      ancestor = parent;
+    }
+  }
+};
+var canonical2 = (p) => {
+  const resolved = realLocation(p);
+  return process.platform === "win32" ? resolved.toLowerCase() : resolved;
+};
+var binding = (p) => ({
+  id: "config-" + hash(canonical2(p.config_file)).slice(7, 23),
+  config_file: p.config_file,
+  control_root: p.control_root
+});
+var sameBinding = (a, b) => canonical2(a.config_file) === canonical2(b.config_file) || canonical2(a.control_root) === canonical2(b.control_root);
+async function withIdleRoots(roots, change) {
+  const ordered = [
+    ...new Map(roots.map((root) => [canonical2(root), root])).values()
+  ].sort();
+  const enter = async (index) => {
+    if (index === ordered.length) return change();
+    const root = ordered[index];
+    const present = await fs17.stat(root).catch((e) => {
+      if (e.code === "ENOENT") return null;
+      throw e;
+    });
+    if (!present) return enter(index + 1);
+    await safePath(path16.dirname(root), path16.basename(root));
+    await new Store(path16.join(root, "onboarding-operation")).lock(
+      () => new Store(root).lock(async () => {
+        const db = await readJson(path16.join(root, "db.json")).catch((e) => {
+          if (e.code === "ENOENT") return null;
+          throw e;
+        });
+        ensure(
+          !db?.active_run,
+          "ACTIVE_RUN",
+          "\u5DE5\u4F5C\u533A\u5B58\u5728\u6D3B\u52A8\u8F6E\u6B21\uFF0C\u7ED3\u675F\u540E\u624D\u80FD\u4FEE\u6539\u6216\u5220\u9664\u9879\u76EE"
+        );
+        await enter(index + 1);
+      })
+    );
+  };
+  await enter(0);
+}
+async function inspectConfiguration(configFile) {
+  ensure(
+    typeof configFile === "string" && path16.isAbsolute(configFile),
+    "CONFIG",
+    "\u8BF7\u9009\u62E9\u914D\u7F6E\u6587\u4EF6\u6216\u586B\u5199\u7EDD\u5BF9\u8DEF\u5F84"
+  );
+  configFile = await fs17.realpath(configFile);
+  const loaded = await loadConfig(configFile);
+  const { config } = loaded;
+  ensure(
+    !within(config.project.source_root, configFile) && !within(config.project.work_root, configFile),
+    "CONFIG_LOCATION",
+    "\u914D\u7F6E\u5FC5\u987B\u4F4D\u4E8E\u6E90\u7801\u548C\u5DE5\u4F5C\u76EE\u5F55\u4E4B\u5916"
+  );
+  const controlRoot = await fs17.realpath(config.project.control_root);
+  const connected = await readJson(await safePath(controlRoot, "project.json"));
+  ensure(
+    canonical2(connected.source_root) === canonical2(config.project.source_root),
+    "PROJECT_NOT_READY",
+    "\u914D\u7F6E\u4E0E\u5DF2\u63A5\u5165\u9879\u76EE\u4E0D\u5339\u914D"
+  );
+  return { ...loaded, configFile, controlRoot, connected };
+}
 var Projects = class {
   root;
   constructor(root = defaultRegistryRoot()) {
     this.root = root;
   }
   async list() {
-    return readJson(path15.join(this.root, "projects.json")).catch((e) => {
+    const stored = await readJson(
+      path16.join(this.root, "projects.json")
+    ).catch((e) => {
       if (e.code === "ENOENT") return [];
       throw e;
     });
+    const grouped = [];
+    for (const original of stored) {
+      const p = structuredClone(original);
+      if (!p.source_root) {
+        p.source_root = await loadConfig(p.config_file).then((c) => c.config.project.source_root).catch(
+          () => readJson(path16.join(p.control_root, "project.json")).then((c) => c.source_root).catch(() => void 0)
+        );
+      }
+      p.configurations ??= [binding(p)];
+      p.current_configuration ??= p.configurations[0].id;
+      p.revision ??= 0;
+      p.aliases ??= [];
+      const previous = p.source_root && grouped.find(
+        (x) => x.source_root && canonical2(x.source_root) === canonical2(p.source_root)
+      );
+      if (previous) {
+        previous.aliases.push(p.id, ...p.aliases);
+        for (const c of p.configurations)
+          if (!previous.configurations.some((x) => sameBinding(x, c)))
+            previous.configurations.push(c);
+      } else grouped.push(p);
+    }
+    return grouped;
+  }
+  async registration(projectId) {
+    const project = (await this.list()).find(
+      (p) => p.id === projectId || p.aliases?.includes(projectId)
+    );
+    ensure(project, "PROJECT_NOT_FOUND", "\u9879\u76EE\u672A\u767B\u8BB0");
+    return project;
   }
   async get(projectId) {
-    const project = (await this.list()).find((p) => p.id === projectId);
-    ensure(project, "PROJECT_NOT_FOUND", "\u9879\u76EE\u672A\u767B\u8BB0");
+    const project = await this.registration(projectId);
     const loaded = await loadConfig(project.config_file);
-    const root = await fs16.realpath(loaded.config.project.control_root);
+    const root = await fs17.realpath(loaded.config.project.control_root);
     ensure(
       canonical2(root) === canonical2(project.control_root),
       "CONFIG_CONFLICT",
-      "\u9879\u76EE\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u79FB\u9664\u767B\u8BB0\u540E\u91CD\u65B0\u6DFB\u52A0"
+      "\u914D\u7F6E\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5728\u9879\u76EE\u8BBE\u7F6E\u4E2D\u91CD\u65B0\u5BFC\u5165\u914D\u7F6E"
     );
-    return { project, ...loaded };
+    ensure(
+      !project.source_root || canonical2(project.source_root) === canonical2(loaded.config.project.source_root),
+      "CONFIG_CONFLICT",
+      "\u914D\u7F6E\u5DF2\u6307\u5411\u5176\u4ED6\u6E90\u7801\u9879\u76EE\uFF0C\u8BF7\u5728\u9879\u76EE\u8BBE\u7F6E\u4E2D\u66F4\u6362\u914D\u7F6E"
+    );
+    const environment = project.configurations?.find(
+      (c) => c.id === project.current_configuration
+    )?.environment;
+    const environmentOverrides = {};
+    if (environment?.java_home)
+      environmentOverrides.JAVA_HOME = environment.java_home;
+    if (environment?.path_prepend?.length) {
+      const key2 = Object.keys(loaded.vars).find((k) => k.toLowerCase() === "path") ?? "PATH";
+      environmentOverrides[key2] = [
+        ...environment.path_prepend,
+        loaded.vars[key2] ?? ""
+      ].join(path16.delimiter);
+    }
+    Object.assign(loaded.vars, environmentOverrides);
+    return { project, ...loaded, environmentOverrides };
   }
   async add(configFile, name) {
-    ensure(
-      typeof configFile === "string" && path15.isAbsolute(configFile),
-      "CONFIG",
-      "\u8BF7\u586B\u5199\u914D\u7F6E\u6587\u4EF6\u7EDD\u5BF9\u8DEF\u5F84"
-    );
-    configFile = await fs16.realpath(configFile);
-    const { config } = await loadConfig(configFile);
-    ensure(
-      !within(config.project.source_root, configFile) && !within(config.project.work_root, configFile),
-      "CONFIG_LOCATION",
-      "\u914D\u7F6E\u5FC5\u987B\u4F4D\u4E8E\u6E90\u7801\u548C\u5DE5\u4F5C\u76EE\u5F55\u4E4B\u5916"
-    );
-    const controlRoot = await fs16.realpath(config.project.control_root);
-    const connected = await readJson(
-      await safePath(controlRoot, "project.json")
-    );
-    ensure(
-      canonical2(path15.resolve(connected.source_root)) === canonical2(config.project.source_root),
-      "PROJECT_NOT_READY",
-      "\u914D\u7F6E\u4E0E\u5DF2\u63A5\u5165\u9879\u76EE\u4E0D\u5339\u914D"
-    );
-    const displayName = name?.trim() || path15.basename(config.project.source_root);
+    const inspected = await inspectConfiguration(configFile);
+    const { config, controlRoot } = inspected;
+    configFile = inspected.configFile;
+    const displayName = name?.trim() || path16.basename(config.project.source_root);
     ensure(
       displayName.length > 0 && displayName.length <= 120,
       "CONFIG",
       "\u9879\u76EE\u540D\u79F0\u957F\u5EA6\u5E94\u4E3A 1 \u81F3 120 \u5B57\u7B26"
     );
-    return new Store(path15.join(this.root, "registry-lock")).lock(async () => {
+    return new Store(path16.join(this.root, "registry-lock")).lock(async () => {
       const projects = await this.list();
       const existing = projects.find(
-        (p) => canonical2(p.config_file) === canonical2(configFile) || canonical2(p.control_root) === canonical2(controlRoot)
+        (p) => canonical2(p.config_file) === canonical2(configFile) || canonical2(p.control_root) === canonical2(controlRoot) || p.source_root && canonical2(p.source_root) === canonical2(config.project.source_root)
       );
-      if (existing) return existing;
+      const nextBinding = binding({
+        config_file: configFile,
+        control_root: controlRoot
+      });
+      if (existing) {
+        ensure(
+          existing.source_root && canonical2(existing.source_root) === canonical2(config.project.source_root) && !existing.configurations.some(
+            (b) => canonical2(b.config_file) === canonical2(configFile) && canonical2(b.control_root) !== canonical2(controlRoot)
+          ),
+          "CONFIG_CONFLICT",
+          "\u5DF2\u767B\u8BB0 YAML \u7684\u9879\u76EE\u6216\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u4F7F\u7528\u72EC\u7ACB\u914D\u7F6E\u6587\u4EF6\u4FDD\u7559\u539F\u6709\u5386\u53F2"
+        );
+        if (!existing.configurations.some((b) => sameBinding(b, nextBinding))) {
+          existing.configurations.push(nextBinding);
+          existing.revision++;
+        }
+        await atomic(path16.join(this.root, "projects.json"), projects);
+        return existing;
+      }
       const project = {
         id: id("project"),
         name: displayName,
         config_file: configFile,
-        control_root: controlRoot
+        control_root: controlRoot,
+        source_root: config.project.source_root,
+        configurations: [nextBinding],
+        current_configuration: nextBinding.id,
+        revision: 0,
+        aliases: []
       };
-      await atomic(path15.join(this.root, "projects.json"), [
+      await atomic(path16.join(this.root, "projects.json"), [
         ...projects,
         project
       ]);
       return project;
     });
   }
+  async configurations(projectId) {
+    const project = await this.registration(projectId);
+    const items = [];
+    for (const c of project.configurations) {
+      try {
+        const data = await inspectConfiguration(c.config_file);
+        ensure(
+          canonical2(data.controlRoot) === canonical2(c.control_root),
+          "CONFIG_CONFLICT",
+          "\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316"
+        );
+        ensure(
+          canonical2(data.config.project.source_root) === canonical2(project.source_root),
+          "CONFIG_CONFLICT",
+          "\u9879\u76EE\u76EE\u5F55\u5DF2\u53D8\u5316"
+        );
+        const db = await readJson(path16.join(c.control_root, "db.json")).catch(
+          (e) => {
+            if (e.code === "ENOENT") return { runs: {}, active_run: null };
+            throw e;
+          }
+        );
+        const runs = Object.values(db.runs ?? {});
+        const times = runs.map((r) => r.updated_at ?? r.created_at).filter(Boolean).sort();
+        items.push({
+          ...c,
+          available: true,
+          selected: c.id === project.current_configuration,
+          workspace: data.connected.workspace ?? null,
+          source_root: data.config.project.source_root,
+          active_run: db.active_run,
+          runs: runs.length,
+          latest_activity: times.at(-1) ?? null,
+          config_revision: hash(await fs17.readFile(c.config_file)),
+          model: data.config.executors[data.config.workflow.active_executor].model
+        });
+      } catch {
+        items.push({
+          ...c,
+          available: false,
+          selected: c.id === project.current_configuration,
+          error: "\u914D\u7F6E\u6216\u5DE5\u4F5C\u533A\u4E0D\u53EF\u7528"
+        });
+      }
+    }
+    return {
+      project_id: project.id,
+      revision: project.revision ?? 0,
+      current_configuration: project.current_configuration,
+      items
+    };
+  }
+  async attach(projectId, file, revision2) {
+    const inspected = await inspectConfiguration(file);
+    return new Store(path16.join(this.root, "registry-lock")).lock(async () => {
+      const all = await this.list();
+      const p = all.find(
+        (p2) => p2.id === projectId || p2.aliases?.includes(projectId)
+      );
+      ensure(p, "PROJECT_NOT_FOUND", "\u9879\u76EE\u672A\u767B\u8BB0");
+      ensure(
+        p.revision === revision2,
+        "CONFIG_CONFLICT",
+        "\u914D\u7F6E\u5217\u8868\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5"
+      );
+      ensure(
+        p.source_root && canonical2(p.source_root) === canonical2(inspected.config.project.source_root),
+        "CONFIG_CONFLICT",
+        "\u53EA\u80FD\u7ED1\u5B9A\u540C\u4E00\u6E90\u7801\u9879\u76EE\u7684\u914D\u7F6E"
+      );
+      const b = binding({
+        config_file: inspected.configFile,
+        control_root: inspected.controlRoot
+      });
+      const existing = p.configurations.find(
+        (c) => canonical2(c.config_file) === canonical2(b.config_file)
+      ) ?? p.configurations.find((c) => sameBinding(c, b));
+      ensure(
+        !existing || canonical2(existing.control_root) === canonical2(b.control_root),
+        "CONFIG_CONFLICT",
+        "\u5DF2\u767B\u8BB0 YAML \u7684\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u4F7F\u7528\u72EC\u7ACB\u914D\u7F6E\u6587\u4EF6\u4FDD\u7559\u539F\u6709\u5386\u53F2"
+      );
+      const update = async () => {
+        if (existing) {
+          existing.config_file = b.config_file;
+          if (existing.id === p.current_configuration)
+            p.config_file = b.config_file;
+        } else p.configurations.push(b);
+        p.revision++;
+        await atomic(path16.join(this.root, "projects.json"), all);
+      };
+      if (existing && canonical2(existing.config_file) !== canonical2(b.config_file))
+        await withIdleRoots([existing.control_root], update);
+      else await update();
+      return p;
+    });
+  }
+  async select(projectId, configurationId, revision2, configRevision) {
+    return new Store(path16.join(this.root, "registry-lock")).lock(async () => {
+      const all = await this.list();
+      const p = all.find(
+        (p2) => p2.id === projectId || p2.aliases?.includes(projectId)
+      );
+      ensure(p, "PROJECT_NOT_FOUND", "\u9879\u76EE\u672A\u767B\u8BB0");
+      ensure(
+        p.revision === revision2,
+        "CONFIG_CONFLICT",
+        "\u5F53\u524D\u914D\u7F6E\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5"
+      );
+      const target = p.configurations.find((c) => c.id === configurationId);
+      ensure(target, "CONFIG", "\u6240\u9009\u914D\u7F6E\u672A\u767B\u8BB0");
+      const inspected = await inspectConfiguration(target.config_file);
+      ensure(
+        canonical2(inspected.config.project.source_root) === canonical2(p.source_root) && canonical2(inspected.controlRoot) === canonical2(target.control_root),
+        "CONFIG_CONFLICT",
+        "\u6240\u9009\u914D\u7F6E\u7684\u9879\u76EE\u6216\u63A7\u5236\u76EE\u5F55\u5DF2\u53D8\u5316"
+      );
+      if (configRevision)
+        ensure(
+          hash(await fs17.readFile(target.config_file)) === configRevision,
+          "CONFIG_CONFLICT",
+          "\u6240\u9009 YAML \u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5"
+        );
+      await withIdleRoots([p.control_root, target.control_root], async () => {
+        p.config_file = target.config_file;
+        p.control_root = target.control_root;
+        p.current_configuration = target.id;
+        p.revision++;
+        await atomic(path16.join(this.root, "projects.json"), all);
+      });
+      return p;
+    });
+  }
   async remove(projectId) {
-    await new Store(path15.join(this.root, "registry-lock")).lock(async () => {
+    await new Store(path16.join(this.root, "registry-lock")).lock(async () => {
       await atomic(
-        path15.join(this.root, "projects.json"),
-        (await this.list()).filter((p) => p.id !== projectId)
+        path16.join(this.root, "projects.json"),
+        (await this.list()).filter(
+          (p) => p.id !== projectId && !p.aliases?.includes(projectId)
+        )
       );
     });
   }
 };
 
+// src/console/native.ts
+import fs18 from "node:fs/promises";
+import path17 from "node:path";
+import { spawn as spawn3 } from "node:child_process";
+import { fileURLToPath as fileURLToPath2 } from "node:url";
+var powershell = () => path17.join(
+  process.env.SystemRoot ?? "C:\\Windows",
+  "System32/WindowsPowerShell/v1.0/powershell.exe"
+);
+var encoded = (script) => [
+  "-NoProfile",
+  "-NonInteractive",
+  "-STA",
+  "-EncodedCommand",
+  Buffer.from(script, "utf16le").toString("base64")
+];
+async function privateDirectory(directory) {
+  await safePath(path17.dirname(directory), path17.basename(directory));
+  await fs18.mkdir(directory, { recursive: true, mode: 448 });
+  if (process.platform !== "win32") return fs18.chmod(directory, 448);
+  const result = await processRun(
+    [
+      powershell(),
+      ...encoded(
+        `$ErrorActionPreference='Stop';$p=$env:HARNESS_PRIVATE_DIR;$a=[Security.AccessControl.DirectorySecurity]::new();$a.SetAccessRuleProtection($true,$false);$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User;$a.SetOwner($sid);foreach($s in @($sid,[Security.Principal.SecurityIdentifier]::new('S-1-5-18'))){$r=[Security.AccessControl.FileSystemAccessRule]::new($s,'FullControl','ContainerInherit,ObjectInherit','None','Allow');$a.AddAccessRule($r)};[IO.Directory]::SetAccessControl($p,$a)`
+      )
+    ],
+    {
+      cwd: directory,
+      env: { ...process.env, HARNESS_PRIVATE_DIR: directory },
+      timeoutMs: 15e3
+    }
+  );
+  ensure(
+    result.exitCode === 0,
+    "PRIVATE_PERMISSIONS",
+    "\u65E0\u6CD5\u8BBE\u7F6E\u5F53\u524D\u7528\u6237\u79C1\u6709\u76EE\u5F55\u6743\u9650"
+  );
+}
+async function openBrowser(url) {
+  ensure(
+    /^http:\/\/127\.0\.0\.1:\d+\/#token=[a-f0-9]{64}$/.test(url),
+    "URL",
+    "\u65E0\u6548\u7684\u5DE5\u4F5C\u53F0\u5730\u5740"
+  );
+  if (process.platform !== "win32") return;
+  await new Promise((resolve, reject) => {
+    const child2 = spawn3(
+      powershell(),
+      encoded(
+        "$ErrorActionPreference='Stop';Start-Process -FilePath $env:HARNESS_BROWSER_URL -WindowStyle Normal"
+      ),
+      {
+        windowsHide: true,
+        stdio: "ignore",
+        env: {
+          ...process.env,
+          PSModulePath: void 0,
+          HARNESS_BROWSER_URL: url
+        }
+      }
+    );
+    const failed = () => new Block(
+      "BROWSER_OPEN",
+      "\u5DE5\u4F5C\u53F0\u670D\u52A1\u5DF2\u5C31\u7EEA\uFF0C\u4F46\u65E0\u6CD5\u6253\u5F00\u9ED8\u8BA4\u6D4F\u89C8\u5668\u3002\u8BF7\u68C0\u67E5 HTTP \u9ED8\u8BA4\u5E94\u7528\u540E\u91CD\u65B0\u542F\u52A8\u5DE5\u4F5C\u53F0\u3002"
+    );
+    const timeout = setTimeout(() => {
+      child2.kill();
+      reject(failed());
+    }, 15e3);
+    child2.once("error", () => {
+      clearTimeout(timeout);
+      reject(failed());
+    });
+    child2.once("exit", (code) => {
+      clearTimeout(timeout);
+      if (code === 0) resolve();
+      else reject(failed());
+    });
+  });
+}
+var choosing = false;
+async function choosePath(kind) {
+  ensure(
+    process.platform === "win32",
+    "PICKER_UNAVAILABLE",
+    "\u672C\u673A\u9009\u62E9\u7A97\u53E3\u4EC5\u652F\u6301 Windows\uFF0C\u8BF7\u7C98\u8D34\u8DEF\u5F84"
+  );
+  ensure(kind === "folder" || kind === "config", "ARGUMENT", "\u9009\u62E9\u7C7B\u578B\u65E0\u6548");
+  ensure(!choosing, "LOCKED", "\u5DF2\u6709\u9009\u62E9\u7A97\u53E3\uFF0C\u8BF7\u5148\u5B8C\u6210\u6216\u5173\u95ED");
+  choosing = true;
+  try {
+    const executable3 = fileURLToPath2(
+      new URL(
+        path17.basename(fileURLToPath2(import.meta.url)) === "harness.mjs" ? "./harness-picker.exe" : "../../dist/harness-picker.exe",
+        import.meta.url
+      )
+    );
+    const result = await processRun([executable3, kind], {
+      cwd: path17.dirname(process.execPath),
+      env: { ...process.env, PSModulePath: void 0 },
+      timeoutMs: 12e4,
+      windowsHide: false
+    });
+    ensure(
+      result.exitCode === 0,
+      "PICKER_UNAVAILABLE",
+      "\u9009\u62E9\u7A97\u53E3\u5DF2\u8D85\u65F6\u6216\u65E0\u6CD5\u6253\u5F00\uFF0C\u8BF7\u7C98\u8D34\u8DEF\u5F84"
+    );
+    return { path: result.stdout.trim() || null };
+  } finally {
+    choosing = false;
+  }
+}
+
+// src/console/onboarding-jobs.ts
+var import_yaml8 = __toESM(require_dist(), 1);
+import fs20 from "node:fs/promises";
+import path19 from "node:path";
+import os2 from "node:os";
+
+// src/console/discovery.ts
+import fs19 from "node:fs/promises";
+import path18 from "node:path";
+
+// src/console/java.ts
+var import_saxes2 = __toESM(require_saxes(), 1);
+var child = (node, name) => node?.children.find((n) => n.name === name);
+var javaMajor = (value) => {
+  const match = /^(?:1\.)?(\d+)(?:[._+-]|$)/.exec(value.trim());
+  return match && Number(match[1]) > 0 ? Number(match[1]) : void 0;
+};
+function mavenJavaRequirement(xml) {
+  const root = { name: "", text: "", children: [] };
+  const stack = [root];
+  const parser = new import_saxes2.SaxesParser();
+  parser.on(
+    "doctype",
+    () => ensure(false, "PROJECT", "pom.xml \u4E0D\u5141\u8BB8\u5916\u90E8\u6587\u6863\u58F0\u660E")
+  );
+  parser.on("opentag", (t2) => {
+    const node = { name: t2.name.split(":").at(-1), text: "", children: [] };
+    stack.at(-1).children.push(node);
+    stack.push(node);
+  });
+  parser.on("text", (text) => {
+    stack.at(-1).text += text;
+  });
+  parser.on("cdata", (text) => {
+    stack.at(-1).text += text;
+  });
+  parser.on("closetag", () => {
+    stack.pop();
+  });
+  parser.write(xml).close();
+  const project = child(root, "project");
+  const properties = Object.fromEntries(
+    (child(project, "properties")?.children ?? []).map((n) => [
+      n.name,
+      n.text.trim()
+    ])
+  );
+  const build = child(project, "build");
+  const plugin = [
+    child(build, "plugins"),
+    child(child(build, "pluginManagement"), "plugins")
+  ].flatMap((n) => n?.children ?? []).find(
+    (n) => child(n, "artifactId")?.text.trim() === "maven-compiler-plugin"
+  );
+  const config = child(plugin, "configuration");
+  const resolve = (value2) => {
+    for (let n = 0; n < 16 && /\$\{/.test(value2); n++) {
+      const next = value2.replace(
+        /\$\{([^}]+)\}/g,
+        (all, name) => properties[name] ?? all
+      );
+      if (next === value2) break;
+      value2 = next;
+    }
+    return value2;
+  };
+  for (const key2 of ["release", "target", "source"]) {
+    const value2 = child(config, key2)?.text.trim() || properties["maven.compiler." + key2];
+    if (value2) {
+      const resolved = resolve(value2);
+      return {
+        value: resolved,
+        major: javaMajor(resolved),
+        source: `pom.xml / ${child(config, key2) ? "maven-compiler-plugin / " + key2 : "properties / maven.compiler." + key2}`
+      };
+    }
+  }
+  const value = properties["java.version"] && resolve(properties["java.version"]);
+  return {
+    value,
+    major: value ? javaMajor(value) : void 0,
+    source: value ? "pom.xml / properties / java.version" : void 0
+  };
+}
+async function chooseJava(required, explicit, candidates, probe) {
+  for (const home of explicit ? [explicit] : [...new Set(candidates.filter(Boolean))].slice(0, 64)) {
+    const result = await probe(home);
+    const version2 = /version\s+"([^"]+)"|^(?:openjdk|java)\s+(\d[^\s]*)/m.exec(
+      result.java ?? ""
+    );
+    const major = javaMajor(version2?.[1] ?? version2?.[2] ?? "");
+    const compiler = javaMajor(
+      /javac\s+(\S+)/.exec(result.javac ?? "")?.[1] ?? ""
+    );
+    const usable = !!major && major === compiler;
+    if (!explicit && (!usable || required && required !== major)) continue;
+    return {
+      home,
+      major,
+      version: result.java,
+      source: explicit ? "manual" : "project_match",
+      blockers: !usable ? ["\u6240\u9009\u76EE\u5F55\u4E0D\u662F\u53EF\u7528 JDK\uFF08\u9700\u8981\u5339\u914D\u7248\u672C\u7684 java \u548C javac\uFF09"] : required && major !== required ? [`\u9879\u76EE\u58F0\u660E Java ${required}\uFF0C\u6240\u9009 JDK \u4E3A ${major}\uFF0C\u8BF7\u9009\u62E9\u5339\u914D\u7248\u672C`] : []
+    };
+  }
+  return {
+    home: void 0,
+    major: void 0,
+    version: null,
+    source: "not_found",
+    blockers: [
+      required ? `\u672A\u627E\u5230\u5339\u914D Java ${required} \u7684 JDK\uFF0C\u8BF7\u9009\u62E9\u5BF9\u5E94 JDK \u4E3B\u76EE\u5F55` : "\u672A\u627E\u5230\u53EF\u7528 JDK\uFF0C\u8BF7\u9009\u62E9 JDK \u4E3B\u76EE\u5F55"
+    ]
+  };
+}
+
+// src/console/discovery.ts
+async function smallText(file) {
+  ensure(
+    (await fs19.stat(file)).size <= 1024 * 1024,
+    "PROJECT",
+    "\u9879\u76EE\u6E05\u5355\u6587\u4EF6\u8D85\u8FC7 1 MiB"
+  );
+  return fs19.readFile(file, "utf8");
+}
+async function executable2(name) {
+  if (process.platform !== "win32") return null;
+  const r = await processRun(
+    [
+      path18.join(process.env.SystemRoot ?? "C:\\Windows", "System32/where.exe"),
+      name
+    ],
+    {
+      cwd: path18.dirname(process.execPath),
+      env: process.env,
+      timeoutMs: 5e3
+    }
+  ).catch(() => null);
+  return r?.exitCode === 0 ? r.stdout.trim().split(/\r?\n/)[0] : null;
+}
+async function version(file, args = "--version", env = {}) {
+  if (!file || !path18.isAbsolute(file) || /[\r\n%"&|<>^]/.test(file) || !await exists(file))
+    return null;
+  if (file.toLowerCase().endsWith(".cmd")) {
+    const script = `[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false);& $env:HARNESS_TOOL ${args};exit $LASTEXITCODE`;
+    const r2 = await processRun(
+      [
+        powershell(),
+        "-NoProfile",
+        "-NonInteractive",
+        "-EncodedCommand",
+        Buffer.from(script, "utf16le").toString("base64")
+      ],
+      {
+        cwd: path18.dirname(process.execPath),
+        env: { ...process.env, ...env, HARNESS_TOOL: file },
+        timeoutMs: 15e3
+      }
+    ).catch(() => null);
+    return r2?.exitCode === 0 ? (r2.stdout + r2.stderr).trim().slice(0, 1e3) : null;
+  }
+  const r = await processRun([file, args], {
+    cwd: path18.dirname(process.execPath),
+    env: { ...process.env, ...env },
+    timeoutMs: 1e4
+  }).catch(() => null);
+  return r?.exitCode === 0 ? (r.stdout + r.stderr).trim().slice(0, 1e3) : null;
+}
+var cmd = (file, args) => [
+  path18.join(process.env.SystemRoot ?? "C:\\Windows", "System32/cmd.exe"),
+  "/d",
+  "/c",
+  file,
+  ...args
+];
+async function detectCommands(source, selection, javaHomes = []) {
+  ensure(
+    selection && typeof selection === "object" && !Array.isArray(selection) && Object.keys(selection).every(
+      (k) => [
+        "java_home",
+        "maven_path",
+        "node_path",
+        "package_manager",
+        "package_manager_path"
+      ].includes(k)
+    ) && Object.values(selection).every(
+      (v) => typeof v === "string" && !/[\r\n\0%"&|<>^]/.test(v)
+    ),
+    "ARGUMENT",
+    "\u5DE5\u5177\u8DEF\u5F84\u6216\u5305\u7BA1\u7406\u5668\u53C2\u6570\u65E0\u6548"
+  );
+  for (const [key2, names] of [
+    ["maven_path", ["mvn.cmd", "mvn"]],
+    ["node_path", ["node.exe", "node"]],
+    [
+      "package_manager_path",
+      ["npm.cmd", "pnpm.cmd", "yarn.cmd", "npm", "pnpm", "yarn"]
+    ]
+  ]) {
+    const file = selection[key2];
+    ensure(
+      !file || path18.isAbsolute(file) && names.some((name) => path18.basename(file).toLowerCase() === name),
+      "ARGUMENT",
+      "\u8BF7\u9009\u62E9\u5BF9\u5E94\u7CFB\u7EDF\u5DE5\u5177\u7684\u7EDD\u5BF9\u8DEF\u5F84"
+    );
+  }
+  ensure(
+    !selection.java_home || path18.isAbsolute(selection.java_home),
+    "ARGUMENT",
+    "JDK \u4E3B\u76EE\u5F55\u5FC5\u987B\u4E3A\u7EDD\u5BF9\u8DEF\u5F84"
+  );
+  const result = {
+    kind: "unknown",
+    commands: [],
+    verification: {},
+    blockers: [],
+    warnings: [],
+    tools: { ...selection },
+    versions: {},
+    environment: {}
+  };
+  for (const [name, value] of Object.entries(selection)) {
+    if (name !== "package_manager" && value)
+      ensure(
+        !within(source, value),
+        "ARGUMENT",
+        "\u672C\u673A\u5DE5\u5177\u5FC5\u987B\u4F4D\u4E8E\u5F85\u63A5\u5165\u9879\u76EE\u4E4B\u5916"
+      );
+  }
+  const add = (id2, argv, purpose = "baseline", verification) => {
+    result.commands.push({
+      id: id2,
+      argv,
+      purpose,
+      cwd: ".",
+      timeout_seconds: 1800
+    });
+    if (verification) result.verification[id2] = verification;
+  };
+  const pom = await exists(path18.join(source, "pom.xml"));
+  const pkgFile = await exists(path18.join(source, "package.json"));
+  if (pom && pkgFile)
+    result.warnings.push(
+      "\u540C\u65F6\u53D1\u73B0 Maven \u548C Node.js\uFF0C\u9996\u6B21\u63A5\u5165\u4EE5\u6839 Maven \u6784\u5EFA\u4E3A\u57FA\u7EBF\uFF1B\u524D\u7AEF\u5B50\u9879\u76EE\u7531 Codex \u8865\u9F50\u9A8C\u8BC1\u3002"
+    );
+  if (pom) {
+    result.kind = "maven";
+    const requirement = mavenJavaRequirement(
+      await smallText(await safePath(source, "pom.xml"))
+    );
+    result.required_java = requirement.value;
+    result.java_requirement_source = requirement.source;
+    const inPath = await executable2("java.exe");
+    const java = await chooseJava(
+      requirement.major,
+      selection.java_home,
+      [
+        ...javaHomes,
+        ...Object.entries(process.env).filter(([k]) => /^(?:JAVA.*HOME|JDK.*HOME)$/i.test(k)).map(([, v]) => v).filter(Boolean),
+        ...inPath ? [path18.dirname(path18.dirname(inPath))] : []
+      ],
+      async (home) => ({
+        java: await version(path18.join(home, "bin/java.exe"), "-version"),
+        javac: await version(path18.join(home, "bin/javac.exe"), "-version")
+      })
+    );
+    result.tools.java_home = java.home;
+    result.java_major = java.major;
+    result.java_selection_source = java.source;
+    result.blockers.push(...java.blockers);
+    if (java.version) result.versions.java = java.version;
+    if (!requirement.major) {
+      result.warnings.push(
+        "\u6839 pom.xml \u672A\u80FD\u89E3\u6790\u51FA Java \u7248\u672C\uFF08\u7236 POM\u3001profile \u6216 toolchain \u9700\u4EBA\u5DE5\u786E\u8BA4\uFF09\u3002"
+      );
+      if (!selection.java_home)
+        result.blockers.push("\u8BF7\u663E\u5F0F\u9009\u62E9\u5E76\u786E\u8BA4\u672C\u9879\u76EE\u7684 JDK");
+    }
+    result.tools.maven_path = selection.maven_path ?? await executable2("mvn.cmd") ?? void 0;
+    if (result.tools.java_home)
+      result.environment.JAVA_HOME = result.tools.java_home;
+    const mavenVersion = await version(
+      result.tools.maven_path,
+      "--version",
+      result.environment
+    );
+    if (!mavenVersion)
+      result.blockers.push("\u672A\u627E\u5230\u53EF\u7528 Maven\uFF0C\u8BF7\u9009\u62E9 mvn.cmd \u8DEF\u5F84");
+    else result.versions.maven = mavenVersion;
+    add(
+      "maven-dependencies",
+      cmd(result.tools.maven_path ?? "mvn.cmd", [
+        "-B",
+        "-e",
+        "-ntp",
+        "-Dmaven.repo.local=.harness-tmp/m2",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline"
+      ]),
+      "init"
+    );
+    add(
+      "maven-verify",
+      cmd(result.tools.maven_path ?? "mvn.cmd", [
+        "-B",
+        "-e",
+        "-ntp",
+        "-Dmaven.repo.local=.harness-tmp/m2",
+        "verify"
+      ]),
+      "baseline",
+      {
+        kind: "test",
+        format: "junit",
+        files: [
+          "**/target/surefire-reports/TEST-*.xml",
+          "**/target/failsafe-reports/TEST-*.xml"
+        ]
+      }
+    );
+  } else if (pkgFile) {
+    result.kind = "node";
+    const pkg = JSON.parse(
+      await smallText(await safePath(source, "package.json"))
+    );
+    ensure(
+      pkg && typeof pkg === "object" && !Array.isArray(pkg),
+      "PROJECT",
+      "package.json \u65E0\u6548"
+    );
+    const locks = [];
+    for (const [file, manager2] of [
+      ["package-lock.json", "npm"],
+      ["npm-shrinkwrap.json", "npm"],
+      ["pnpm-lock.yaml", "pnpm"],
+      ["yarn.lock", "yarn"]
+    ])
+      if (await exists(path18.join(source, file))) locks.push(manager2);
+    const managers = [...new Set(locks)];
+    if (managers.length > 1 && !selection.package_manager)
+      result.blockers.push("\u53D1\u73B0\u591A\u4E2A\u5305\u7BA1\u7406\u5668\u9501\u6587\u4EF6\uFF0C\u8BF7\u9009\u62E9\u672C\u6B21\u4F7F\u7528\u7684\u5305\u7BA1\u7406\u5668");
+    const manager = selection.package_manager ?? managers[0] ?? "npm";
+    ensure(
+      ["npm", "pnpm", "yarn"].includes(manager),
+      "ARGUMENT",
+      "\u5305\u7BA1\u7406\u5668\u65E0\u6548"
+    );
+    result.tools.package_manager = manager;
+    result.tools.node_path = selection.node_path ?? process.execPath;
+    result.tools.package_manager_path = selection.package_manager_path ?? (await exists(
+      path18.join(path18.dirname(result.tools.node_path), manager + ".cmd")
+    ) ? path18.join(path18.dirname(result.tools.node_path), manager + ".cmd") : await executable2(manager + ".cmd") ?? void 0);
+    const nodeVersion = await version(result.tools.node_path);
+    const pmVersion = await version(result.tools.package_manager_path);
+    if (!nodeVersion) result.blockers.push("\u672A\u627E\u5230\u53EF\u7528 Node.js");
+    else result.versions.node = nodeVersion;
+    if (!pmVersion)
+      result.blockers.push(`\u672A\u627E\u5230\u53EF\u7528 ${manager}\uFF0C\u8BF7\u5B89\u88C5\u540E\u91CD\u65B0\u68C0\u6D4B`);
+    else result.versions.package_manager = pmVersion;
+    const tool = result.tools.package_manager_path ?? manager + ".cmd";
+    const locked = locks.includes(manager);
+    if (manager === "yarn" && !locked && Number.parseInt(pmVersion ?? "1") >= 2)
+      result.blockers.push("Yarn 2+ \u9879\u76EE\u7F3A\u5C11 yarn.lock\uFF0C\u8BF7\u5148\u751F\u6210\u5E76\u6838\u5BF9\u9501\u6587\u4EF6");
+    const install = manager === "npm" ? [
+      locked ? "ci" : "install",
+      ...!locked ? ["--package-lock=false"] : [],
+      "--no-audit",
+      "--no-fund",
+      "--cache",
+      ".harness-tmp/npm-cache"
+    ] : manager === "pnpm" ? [
+      "install",
+      ...locked ? ["--frozen-lockfile"] : ["--lockfile=false"],
+      "--store-dir",
+      ".harness-tmp/pnpm-store"
+    ] : [
+      "install",
+      ...locked ? [
+        Number.parseInt(pmVersion ?? "1") >= 2 ? "--immutable" : "--frozen-lockfile"
+      ] : ["--no-lockfile"]
+    ];
+    add("dependencies", cmd(tool, install), "init");
+    for (const name of ["build", "typecheck", "test"]) {
+      const script = pkg.scripts?.[name];
+      if (typeof script !== "string" || !script.trim()) continue;
+      const args = [
+        ...manager !== "yarn" || Number.parseInt(pmVersion ?? "1") < 2 ? ["--silent"] : [],
+        "run",
+        name
+      ];
+      let verification = { kind: "check" };
+      if (name === "test") {
+        if (script.trim() === "node --test") {
+          args.push(
+            ...manager === "npm" ? ["--"] : [],
+            "--test-reporter=tap"
+          );
+          verification = { kind: "test", format: "tap", source: "stdout" };
+        } else if (/--test-reporter(?:=|\s+)tap\b/.test(script))
+          verification = { kind: "test", format: "tap", source: "stdout" };
+        else {
+          verification = {
+            kind: "test",
+            format: "junit",
+            files: ["**/junit.xml", "**/junit-*.xml", "**/TEST-*.xml"]
+          };
+          result.warnings.push(
+            "\u6D4B\u8BD5\u811A\u672C\u5C06\u539F\u6837\u6267\u884C\uFF1B\u672A\u8BC6\u522B\u5230 TAP \u53C2\u6570\uFF0C\u9700\u8981\u751F\u6210 JUnit \u62A5\u544A\uFF0C\u5426\u5219\u663E\u793A\u6D4B\u8BD5\u672A\u786E\u8BA4\u3002"
+          );
+        }
+      }
+      add(name, cmd(tool, args), "baseline", verification);
+    }
+    if (!result.commands.some((c) => c.purpose === "baseline"))
+      result.blockers.push(
+        "\u672A\u627E\u5230 build\u3001typecheck \u6216 test \u811A\u672C\uFF0C\u8BF7\u7531 Codex \u767B\u8BB0\u57FA\u7EBF\u547D\u4EE4"
+      );
+    if (!result.verification.test)
+      result.warnings.push(
+        "\u9879\u76EE\u672A\u58F0\u660E test \u811A\u672C\uFF0C\u6784\u5EFA\u6210\u529F\u4E0D\u4F1A\u6807\u8BB0\u4E3A\u6D4B\u8BD5\u901A\u8FC7\u3002"
+      );
+  } else
+    result.blockers.push("\u5C1A\u4E0D\u652F\u6301\u6B64\u9879\u76EE\u7684\u81EA\u52A8\u8BD5\u8DD1\uFF0C\u8BF7\u7531 Codex \u8865\u9F50\u914D\u7F6E\u540E\u5BFC\u5165");
+  const bins = [
+    result.tools.java_home && path18.join(result.tools.java_home, "bin"),
+    result.tools.maven_path && path18.dirname(result.tools.maven_path),
+    result.tools.node_path && path18.dirname(result.tools.node_path),
+    result.tools.package_manager_path && path18.dirname(result.tools.package_manager_path)
+  ].filter(Boolean);
+  result.environment.PATH = [
+    ...new Set(bins),
+    process.env.PATH ?? process.env.Path ?? ""
+  ].join(path18.delimiter);
+  return result;
+}
+async function consoleDefaults(projects) {
+  const saved = await readJson(
+    path18.join(projects.root, "preferences.json")
+  ).catch((e) => {
+    if (e.code === "ENOENT") return {};
+    throw e;
+  });
+  const dataRoot = saved.data_root ?? (process.platform === "win32" && await exists("D:\\Harness") ? "D:\\Harness" : path18.join(path18.dirname(projects.root), "projects"));
+  const executors = [];
+  let codexPath = saved.codex_path ?? "codex";
+  const javaHomes = new Set([saved.tools?.java_home].filter(Boolean));
+  for (const p of await projects.list()) {
+    const loaded = await projects.get(p.id).catch(() => null);
+    if (!loaded) continue;
+    if (loaded.vars.JAVA_HOME) javaHomes.add(loaded.vars.JAVA_HOME);
+    if (loaded.environmentOverrides.JAVA_HOME)
+      javaHomes.add(loaded.environmentOverrides.JAVA_HOME);
+    if (codexPath === "codex") codexPath = loaded.config.sandbox.codex_path;
+    for (const [name, executor] of Object.entries(loaded.config.executors))
+      executors.push({
+        project_id: p.id,
+        executor_id: name,
+        project_name: p.name,
+        executor,
+        key_configured: !!loaded.vars[executor.api_key_env]
+      });
+  }
+  let codexError;
+  try {
+    codexPath = await resolveCodexExecutable(codexPath, process.env);
+  } catch (error2) {
+    codexError = error2.message;
+  }
+  return {
+    data_root: dataRoot,
+    tools: saved.tools ?? {},
+    java_homes: [...javaHomes],
+    codex_path: codexPath,
+    codex_error: codexError,
+    executors
+  };
+}
+async function discoverConfigurations(projects, source, storageRoot) {
+  ensure(
+    typeof source === "string" && path18.isAbsolute(source),
+    "PROJECT",
+    "\u8BF7\u9009\u62E9\u9879\u76EE\u6587\u4EF6\u5939\u6216\u586B\u5199\u7EDD\u5BF9\u8DEF\u5F84"
+  );
+  source = await fs19.realpath(source);
+  ensure((await fs19.stat(source)).isDirectory(), "PROJECT", "\u9879\u76EE\u76EE\u5F55\u4E0D\u5B58\u5728");
+  const registered = await projects.list();
+  const directories = /* @__PURE__ */ new Set();
+  const defaults = await consoleDefaults(projects);
+  directories.add(path18.join(storageRoot ?? defaults.data_root, "configs"));
+  const files = /* @__PURE__ */ new Set();
+  for (const p of registered)
+    for (const c of p.configurations ?? []) {
+      directories.add(path18.dirname(c.config_file));
+      files.add(c.config_file);
+    }
+  for (const dir of directories) {
+    const entries = await fs19.readdir(dir, { withFileTypes: true }).catch((e) => {
+      if (e.code === "ENOENT") return [];
+      throw e;
+    });
+    ensure(
+      entries.length <= 5e3,
+      "CONFIG_LIMIT",
+      "\u914D\u7F6E\u76EE\u5F55\u8FC7\u5927\uFF0C\u8BF7\u76F4\u63A5\u9009\u62E9 YAML"
+    );
+    for (const f of entries)
+      if (f.isFile() && /\.ya?ml$/i.test(f.name))
+        files.add(path18.join(dir, f.name));
+  }
+  const matches3 = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const file of files) {
+    const inspected = await inspectConfiguration(file).catch(() => null);
+    if (!inspected || canonical2(inspected.config.project.source_root) !== canonical2(source) || seen.has(canonical2(inspected.controlRoot)))
+      continue;
+    seen.add(canonical2(inspected.controlRoot));
+    const p = registered.find(
+      (p2) => p2.configurations?.some(
+        (c) => canonical2(c.control_root) === canonical2(inspected.controlRoot)
+      )
+    );
+    const db = await readJson(
+      path18.join(inspected.controlRoot, "db.json")
+    ).catch((e) => {
+      if (e.code === "ENOENT") return { runs: {} };
+      throw e;
+    });
+    const runs = Object.values(db.runs ?? {});
+    matches3.push({
+      config_file: inspected.configFile,
+      control_root: inspected.controlRoot,
+      workspace: inspected.connected.workspace,
+      project_id: p?.id,
+      selected: p && canonical2(p.config_file) === canonical2(inspected.configFile),
+      runs: runs.length,
+      active_run: db.active_run ?? null,
+      latest_activity: runs.map((r) => r.updated_at ?? r.created_at ?? "").sort().at(-1) ?? null
+    });
+  }
+  matches3.sort(
+    (a, b) => Number(!!b.selected) - Number(!!a.selected) || Number(!!b.active_run) - Number(!!a.active_run) || String(b.latest_activity ?? "").localeCompare(
+      String(a.latest_activity ?? "")
+    ) || b.runs - a.runs
+  );
+  return { source_root: source, matches: matches3 };
+}
+
+// src/console/onboarding-jobs.ts
+var alive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code !== "ESRCH";
+  }
+};
+async function codeDigest(source) {
+  const s = await snapshot(source);
+  return digest(
+    s.files.filter(
+      (f) => f.path !== "AGENTS.md" && !f.path.startsWith("docs/harness/")
+    )
+  );
+}
+var phaseLabels = {
+  saving: "\u4FDD\u5B58\u914D\u7F6E\u4E0E\u51ED\u636E",
+  standards: "\u5B89\u88C5\u9879\u76EE\u89C4\u8303",
+  standards_ready: "\u89C4\u8303\u5DF2\u5B89\u88C5",
+  doctor: "\u6C99\u7BB1\u4E0E\u5DE5\u4F5C AI \u9884\u68C0",
+  doctor_result: "\u9884\u68C0\u7ED3\u679C",
+  initializing: "\u521B\u5EFA\u9694\u79BB\u5DE5\u4F5C\u533A",
+  initialized: "\u5DE5\u4F5C\u533A\u5DF2\u521D\u59CB\u5316",
+  baseline: "\u5B89\u88C5\u4F9D\u8D56\u4E0E\u57FA\u7EBF\u8BD5\u8DD1",
+  registering: "\u767B\u8BB0\u9879\u76EE",
+  completed: "\u63A5\u5165\u5B8C\u6210",
+  blocked: "\u63A5\u5165\u53D7\u963B",
+  needs_attention: "\u521D\u59CB\u5316\u5B8C\u6210\uFF0C\u57FA\u7EBF\u6216\u6D4B\u8BD5\u5F85\u5904\u7406",
+  preview: "\u7B49\u5F85\u9996\u6B21\u786E\u8BA4",
+  awaiting_confirmation: "\u5DF2\u6267\u884C\u8FC7\u63A5\u5165\uFF0C\u7B49\u5F85\u786E\u8BA4\u4FEE\u6539\u540E\u7684\u8BA1\u5212"
+};
+var OnboardingJobs = class {
+  projects;
+  root;
+  runtime;
+  running = /* @__PURE__ */ new Map();
+  constructor(projects, runtime) {
+    this.projects = projects;
+    this.root = path19.join(projects.root, "onboarding");
+    this.runtime = runtime;
+  }
+  file(jobId) {
+    ensure(
+      /^onboard-[a-f0-9-]+$/.test(jobId),
+      "JOB_NOT_FOUND",
+      "\u63A5\u5165\u8BB0\u5F55\u4E0D\u5B58\u5728"
+    );
+    return path19.join(this.root, jobId + ".json");
+  }
+  async read(jobId) {
+    const job = await readJson(this.file(jobId)).catch((e) => {
+      if (e.code === "ENOENT") return null;
+      throw e;
+    });
+    ensure(job, "JOB_NOT_FOUND", "\u63A5\u5165\u8BB0\u5F55\u4E0D\u5B58\u5728");
+    if (job.status === "preview" && job.events?.some((e) => e.phase === "saving")) {
+      const result = await readJson(
+        path19.join(job.config.project.control_root, "onboarding.json")
+      ).catch((e) => {
+        if (e.code === "ENOENT") return null;
+        throw e;
+      });
+      job.initialized = result?.initialized === true;
+      job.baseline_passed = result?.baseline?.passed ?? null;
+      job.status = job.initialized ? "needs_attention" : "blocked";
+      job.phase = "awaiting_confirmation";
+      job.awaiting_confirmation = true;
+      job.project_id = (await this.projects.list()).find(
+        (p) => canonical2(p.source_root ?? "") === canonical2(job.source_root)
+      )?.id;
+    }
+    if (job.status === "running" && !alive(job.pid))
+      return {
+        ...job,
+        status: "interrupted",
+        error: "\u670D\u52A1\u6216\u7535\u8111\u5DF2\u91CD\u542F\uFF0C\u6838\u5BF9\u540E\u53EF\u91CD\u8BD5"
+      };
+    return job;
+  }
+  expose(job) {
+    return {
+      id: job.id,
+      name: job.name,
+      source_root: job.source_root,
+      config_file: job.config_file,
+      codex_path: job.config.sandbox.codex_path,
+      created_at: job.created_at,
+      updated_at: job.updated_at,
+      status: job.status,
+      phase: job.phase,
+      phase_label: phaseLabels[job.phase] ?? job.phase,
+      project_id: job.project_id,
+      blockers: job.blockers,
+      warnings: job.warnings,
+      error: job.error,
+      commands: job.config.project.commands,
+      changes: job.changes,
+      doctor: job.doctor,
+      checks: job.checks ?? [],
+      initialized: !!job.initialized,
+      baseline_passed: job.baseline_passed ?? null,
+      tests_confirmed: job.tests_confirmed ?? false,
+      tools: job.detection.tools,
+      versions: job.detection.versions,
+      required_java: job.detection.required_java,
+      java_requirement_source: job.detection.java_requirement_source,
+      java_major: job.detection.java_major,
+      java_selection_source: job.detection.java_selection_source,
+      awaiting_confirmation: job.awaiting_confirmation ?? job.status === "preview",
+      confirmations: job.confirmations ?? [],
+      executed_before: job.events?.some((e) => e.phase === "saving") ?? false,
+      kind: job.detection.kind,
+      supplier: job.config.executors.primary.base_url,
+      model: job.config.executors.primary.model,
+      credential_required: !job.ai_source && job.status === "preview",
+      revision: job.revision ?? 1,
+      storage_root: path19.dirname(path19.dirname(job.config_file)),
+      ai_source: job.ai_source && {
+        project_id: job.ai_source.project_id,
+        executor_id: job.ai_source.executor_id
+      },
+      events: job.events ?? [],
+      attempts: job.attempts ?? [],
+      live_logs: job.live_logs ?? []
+    };
+  }
+  async get(jobId) {
+    return this.expose(await this.read(jobId));
+  }
+  async remove(jobId) {
+    const file = this.file(jobId);
+    await new Store(path19.join(this.root, "locks", jobId)).lock(async () => {
+      const job = await this.read(jobId).catch((e) => {
+        if (e.code === "JOB_NOT_FOUND") return null;
+        throw e;
+      });
+      ensure(
+        !this.running.has(jobId) && job?.status !== "running",
+        "LOCKED",
+        "\u63A5\u5165\u6B63\u5728\u6267\u884C\uFF0C\u7ED3\u675F\u540E\u624D\u80FD\u5220\u9664\u8BB0\u5F55"
+      );
+      if (job) await fs20.unlink(file);
+    });
+  }
+  async list() {
+    const files = await fs20.readdir(this.root).catch((e) => {
+      if (e.code === "ENOENT") return [];
+      throw e;
+    });
+    const items = [];
+    for (const f of files.filter((f2) => /^onboard-[a-f0-9-]+\.json$/.test(f2))) {
+      const job = await this.get(f.slice(0, -5)).catch((e) => {
+        if (e.code === "JOB_NOT_FOUND") return null;
+        throw e;
+      });
+      if (job) items.push(job);
+    }
+    return items.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }
+  async preview(input, reviseId) {
+    ensure(
+      input && typeof input === "object" && !Array.isArray(input),
+      "ARGUMENT",
+      "\u63A5\u5165\u53C2\u6570\u65E0\u6548"
+    );
+    ensure(
+      Object.keys(input).every(
+        (k) => ["source_root", "name", "storage_root", "tools", "ai"].includes(k)
+      ),
+      "ARGUMENT",
+      "\u63A5\u5165\u4EC5\u63A5\u53D7\u9879\u76EE\u3001\u5DE5\u5177\u548C AI \u53C2\u6570\uFF0C\u4E0D\u63A5\u53D7\u547D\u4EE4\u6216\u539F\u59CB\u914D\u7F6E"
+    );
+    const defaults = await consoleDefaults(this.projects);
+    ensure(
+      typeof input.source_root === "string" && (!input.name || typeof input.name === "string"),
+      "ARGUMENT",
+      "\u9879\u76EE\u8DEF\u5F84\u548C\u540D\u79F0\u65E0\u6548"
+    );
+    ensure(
+      !input.ai || typeof input.ai === "object" && !Array.isArray(input.ai) && Object.keys(input.ai).every(
+        (k) => ["project_id", "executor_id", "base_url", "model"].includes(k)
+      ) && Object.values(input.ai).every((v) => typeof v === "string"),
+      "ARGUMENT",
+      "\u5DE5\u4F5C AI \u53C2\u6570\u65E0\u6548"
+    );
+    const previous = reviseId ? await this.read(reviseId) : null;
+    if (previous) {
+      ensure(
+        !["running", "completed"].includes(previous.status) && !this.running.has(previous.id),
+        "LOCKED",
+        "\u63A5\u5165\u5DF2\u5B8C\u6210\u6216\u6B63\u5728\u6267\u884C\uFF0C\u4E0D\u80FD\u4FEE\u6539\u672C\u6B21\u8BA1\u5212"
+      );
+      ensure(
+        canonical2(input.source_root) === canonical2(previous.source_root),
+        "CONFIG_CONFLICT",
+        "\u4FEE\u6539\u63A5\u5165\u8BBE\u7F6E\u4E0D\u80FD\u66F4\u6362\u6E90\u7801\u76EE\u5F55"
+      );
+      const db = await readJson(
+        path19.join(previous.config.project.control_root, "db.json")
+      ).catch((e) => {
+        if (e.code === "ENOENT") return null;
+        throw e;
+      });
+      ensure(
+        !db?.active_run && !Object.keys(db?.runs ?? {}).length,
+        "ACTIVE_RUN",
+        "\u5DF2\u6709\u4E1A\u52A1\u8F6E\u6B21\uFF0C\u8BF7\u7531 Codex \u8C03\u6574\u9A8C\u8BC1\u914D\u7F6E\uFF0C\u4E0D\u91CD\u65B0\u63A5\u5165"
+      );
+    }
+    let storage = input.storage_root ?? defaults.data_root;
+    ensure(
+      typeof storage === "string" && path19.isAbsolute(storage),
+      "CONFIG",
+      "\u5B58\u50A8\u76EE\u5F55\u5FC5\u987B\u4E3A\u7EDD\u5BF9\u8DEF\u5F84"
+    );
+    storage = realLocation(storage);
+    if (previous)
+      ensure(
+        canonical2(storage) === canonical2(path19.dirname(path19.dirname(previous.config_file))),
+        "CONFIG_CONFLICT",
+        "\u91CD\u8BD5\u63A5\u5165\u4E0D\u80FD\u642C\u8FC1\u5B58\u50A8\u76EE\u5F55"
+      );
+    const discovery = await discoverConfigurations(
+      this.projects,
+      input.source_root,
+      storage
+    );
+    if (!previous && discovery.matches.length)
+      return {
+        existing: discovery.matches,
+        source_root: discovery.source_root
+      };
+    const source = discovery.source_root;
+    ensure(
+      !within(source, storage) && !within(storage, source),
+      "CONFIG",
+      "\u5B58\u50A8\u76EE\u5F55\u4E0E\u6E90\u7801\u76EE\u5F55\u4E0D\u80FD\u4E92\u76F8\u5305\u542B"
+    );
+    const existingJobs = await this.list();
+    const unfinished = existingJobs.find(
+      (j) => j.id !== previous?.id && canonical2(j.source_root) === canonical2(source) && ["running", "interrupted", "blocked"].includes(j.status)
+    );
+    if (unfinished) return { resume_job: unfinished, source_root: source };
+    const detectionTools = {
+      ...defaults.tools,
+      ...input.tools
+    };
+    if (!input.tools?.java_home) delete detectionTools.java_home;
+    const detection = await detectCommands(source, detectionTools, [
+      ...existingJobs.filter((j) => canonical2(j.source_root) === canonical2(source)).map((j) => j.tools?.java_home).filter(Boolean),
+      ...defaults.java_homes
+    ]);
+    if (defaults.codex_error) detection.blockers.push(defaults.codex_error);
+    if (detection.kind === "maven" && within(realLocation(os2.tmpdir()), storage))
+      detection.blockers.push(
+        "Maven \u6570\u636E\u76EE\u5F55\u4E0D\u80FD\u653E\u5728\u7CFB\u7EDF\u4E34\u65F6\u76EE\u5F55\uFF1B\u8BF7\u4F7F\u7528\u6301\u4E45\u5316\u76EE\u5F55\uFF0C\u907F\u514D\u672C\u673A\u6C99\u7BB1\u7684 JAR \u8DEF\u5F84\u8BFB\u53D6\u9650\u5236"
+      );
+    if (previous?.initialized)
+      ensure(
+        await codeDigest(source) === previous.code_digest,
+        "ONBOARD_CONFLICT",
+        "\u5DF2\u6709\u9694\u79BB\u57FA\u7EBF\u4E14\u6E90\u7801\u5DF2\u53D8\u5316\uFF0C\u8BF7\u7531 Codex \u521B\u5EFA\u5F00\u53D1\u4EFB\u52A1\uFF0C\u4E0D\u91CD\u65B0\u521D\u59CB\u5316"
+      );
+    const gitEnv = {
+      ...process.env,
+      GIT_CONFIG_NOSYSTEM: "1",
+      GIT_CONFIG_GLOBAL: process.platform === "win32" ? "NUL" : "/dev/null"
+    };
+    const gitRoot = await processRun(
+      ["git", "-C", source, "rev-parse", "--show-toplevel"],
+      { cwd: source, env: gitEnv, timeoutMs: 1e4 }
+    ).catch(() => null);
+    if (gitRoot?.exitCode === 0) {
+      if (canonical2(gitRoot.stdout.trim()) !== canonical2(source))
+        detection.blockers.push("\u8BF7\u9009\u62E9 Git \u4ED3\u5E93\u6839\u76EE\u5F55\uFF0C\u800C\u4E0D\u662F\u5176\u4E2D\u7684\u5B50\u6587\u4EF6\u5939");
+      const head = await processRun(
+        ["git", "-C", source, "rev-parse", "HEAD"],
+        { cwd: source, env: gitEnv, timeoutMs: 1e4 }
+      );
+      if (head.exitCode !== 0)
+        detection.blockers.push("Git \u9879\u76EE\u81F3\u5C11\u9700\u8981\u4E00\u6B21\u63D0\u4EA4\uFF0C\u624D\u80FD\u521B\u5EFA\u9694\u79BB\u5DE5\u4F5C\u6811");
+    }
+    const name = input.name?.trim() || path19.basename(source);
+    ensure(
+      name.length > 0 && name.length <= 120,
+      "CONFIG",
+      "\u9879\u76EE\u540D\u79F0\u957F\u5EA6\u5E94\u4E3A 1 \u81F3 120 \u5B57\u7B26"
+    );
+    const slug = path19.basename(source).replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 48) + "-" + hash(canonical2(source)).slice(7, 17);
+    const configFile = previous?.config_file ?? path19.join(storage, "configs", slug + ".yaml");
+    let expectedConfigDigest = null;
+    if (await exists(configFile)) {
+      ensure(
+        previous,
+        "ONBOARD_CONFLICT",
+        "\u6B64\u9879\u76EE\u5DF2\u6709\u672A\u767B\u8BB0\u914D\u7F6E\uFF0C\u8BF7\u5BFC\u5165\u8BE5\u914D\u7F6E\u6216\u6253\u5F00\u5DF2\u6709\u63A5\u5165\u8BB0\u5F55"
+      );
+      expectedConfigDigest = digest(
+        (0, import_yaml8.parse)(await fs20.readFile(configFile, "utf8"))
+      );
+      ensure(
+        expectedConfigDigest === digest({
+          ...previous.config,
+          private_env_file: previous.credential_file
+        }) || expectedConfigDigest === previous.expected_config_digest,
+        "CONFIG_CONFLICT",
+        "\u63A5\u5165\u914D\u7F6E\u88AB\u5916\u90E8\u4FEE\u6539\uFF0C\u8BF7\u5148\u6838\u5BF9"
+      );
+    }
+    let executor;
+    let aiSource = null;
+    if (input.ai?.project_id) {
+      const loaded = await this.projects.get(input.ai.project_id);
+      executor = loaded.config.executors[input.ai.executor_id ?? ""];
+      ensure(executor, "EXECUTOR", "\u6240\u9009\u5DE5\u4F5C AI \u4E0D\u5B58\u5728");
+      ensure(
+        loaded.vars[executor.api_key_env],
+        "SECRET",
+        "\u6240\u9009\u5DE5\u4F5C AI \u672A\u914D\u7F6E\u5BC6\u94A5"
+      );
+      aiSource = {
+        project_id: loaded.project.id,
+        executor_id: input.ai.executor_id,
+        digest: digest(executor)
+      };
+      executor = { ...executor, api_key_env: "HARNESS_WORK_AI_KEY" };
+    } else {
+      ensure(
+        input.ai?.base_url && input.ai.model?.trim(),
+        "EXECUTOR",
+        "\u8BF7\u9009\u62E9\u5DE5\u4F5C AI\uFF0C\u6216\u586B\u5199 API \u5730\u5740\u548C\u6A21\u578B"
+      );
+      executor = {
+        protocol: "openai_chat_completions",
+        base_url: input.ai.base_url.trim(),
+        model: input.ai.model.trim(),
+        api_key_env: "HARNESS_WORK_AI_KEY"
+      };
+    }
+    const url = new URL(executor.base_url);
+    ensure(
+      (url.protocol === "https:" || url.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname)) && !url.username && !url.password && !url.search && !url.hash,
+      "EXECUTOR",
+      "API \u5730\u5740\u987B\u4E3A HTTPS\uFF08\u672C\u673A\u53EF\u7528 HTTP\uFF09\uFF0C\u4E0D\u80FD\u5305\u542B\u51ED\u636E\u3001\u67E5\u8BE2\u53C2\u6570\u6216\u7247\u6BB5"
+    );
+    const config = {
+      schema_version: "1.3",
+      executors: { primary: executor },
+      workflow: { active_executor: "primary" },
+      project: {
+        source_root: source,
+        work_root: path19.join(storage, "work", slug),
+        control_root: path19.join(storage, "control", slug),
+        read_paths: ["**"],
+        allowed_paths: [],
+        protected_paths: ["AGENTS.md", "docs/harness/"],
+        command_env_allowlist: ["JAVA_HOME"],
+        commands: detection.commands,
+        verification: detection.verification
+      },
+      sandbox: {
+        profile: "trusted_local",
+        network: true,
+        codex_path: defaults.codex_path,
+        mode: "elevated"
+      }
+    };
+    normalizeConfig(structuredClone(config), path19.dirname(configFile));
+    const preview = await onboard(configFile, { config }, true);
+    const timestamp2 = (/* @__PURE__ */ new Date()).toISOString();
+    const job = {
+      ...previous,
+      id: previous?.id ?? id("onboard"),
+      revision: (previous?.revision ?? 0) + 1,
+      name,
+      source_root: source,
+      config_file: configFile,
+      config,
+      credential_file: previous?.credential_file ?? path19.join(storage, "private", slug, "work-ai.env"),
+      ai_source: aiSource,
+      credential_binding: previous?.credential_binding,
+      credential_reset: !!previous && !aiSource && (previous.config.executors.primary.base_url !== executor.base_url || !!previous.ai_source),
+      expected_config_digest: expectedConfigDigest,
+      code_digest: await codeDigest(source),
+      detection,
+      changes: preview.changes,
+      blockers: [...detection.blockers, ...preview.conflicts, ...preview.todos],
+      warnings: detection.warnings,
+      status: previous?.events?.length ? previous.status : "preview",
+      phase: previous?.events?.length ? "awaiting_confirmation" : "preview",
+      awaiting_confirmation: true,
+      created_at: previous?.created_at ?? timestamp2,
+      updated_at: timestamp2,
+      events: previous?.events ?? [],
+      attempts: previous?.attempts ?? []
+    };
+    await new Store(path19.join(this.root, "locks", job.id)).lock(async () => {
+      if (previous) {
+        const actual = await this.read(previous.id);
+        ensure(
+          actual.updated_at === previous.updated_at && actual.revision === previous.revision && actual.status !== "running",
+          "CONFIG_CONFLICT",
+          "\u63A5\u5165\u8BB0\u5F55\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5"
+        );
+      }
+      await atomic(this.file(job.id), job);
+    });
+    return this.expose(job);
+  }
+  async start(jobId, input) {
+    return new Store(
+      path19.join(this.root, "locks", path19.basename(this.file(jobId), ".json"))
+    ).lock(async () => {
+      ensure(
+        input?.confirmed === true,
+        "CONSENT_REQUIRED",
+        "\u8BF7\u786E\u8BA4\u771F\u5B9E\u6A21\u578B\u8C03\u7528\u3001\u4F9D\u8D56\u4E0B\u8F7D\u548C\u9879\u76EE\u811A\u672C\u6267\u884C"
+      );
+      const job = await this.read(jobId);
+      ensure(
+        input.revision === (job.revision ?? 1),
+        "CONFIG_CONFLICT",
+        "\u63A5\u5165\u9884\u89C8\u5DF2\u53D8\u5316\uFF0C\u8BF7\u5237\u65B0\u5E76\u91CD\u65B0\u786E\u8BA4"
+      );
+      ensure(
+        !job.blockers.length,
+        "ONBOARD_BLOCKED",
+        "\u8BF7\u4FEE\u590D\u68C0\u6D4B\u4E2D\u7684\u963B\u585E\u9879\u540E\u91CD\u65B0\u751F\u6210\u9884\u89C8"
+      );
+      ensure(
+        !this.running.has(jobId) && job.status !== "running",
+        "LOCKED",
+        "\u63A5\u5165\u6B63\u5728\u6267\u884C"
+      );
+      ensure(
+        job.status !== "completed",
+        "ONBOARD_COMPLETED",
+        "\u9879\u76EE\u5DF2\u63A5\u5165\uFF0C\u65E0\u9700\u91CD\u590D\u6267\u884C"
+      );
+      ensure(
+        await codeDigest(job.source_root) === job.code_digest,
+        "ONBOARD_CONFLICT",
+        "\u9879\u76EE\u4EE3\u7801\u5728\u9884\u89C8\u540E\u53D1\u751F\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u6838\u5BF9\u63A5\u5165\u8BA1\u5212"
+      );
+      const apiKey = input.api_key;
+      if (apiKey !== void 0)
+        ensure(
+          typeof apiKey === "string" && apiKey.length > 0 && apiKey.length <= 8192 && !/[\r\n\0]/.test(apiKey),
+          "SECRET",
+          "\u5BC6\u94A5\u4E0D\u80FD\u4E3A\u7A7A\u6216\u5305\u542B\u6362\u884C"
+        );
+      if (!job.ai_source && (job.credential_reset || !await exists(job.credential_file)))
+        ensure(apiKey, "SECRET", "\u8BF7\u586B\u5199\u5DE5\u4F5C AI \u5BC6\u94A5");
+      job.status = "running";
+      job.awaiting_confirmation = false;
+      job.confirmations ??= [];
+      job.confirmations.push({
+        at: (/* @__PURE__ */ new Date()).toISOString(),
+        revision: job.revision ?? 1
+      });
+      job.live_logs = [];
+      if (job.checks?.length) {
+        job.attempts ??= [];
+        job.attempts.push({ at: job.updated_at, checks: job.checks });
+        job.checks = [];
+      }
+      job.pid = process.pid;
+      job.error = null;
+      job.updated_at = (/* @__PURE__ */ new Date()).toISOString();
+      await atomic(this.file(job.id), job);
+      const pending = this.execute(job, apiKey).finally(
+        () => this.running.delete(jobId)
+      );
+      this.running.set(jobId, pending);
+      return this.expose(job);
+    });
+  }
+  async execute(job, suppliedKey) {
+    let secrets2 = new Secrets(suppliedKey ? [suppliedKey] : []);
+    const save = async () => {
+      job.updated_at = (/* @__PURE__ */ new Date()).toISOString();
+      await atomic(this.file(job.id), secrets2.clean(job));
+    };
+    const progress = async (phase, detail) => {
+      if (phase === "standards_file") return;
+      if (phase !== "activity") job.phase = phase;
+      if (phase === "doctor_result") job.doctor = detail;
+      if (phase === "initialized") job.initialized = true;
+      const data = detail;
+      const activityLabels = {
+        check_started: "\u68C0\u67E5\u5F00\u59CB",
+        command_started: "\u547D\u4EE4\u5F00\u59CB",
+        command_finished: "\u547D\u4EE4\u7ED3\u675F",
+        command_failed: "\u547D\u4EE4\u5931\u8D25"
+      };
+      if (phase === "activity" && data?.logs) job.live_logs.push(...data.logs);
+      job.events.push({
+        sequence: job.events.length + 1,
+        at: (/* @__PURE__ */ new Date()).toISOString(),
+        phase,
+        label: phase === "activity" ? `${activityLabels[data?.phase] ?? "\u68C0\u67E5\u6D3B\u52A8"} \xB7 ${data?.command_id ?? ""}${data?.exit_code !== void 0 ? ` \xB7 \u9000\u51FA\u7801 ${data.exit_code}` : ""}` : phaseLabels[phase] ?? phase
+      });
+      await save();
+    };
+    try {
+      await new Store(
+        path19.join(job.config.project.control_root, "onboarding-operation")
+      ).lock(async () => {
+        let key2 = suppliedKey;
+        if (job.ai_source && job.credential_binding !== digest(job.ai_source)) {
+          const loaded = await this.projects.get(job.ai_source.project_id);
+          const selected = loaded.config.executors[job.ai_source.executor_id];
+          ensure(
+            selected && digest(selected) === job.ai_source.digest,
+            "CONFIG_CONFLICT",
+            "\u6765\u6E90\u5DE5\u4F5C AI \u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u751F\u6210\u9884\u89C8"
+          );
+          key2 = loaded.vars[selected.api_key_env];
+        }
+        if (!key2 && await exists(job.credential_file)) {
+          const existing = await loadConfigValue(
+            {
+              ...structuredClone(job.config),
+              private_env_file: job.credential_file
+            },
+            job.config_file
+          );
+          key2 = existing.vars.HARNESS_WORK_AI_KEY;
+        }
+        ensure(key2 && !/[\r\n\0]/.test(key2), "SECRET", "\u5DE5\u4F5C AI \u5BC6\u94A5\u4E0D\u53EF\u7528");
+        secrets2 = new Secrets([key2]);
+        secrets2.assertSafe(JSON.stringify(job));
+        const config = { ...job.config, private_env_file: job.credential_file };
+        if (await exists(job.config_file)) {
+          const existing = (0, import_yaml8.parse)(await fs20.readFile(job.config_file, "utf8"));
+          ensure(
+            digest(existing) === digest(config) || digest(existing) === job.expected_config_digest,
+            "CONFIG_CONFLICT",
+            "\u63A5\u5165\u914D\u7F6E\u88AB\u5916\u90E8\u4FEE\u6539\uFF0C\u8BF7\u4FDD\u7559\u73B0\u573A\u5E76\u6838\u5BF9"
+          );
+        }
+        await new Store(job.config.project.control_root).lock(async () => {
+          const db = await readJson(
+            path19.join(job.config.project.control_root, "db.json")
+          ).catch((e) => {
+            if (e.code === "ENOENT") return null;
+            throw e;
+          });
+          ensure(
+            !db?.active_run,
+            "ACTIVE_RUN",
+            "\u5B58\u5728\u6D3B\u52A8\u8F6E\u6B21\uFF0C\u4E0D\u80FD\u91CD\u8BD5\u521D\u59CB\u5316\u6216\u66FF\u6362\u51ED\u636E"
+          );
+          await progress("saving");
+          await privateDirectory(path19.dirname(job.credential_file));
+          const environment = {
+            HARNESS_WORK_AI_KEY: key2,
+            ...job.detection.environment
+          };
+          ensure(
+            Object.values(environment).every(
+              (s) => typeof s === "string" && !/[\r\n\0]/.test(s)
+            ),
+            "ENV_FILE",
+            "\u73AF\u5883\u914D\u7F6E\u4E0D\u80FD\u5305\u542B\u6362\u884C"
+          );
+          await atomic(
+            job.credential_file,
+            Object.entries(environment).map(([k, v]) => `${k}=${v}`).join("\n") + "\n"
+          );
+          job.credential_binding = job.ai_source ? digest(job.ai_source) : null;
+          job.credential_reset = false;
+          await save();
+        });
+        const result = await onboard(
+          job.config_file,
+          { config },
+          false,
+          this.runtime,
+          job.config.project.control_root,
+          progress
+        );
+        job.initialized = result.initialized;
+        job.doctor = result.doctor ?? job.doctor;
+        job.baseline_passed = result.baseline?.passed ?? null;
+        job.checks = (result.baseline?.results ?? []).map((c) => ({
+          command: c.command.id,
+          exit_code: c.exitCode,
+          test_results: c.test_results,
+          logs: (c.log_capture?.files ?? []).map((l) => ({
+            path: l.path,
+            stream: l.stream,
+            command_id: l.command_id
+          })),
+          stderr: String(c.stderr ?? "").slice(-3e3)
+        }));
+        const tests = job.checks.filter(
+          (c) => c.test_results?.status !== "not_applicable"
+        );
+        job.tests_confirmed = tests.length > 0 && tests.every(
+          (c) => c.test_results?.eligible === true && c.test_results?.executed > 0
+        );
+        if (result.initialized) {
+          await progress("registering");
+          const project = await this.projects.add(job.config_file, job.name);
+          job.project_id = project.id;
+        }
+        const reasons = [...result.conflicts, ...result.todos];
+        if (!result.doctor?.ok) reasons.push("\u6C99\u7BB1\u6216\u771F\u5B9E\u6A21\u578B\u9884\u68C0\u672A\u901A\u8FC7");
+        if (result.initialized && !result.baseline?.passed)
+          reasons.push("\u57FA\u7EBF\u672A\u901A\u8FC7\uFF0C\u8BF7\u67E5\u770B\u68C0\u67E5\u65E5\u5FD7");
+        job.error = reasons.length ? reasons.join("\uFF1B") : null;
+        job.status = result.ok && job.tests_confirmed ? "completed" : result.initialized ? "needs_attention" : "blocked";
+        await progress(job.status);
+      });
+    } catch (e) {
+      job.status = "blocked";
+      job.error = secrets2.clean(e.message);
+      await progress("blocked");
+    }
+  }
+  async log(jobId, ref, offset) {
+    const job = await this.read(jobId);
+    ensure(
+      [
+        ...job.checks ?? [],
+        { logs: job.live_logs ?? [] },
+        ...(job.attempts ?? []).flatMap((a) => a.checks)
+      ].some((c) => c.logs?.some((l) => l.path === ref)),
+      "LOG_REF",
+      "\u65E5\u5FD7\u4E0D\u5C5E\u4E8E\u672C\u6B21\u63A5\u5165\u8BB0\u5F55"
+    );
+    const loaded = await loadConfig(job.config_file);
+    const page = await readLogPage(
+      await safePath(job.config.project.control_root, ref),
+      offset
+    );
+    return loaded.secrets.clean({
+      ...page,
+      next_offset: page.next_byte_offset,
+      end_offset: page.byte_offset + Buffer.byteLength(page.text),
+      running: job.status === "running"
+    });
+  }
+  async wait(jobId) {
+    await this.running.get(jobId);
+  }
+  async waitAll() {
+    await Promise.allSettled(this.running.values());
+  }
+};
+
+// src/console/removal.ts
+import fs21 from "node:fs/promises";
+import path20 from "node:path";
+import os3 from "node:os";
+import { fileURLToPath as fileURLToPath3 } from "node:url";
+var optionalJson = (file) => readJson(file).catch((e) => {
+  if (e.code === "ENOENT") return null;
+  throw e;
+});
+var overlap = (a, b) => within(canonical2(a), canonical2(b)) || within(canonical2(b), canonical2(a));
+var ProjectRemoval = class {
+  projects;
+  jobs;
+  constructor(projects, jobs) {
+    this.projects = projects;
+    this.jobs = jobs;
+  }
+  async plan(projectId, standards) {
+    ensure(typeof standards === "boolean", "ARGUMENT", "\u8BF7\u9009\u62E9\u89C4\u8303\u6E05\u7406\u8303\u56F4");
+    const project = await this.projects.registration(projectId);
+    ensure(
+      project.source_root,
+      "REMOVE_UNSAFE",
+      "\u9879\u76EE\u6E90\u7801\u5F52\u5C5E\u4E0D\u660E\uFF0C\u4E0D\u80FD\u81EA\u52A8\u6E05\u7406"
+    );
+    const source = project.source_root;
+    const moduleFile = fileURLToPath3(import.meta.url);
+    const runtimeRoot = path20.resolve(
+      path20.dirname(moduleFile),
+      path20.basename(moduleFile) === "harness.mjs" ? ".." : "../.."
+    );
+    const all = await this.projects.list();
+    const others = all.filter((p) => p.id !== project.id);
+    const jobList = await this.jobs.list();
+    const relatedJobs = jobList.filter(
+      (j) => canonical2(j.source_root) === canonical2(source)
+    );
+    ensure(
+      !relatedJobs.some(
+        (j) => j.status === "running" || this.jobs.running.has(j.id)
+      ),
+      "LOCKED",
+      "\u63A5\u5165\u6B63\u5728\u6267\u884C\uFF0C\u7ED3\u675F\u540E\u624D\u80FD\u5220\u9664\u9879\u76EE"
+    );
+    const protectedPaths = [
+      source,
+      this.projects.root,
+      os3.homedir(),
+      os3.tmpdir(),
+      ...process.env.LOCALAPPDATA ? [process.env.LOCALAPPDATA] : [],
+      ...process.env.SystemRoot ? [process.env.SystemRoot] : [],
+      process.execPath,
+      runtimeRoot
+    ];
+    const sharedCredentials = /* @__PURE__ */ new Set();
+    const otherRoots = [];
+    for (const other of others) {
+      if (other.source_root) protectedPaths.push(other.source_root);
+      for (const binding2 of other.configurations ?? []) {
+        protectedPaths.push(binding2.config_file, binding2.control_root);
+        const loaded = await loadConfig(binding2.config_file).catch(() => null);
+        ensure(
+          loaded,
+          "REMOVE_UNSAFE",
+          "\u5176\u4ED6\u9879\u76EE\u914D\u7F6E\u5931\u6548\uFF0C\u65E0\u6CD5\u6392\u9664\u5171\u4EAB\u76EE\u5F55\uFF1B\u8BF7\u5148\u4FEE\u590D\u6216\u79FB\u9664\u5176\u767B\u8BB0"
+        );
+        protectedPaths.push(loaded.config.project.work_root);
+        otherRoots.push(binding2.control_root, loaded.config.project.work_root);
+        if (loaded.config.private_env_file) {
+          sharedCredentials.add(canonical2(loaded.config.private_env_file));
+          protectedPaths.push(loaded.config.private_env_file);
+        }
+      }
+    }
+    for (const j of jobList.filter(
+      (j2) => canonical2(j2.source_root) !== canonical2(source)
+    )) {
+      const pending = await this.jobs.read(j.id);
+      protectedPaths.push(
+        pending.source_root,
+        pending.config_file,
+        pending.credential_file
+      );
+      otherRoots.push(
+        pending.config.project.work_root,
+        pending.config.project.control_root
+      );
+    }
+    const paths = [], preserved = [];
+    const critical = {};
+    const controlRoots = [], gitWorktrees = [];
+    const managed = {};
+    const add = async (target, kind, replacement) => {
+      ensure(
+        path20.isAbsolute(target) && canonical2(target) !== canonical2(path20.parse(target).root),
+        "REMOVE_UNSAFE",
+        "\u62D2\u7EDD\u6E05\u7406\u78C1\u76D8\u6839\u76EE\u5F55"
+      );
+      await safePath(path20.dirname(target), path20.basename(target));
+      if (!await exists(target)) return;
+      const stat = await fs21.lstat(target);
+      ensure(!stat.isSymbolicLink(), "REMOVE_UNSAFE", "\u6E05\u7406\u76EE\u6807\u4E0D\u80FD\u662F\u94FE\u63A5");
+      ensure(
+        !protectedPaths.some((p) => within(canonical2(target), canonical2(p))),
+        "REMOVE_UNSAFE",
+        "\u76EE\u5F55\u4E0E\u6E90\u7801\u3001\u5DE5\u4F5C\u53F0\u6216\u5176\u4ED6\u9879\u76EE\u5171\u4EAB\uFF0C\u62D2\u7EDD\u81EA\u52A8\u6E05\u7406: " + target
+      );
+      if (paths.some((p) => canonical2(p.path) === canonical2(target))) return;
+      paths.push({
+        path: target,
+        kind,
+        ...replacement === void 0 ? {} : { replacement }
+      });
+      if (stat.isFile()) critical[target] = hash(await fs21.readFile(target));
+    };
+    for (const binding2 of project.configurations ?? []) {
+      protectedPaths.push(
+        path20.dirname(binding2.config_file),
+        path20.dirname(path20.dirname(binding2.config_file))
+      );
+      const loaded = await loadConfig(binding2.config_file);
+      const config = loaded.config;
+      ensure(
+        canonical2(config.project.source_root) === canonical2(source) && canonical2(config.project.control_root) === canonical2(binding2.control_root),
+        "REMOVE_UNSAFE",
+        "\u914D\u7F6E\u7684\u9879\u76EE\u5F52\u5C5E\u5DF2\u6539\u53D8\uFF0C\u4E0D\u80FD\u6E05\u7406"
+      );
+      const control = config.project.control_root, work = config.project.work_root;
+      ensure(
+        ![runtimeRoot, path20.dirname(process.execPath)].some(
+          (root) => overlap(root, control) || overlap(root, work)
+        ),
+        "REMOVE_UNSAFE",
+        "\u5DE5\u4F5C\u6216\u63A7\u5236\u76EE\u5F55\u4E0D\u80FD\u4F4D\u4E8E\u5171\u7528\u6267\u884C\u5668\u7A0B\u5E8F\u76EE\u5F55\u4E2D"
+      );
+      ensure(
+        !overlap(control, work) && !overlap(control, source) && !overlap(work, source),
+        "REMOVE_UNSAFE",
+        "\u6E90\u7801\u3001\u63A7\u5236\u76EE\u5F55\u548C\u5DE5\u4F5C\u76EE\u5F55\u91CD\u53E0"
+      );
+      ensure(
+        !otherRoots.some(
+          (root) => overlap(root, control) || overlap(root, work)
+        ),
+        "REMOVE_UNSAFE",
+        "\u5DE5\u4F5C\u6216\u63A7\u5236\u76EE\u5F55\u4E0E\u5176\u4ED6\u9879\u76EE\u5171\u4EAB"
+      );
+      const ownerFile = path20.join(control, "project.json");
+      const owner = await optionalJson(ownerFile);
+      ensure(
+        owner && canonical2(owner.source_root) === canonical2(source) && owner.workspace && within(canonical2(work), canonical2(owner.workspace)),
+        "REMOVE_UNSAFE",
+        "\u7F3A\u5C11\u5339\u914D\u7684\u5DE5\u4F5C\u533A\u5F52\u5C5E\u8BB0\u5F55"
+      );
+      const dbFile = path20.join(control, "db.json"), db = await optionalJson(dbFile);
+      ensure(!db?.active_run, "ACTIVE_RUN", "\u9879\u76EE\u5B58\u5728\u6D3B\u52A8\u8F6E\u6B21\uFF0C\u7ED3\u675F\u540E\u624D\u80FD\u5220\u9664");
+      critical[ownerFile] = hash(await fs21.readFile(ownerFile));
+      critical[dbFile] = await exists(dbFile) ? hash(await fs21.readFile(dbFile)) : null;
+      controlRoots.push(control);
+      if (owner.mode === "git-worktree")
+        gitWorktrees.push({ source, workspace: owner.workspace });
+      for (const candidate of [
+        loaded.vars.JAVA_HOME,
+        loaded.vars.NODE_HOME,
+        config.sandbox.codex_path
+      ]) {
+        if (candidate && path20.isAbsolute(candidate))
+          protectedPaths.push(candidate);
+      }
+      await add(binding2.config_file, "\u9879\u76EE YAML \u4E0E AI \u914D\u7F6E");
+      await add(control, "\u4EFB\u52A1\u5386\u53F2\u3001\u68C0\u67E5\u7ED3\u679C\u53CA\u63A7\u5236\u6570\u636E");
+      await add(work, "\u9694\u79BB\u5DE5\u4F5C\u533A\u53CA\u4F9D\u8D56\u7F13\u5B58");
+      const credential = config.private_env_file;
+      if (credential && await exists(credential)) {
+        const generated = path20.join(
+          path20.dirname(path20.dirname(binding2.config_file)),
+          "private",
+          path20.basename(work),
+          "work-ai.env"
+        );
+        if (sharedCredentials.has(canonical2(credential)))
+          preserved.push({ path: credential, reason: "\u5176\u4ED6\u9879\u76EE\u5171\u7528\u7684\u51ED\u636E" });
+        else if (within(canonical2(control), canonical2(credential)) || canonical2(credential) === canonical2(generated))
+          await add(credential, "\u9879\u76EE\u79C1\u6709\u51ED\u636E");
+        else
+          preserved.push({
+            path: credential,
+            reason: "\u5916\u90E8\u51ED\u636E\u6587\u4EF6\uFF0C\u65E0\u6CD5\u8BC1\u660E\u7531\u672C\u9879\u76EE\u72EC\u5360\u521B\u5EFA"
+          });
+      }
+      for (const name of await fs21.readdir(path20.dirname(binding2.config_file))) {
+        const prefix = path20.basename(binding2.config_file) + ".previous-";
+        if (name.startsWith(prefix) && /^[a-f0-9]{64}$/.test(name.slice(prefix.length)))
+          await add(
+            path20.join(path20.dirname(binding2.config_file), name),
+            "\u9879\u76EE YAML \u5907\u4EFD"
+          );
+      }
+      const receiptFile = path20.join(control, "onboarding.json");
+      const receipt = await optionalJson(receiptFile);
+      critical[receiptFile] = await exists(receiptFile) ? hash(await fs21.readFile(receiptFile)) : null;
+      for (const [rel, expected] of Object.entries(
+        receipt?.managed_files ?? {}
+      )) {
+        ensure(
+          !managed[rel] || managed[rel] === expected,
+          "REMOVE_UNSAFE",
+          "\u591A\u4E2A\u914D\u7F6E\u7684\u89C4\u8303\u5F52\u5C5E\u8BB0\u5F55\u51B2\u7A81"
+        );
+        managed[rel] = String(expected);
+      }
+    }
+    for (const target of paths)
+      ensure(
+        !protectedPaths.some(
+          (p) => within(canonical2(target.path), canonical2(p))
+        ),
+        "REMOVE_UNSAFE",
+        "\u6E05\u7406\u8DEF\u5F84\u5305\u542B\u5171\u7528\u5DE5\u5177\u6216\u5176\u4ED6\u9879\u76EE"
+      );
+    for (const j of relatedJobs) await add(this.jobs.file(j.id), "\u63A5\u5165\u8BB0\u5F55");
+    for (const projectId2 of [project.id, ...project.aliases ?? []])
+      await add(
+        await safePath(
+          path20.join(this.projects.root, "launchers"),
+          projectId2 + ".cmd"
+        ),
+        "\u7EDF\u4E00\u9879\u76EE\u547D\u4EE4\u5165\u53E3"
+      );
+    if (standards) {
+      ensure(
+        Object.keys(managed).length,
+        "REMOVE_UNSAFE",
+        "\u7F3A\u5C11 Harness \u89C4\u8303\u5F52\u5C5E\u6E05\u5355\uFF0C\u4E0D\u80FD\u81EA\u52A8\u5220\u9664\u89C4\u8303"
+      );
+      for (const [rel, expected] of Object.entries(managed)) {
+        ensure(
+          rel === "AGENTS.md" || rel.startsWith("docs/harness/"),
+          "REMOVE_UNSAFE",
+          "\u89C4\u8303\u6E05\u5355\u5305\u542B\u975E Harness \u8DEF\u5F84"
+        );
+        const file = await safePath(source, rel);
+        if (!await exists(file)) continue;
+        const before = await fs21.readFile(file, "utf8");
+        if (rel === "AGENTS.md") {
+          const start = "<!-- CODEX_HARNESS_START -->", end = "<!-- CODEX_HARNESS_END -->";
+          const a = before.indexOf(start), b = before.indexOf(end);
+          if (a < 0 || b < a || a !== before.lastIndexOf(start) || b !== before.lastIndexOf(end) || hash(before.slice(a, b + end.length)) !== expected) {
+            preserved.push({
+              path: file,
+              reason: "Harness \u6807\u8BB0\u6216\u5185\u5BB9\u5DF2\u4FEE\u6539\uFF0C\u4FDD\u7559\u81EA\u5B9A\u4E49\u89C4\u8303"
+            });
+            continue;
+          }
+          const remaining = before.slice(0, a) + before.slice(b + end.length);
+          await add(
+            file,
+            "\u4EC5\u79FB\u9664 AGENTS.md \u7684 Harness \u533A\u5757",
+            remaining.trim() ? remaining : void 0
+          );
+        } else if (hash(before) === expected)
+          await add(file, "Harness \u751F\u6210\u4E14\u672A\u4FEE\u6539\u7684\u89C4\u8303");
+        else
+          preserved.push({ path: file, reason: "\u89C4\u8303\u5DF2\u4FEE\u6539\uFF0C\u4FDD\u7559\u81EA\u5B9A\u4E49\u5185\u5BB9" });
+      }
+      preserved.push({
+        path: path20.join(source, "docs/harness"),
+        reason: "\u672A\u5217\u5165\u6258\u7BA1\u6E05\u5355\u6216\u5DF2\u4FEE\u6539\u7684\u81EA\u5B9A\u4E49\u6587\u4EF6\u4FDD\u7559"
+      });
+    } else
+      preserved.push(
+        { path: path20.join(source, "docs/harness"), reason: "\u4FDD\u7559\u9879\u76EE\u89C4\u8303" },
+        { path: path20.join(source, "AGENTS.md"), reason: "\u4FDD\u7559\u9879\u76EE\u89C4\u8303" }
+      );
+    const targets = paths.filter(
+      (p) => !paths.some(
+        (parent) => parent !== p && within(canonical2(parent.path), canonical2(p.path))
+      )
+    );
+    const revision2 = digest({
+      project,
+      paths: targets,
+      critical,
+      standards,
+      preserved
+    });
+    return {
+      project,
+      source,
+      paths: targets,
+      preserved,
+      controlRoots,
+      relatedJobs,
+      gitWorktrees,
+      revision: revision2,
+      remove_standards: standards
+    };
+  }
+  async preview(projectId, standards = false) {
+    const p = await this.plan(projectId, standards);
+    return {
+      project_id: p.project.id,
+      name: p.project.name,
+      revision: p.revision,
+      remove_standards: standards,
+      paths: p.paths.map(({ path: path26, kind }) => ({ path: path26, kind })),
+      preserved: p.preserved
+    };
+  }
+  async remove(projectId, input) {
+    ensure(
+      input && Object.keys(input).every(
+        (k) => ["revision", "remove_standards", "confirmation"].includes(k)
+      ) && typeof input.revision === "string" && typeof input.remove_standards === "boolean",
+      "ARGUMENT",
+      "\u5220\u9664\u53C2\u6570\u65E0\u6548"
+    );
+    const first = await this.plan(projectId, input.remove_standards);
+    ensure(
+      input.confirmation === first.project.name,
+      "CONFIRMATION",
+      "\u8BF7\u8F93\u5165\u5B8C\u6574\u9879\u76EE\u540D\u79F0\u786E\u8BA4\u5220\u9664"
+    );
+    ensure(
+      first.revision === input.revision,
+      "CONFIG_CONFLICT",
+      "\u9879\u76EE\u6587\u4EF6\u6216\u914D\u7F6E\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u9884\u89C8\u5220\u9664\u8303\u56F4"
+    );
+    return new Store(path20.join(this.projects.root, "registry-lock")).lock(
+      async () => {
+        const lockJobs = async (index) => {
+          if (index < first.relatedJobs.length)
+            return new Store(
+              path20.join(this.jobs.root, "locks", first.relatedJobs[index].id)
+            ).lock(() => lockJobs(index + 1));
+          let result;
+          await withIdleRoots(first.controlRoots, async () => {
+            const plan = await this.plan(projectId, input.remove_standards);
+            ensure(
+              plan.revision === input.revision,
+              "CONFIG_CONFLICT",
+              "\u9879\u76EE\u72B6\u6001\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u9884\u89C8\u5220\u9664\u8303\u56F4"
+            );
+            const operation = id("remove");
+            const journalRoot = path20.join(
+              this.projects.root,
+              "private",
+              "removals"
+            );
+            await privateDirectory(journalRoot);
+            const file = path20.join(journalRoot, operation + ".json");
+            const moves = plan.paths.map((target, index2) => ({
+              ...target,
+              staged: path20.join(
+                path20.dirname(target.path),
+                `.harness-${operation}-${index2}`
+              )
+            }));
+            const journal = {
+              project_id: plan.project.id,
+              source: plan.source,
+              status: "staging",
+              moves
+            };
+            await atomic(file, journal);
+            try {
+              for (const move of moves) {
+                await safePath(
+                  path20.dirname(move.path),
+                  path20.basename(move.path)
+                );
+                ensure(
+                  !await exists(move.staged),
+                  "REMOVE_CONFLICT",
+                  "\u6E05\u7406\u6682\u5B58\u8DEF\u5F84\u5DF2\u5B58\u5728"
+                );
+                await fs21.rename(move.path, move.staged);
+                if (move.replacement !== void 0)
+                  await atomic(move.path, move.replacement);
+              }
+              await atomic(
+                path20.join(this.projects.root, "projects.json"),
+                (await this.projects.list()).filter(
+                  (p) => p.id !== plan.project.id
+                )
+              );
+            } catch (e) {
+              await this.rollback(moves);
+              await fs21.unlink(file);
+              throw e;
+            }
+            journal.status = "committed";
+            await atomic(file, journal);
+            const warnings = [];
+            for (const tree of plan.gitWorktrees) {
+              const git = await processRun(
+                [
+                  "git",
+                  "-c",
+                  "core.hooksPath=NUL",
+                  "-C",
+                  tree.source,
+                  "worktree",
+                  "remove",
+                  "--force",
+                  tree.workspace
+                ],
+                {
+                  cwd: path20.dirname(process.execPath),
+                  env: {
+                    ...process.env,
+                    GIT_CONFIG_NOSYSTEM: "1",
+                    GIT_CONFIG_GLOBAL: process.platform === "win32" ? "NUL" : "/dev/null"
+                  },
+                  timeoutMs: 3e4
+                }
+              ).catch(() => null);
+              if (git?.exitCode !== 0)
+                warnings.push(
+                  "\u5DE5\u4F5C\u533A\u5DF2\u79FB\u9664\uFF0C\u4F46 Git \u5DE5\u4F5C\u6811\u767B\u8BB0\u672A\u6E05\u7406: " + tree.workspace
+                );
+            }
+            for (const move of moves) {
+              try {
+                await this.purge(move);
+              } catch {
+                warnings.push(
+                  "\u6682\u5B58\u6587\u4EF6\u672A\u80FD\u6E05\u7406\uFF0C\u53EF\u91CD\u542F\u5DE5\u4F5C\u53F0\u91CD\u8BD5: " + move.staged
+                );
+              }
+            }
+            if (input.remove_standards) {
+              const scope = path20.join(plan.source, "docs/harness");
+              const directories = /* @__PURE__ */ new Set();
+              for (const target of plan.paths) {
+                let dir = path20.dirname(target.path);
+                while (within(scope, dir)) {
+                  directories.add(dir);
+                  if (canonical2(dir) === canonical2(scope)) break;
+                  dir = path20.dirname(dir);
+                }
+              }
+              for (const dir of [...directories].sort(
+                (a, b) => b.length - a.length
+              )) {
+                await safePath(
+                  plan.source,
+                  path20.relative(plan.source, dir).split(path20.sep).join("/")
+                );
+                await fs21.rmdir(dir).catch((e) => {
+                  if (!["ENOTEMPTY", "ENOENT", "EEXIST"].includes(e.code))
+                    warnings.push("\u7A7A\u76EE\u5F55\u672A\u80FD\u6E05\u7406: " + dir);
+                });
+              }
+            }
+            if (!warnings.length) await fs21.unlink(file);
+            result = { ok: true, preserved: plan.preserved, warnings };
+          });
+          return result;
+        };
+        return lockJobs(0);
+      }
+    );
+  }
+  async purge(move) {
+    ensure(
+      path20.dirname(move.staged) === path20.dirname(move.path) && /^\.harness-remove-[a-f0-9-]+-\d+$/.test(path20.basename(move.staged)),
+      "REMOVE_UNSAFE",
+      "\u65E0\u6548\u6E05\u7406\u6682\u5B58\u8DEF\u5F84"
+    );
+    await safePath(path20.dirname(move.staged), path20.basename(move.staged));
+    await fs21.rm(move.staged, { recursive: true, force: true });
+  }
+  async rollback(moves) {
+    for (const move of [...moves].reverse()) {
+      if (!await exists(move.staged)) continue;
+      if (await exists(move.path)) {
+        ensure(
+          move.replacement !== void 0 && await fs21.readFile(move.path, "utf8") === move.replacement,
+          "REMOVE_CONFLICT",
+          "\u6E05\u7406\u4E2D\u65AD\u540E\u539F\u8DEF\u5F84\u88AB\u4FEE\u6539\uFF0C\u8BF7\u4FDD\u7559\u6682\u5B58\u6570\u636E\u5E76\u6838\u5BF9"
+        );
+        await fs21.unlink(move.path);
+      }
+      await fs21.rename(move.staged, move.path);
+    }
+  }
+  async recover() {
+    const root = path20.join(this.projects.root, "private", "removals");
+    const files = await fs21.readdir(root).catch((e) => {
+      if (e.code === "ENOENT") return [];
+      throw e;
+    });
+    if (!files.length) return;
+    await new Store(path20.join(this.projects.root, "registry-lock")).lock(
+      async () => {
+        for (const name of files.filter(
+          (n) => /^remove-[a-f0-9-]+\.json$/.test(n)
+        )) {
+          const file = await safePath(root, name), journal = await readJson(file);
+          const registered = (await this.projects.list()).some(
+            (p) => p.id === journal.project_id
+          );
+          if (journal.status === "staging" && registered)
+            await this.rollback(journal.moves);
+          else for (const move of journal.moves) await this.purge(move);
+          await fs21.unlink(file);
+        }
+      }
+    );
+  }
+};
+
+// src/console/project-launcher.ts
+import path21 from "node:path";
+import { fileURLToPath as fileURLToPath4 } from "node:url";
+var batchValue = (value) => {
+  ensure(!/[\r\n\0"]/.test(value), "LAUNCHER_PATH", "\u542F\u52A8\u8DEF\u5F84\u5305\u542B\u4E0D\u652F\u6301\u7684\u5B57\u7B26");
+  return value.replaceAll("%", "%%");
+};
+async function projectLauncher(projects, projectId) {
+  const project = await projects.registration(projectId);
+  ensure(/^[a-zA-Z0-9_-]+$/.test(project.id), "PROJECT", "\u9879\u76EE ID \u65E0\u6548");
+  const bundled = path21.basename(fileURLToPath4(import.meta.url)) === "harness.mjs";
+  const entry = fileURLToPath4(
+    new URL(
+      bundled ? "./harness.mjs" : "../../dist/harness.mjs",
+      import.meta.url
+    )
+  );
+  const file = path21.join(projects.root, "launchers", `${project.id}.cmd`);
+  await atomic(
+    file,
+    `@echo off\r
+setlocal DisableDelayedExpansion\r
+set "HARNESS_CONSOLE_ROOT=${batchValue(projects.root)}"\r
+"${batchValue(process.execPath)}" "${batchValue(entry)}" %* --project-id "${project.id}"\r
+exit /b %errorlevel%\r
+`
+  );
+  return { path: file, project_id: project.id };
+}
+
 // src/console/readers.ts
-import fs17 from "node:fs/promises";
-import path16 from "node:path";
+import fs22 from "node:fs/promises";
+import path22 from "node:path";
 function pageParams(query) {
   const offset = Number(query.get("offset") ?? 0), limit = Number(query.get("limit") ?? 50);
   ensure(
@@ -25782,8 +28059,8 @@ function paginate(items, p) {
     next_offset: p.offset + p.limit < items.length ? p.offset + p.limit : null
   };
 }
-async function reader(projects, projectId) {
-  const loaded = await projects.get(projectId);
+async function reader(projects, projectId, loaded = void 0) {
+  loaded ??= await projects.get(projectId);
   return new Engine(
     loaded.config,
     loaded.vars,
@@ -25975,7 +28252,7 @@ async function eventPage(engine, cursor, runId) {
   );
   if (runId) await runById(engine, runId);
   const file = await safePath(engine.store.root, "events.jsonl");
-  const handle = await fs17.open(file, "r").catch((e) => {
+  const handle = await fs22.open(file, "r").catch((e) => {
     if (e.code === "ENOENT") return null;
     throw e;
   });
@@ -26032,7 +28309,7 @@ async function artifactFile(engine, runId, ref) {
   ensure(artifact2, "REFERENCE", "\u53EA\u80FD\u8BFB\u53D6\u8BE5\u8FD0\u884C\u767B\u8BB0\u7684\u4EA7\u7269");
   return {
     file: await safePath(engine.store.root, ref),
-    name: path16.basename(ref),
+    name: path22.basename(ref),
     type: artifact2.type
   };
 }
@@ -26069,12 +28346,16 @@ var offsetValue = (value) => {
 };
 async function startConsole(options = {}) {
   const projects = new Projects(options.registryRoot);
+  const onboarding = new OnboardingJobs(projects, options.onboardingRuntime);
+  const removal = new ProjectRemoval(projects, onboarding);
+  await removal.recover();
   if (options.configFile) await projects.add(options.configFile);
   const token = randomBytes(32).toString("hex"), cookieName = "harness_" + randomBytes(8).toString("hex");
-  const sourceAssets = fileURLToPath2(
+  const instanceId = randomBytes(16).toString("hex");
+  const sourceAssets = fileURLToPath5(
     new URL("../../dist/ui/", import.meta.url)
   );
-  const assetsRoot = options.assetsRoot ?? (path17.basename(fileURLToPath2(import.meta.url)) === "harness.mjs" ? fileURLToPath2(new URL("./ui/", import.meta.url)) : sourceAssets);
+  const assetsRoot = options.assetsRoot ?? (path23.basename(fileURLToPath5(import.meta.url)) === "harness.mjs" ? fileURLToPath5(new URL("./ui/", import.meta.url)) : sourceAssets);
   let origin = "";
   const streams = /* @__PURE__ */ new Set();
   const probes = /* @__PURE__ */ new Set();
@@ -26140,7 +28421,7 @@ async function startConsole(options = {}) {
           res.end();
           return;
         }
-        const content = await fs18.readFile(path17.join(assetsRoot, asset[0]));
+        const content = await fs23.readFile(path23.join(assetsRoot, asset[0]));
         res.writeHead(200, { "Content-Type": asset[1] + "; charset=utf-8" });
         res.end(content);
         return;
@@ -26150,7 +28431,96 @@ async function startConsole(options = {}) {
         "UNAUTHORIZED",
         "\u4F1A\u8BDD\u5DF2\u5931\u6548\uFF0C\u8BF7\u4F7F\u7528\u542F\u52A8\u547D\u4EE4\u63D0\u4F9B\u7684\u94FE\u63A5\u91CD\u65B0\u6253\u5F00"
       );
+      if (url2.pathname === "/api/instance" && method === "GET") {
+        json(res, { instance_id: instanceId, pid: process.pid });
+        return;
+      }
+      if (url2.pathname === "/api/path-selections" && method === "POST") {
+        json(res, await choosePath((await body(req)).kind));
+        return;
+      }
       const parts = url2.pathname.split("/").slice(2).map(decodeURIComponent);
+      if (parts[0] === "onboarding") {
+        if (parts[1] === "defaults" && parts.length === 2 && method === "GET")
+          json(res, await consoleDefaults(projects));
+        else if (parts[1] === "previews" && parts.length === 2 && method === "POST")
+          json(res, await onboarding.preview(await body(req)), 201);
+        else if (parts[1] === "jobs" && parts.length === 2 && method === "GET")
+          json(
+            res,
+            paginate(await onboarding.list(), pageParams(url2.searchParams))
+          );
+        else if (parts[1] === "jobs" && parts[2]) {
+          const jobId = parts[2];
+          if (parts.length === 3 && method === "GET")
+            json(res, await onboarding.get(jobId));
+          else if (parts.length === 3 && method === "DELETE") {
+            await onboarding.remove(jobId);
+            json(res, { ok: true });
+          } else if (parts[3] === "start" && parts.length === 4 && method === "POST")
+            json(res, await onboarding.start(jobId, await body(req)), 202);
+          else if (parts[3] === "revisions" && parts.length === 4 && method === "POST")
+            json(res, await onboarding.preview(await body(req), jobId));
+          else if (parts[3] === "logs" && parts.length === 4 && method === "GET")
+            json(
+              res,
+              await onboarding.log(
+                jobId,
+                url2.searchParams.get("ref") ?? "",
+                offsetValue(url2.searchParams.get("offset"))
+              )
+            );
+          else if (parts[3] === "events" && parts.length === 4 && method === "GET") {
+            await onboarding.get(jobId);
+            let cursor = offsetValue(
+              req.headers["last-event-id"] ?? url2.searchParams.get("cursor")
+            );
+            ensure(streams.size < 30, "LOCKED", "\u6253\u5F00\u7684\u5B9E\u65F6\u8FDE\u63A5\u8FC7\u591A");
+            res.writeHead(200, {
+              "Content-Type": "text/event-stream; charset=utf-8",
+              Connection: "keep-alive"
+            });
+            res.flushHeaders();
+            streams.add(res);
+            let busy = false, signature = "";
+            const poll = async () => {
+              if (busy || res.destroyed) return;
+              busy = true;
+              try {
+                const job = await onboarding.get(jobId);
+                const events = job.events.filter((e) => e.sequence > cursor).slice(0, 100);
+                if (events.length || signature !== job.updated_at + job.status) {
+                  cursor = events.at(-1)?.sequence ?? cursor;
+                  signature = job.updated_at + job.status;
+                  res.write(
+                    `id: ${cursor}
+event: progress
+data: ${JSON.stringify({ state: { ...job, events: void 0 }, items: events, cursor })}
+
+`
+                  );
+                } else res.write(": heartbeat\n\n");
+                if (res.writableLength > 2 * 1024 * 1024) res.destroy();
+              } catch (error2) {
+                if (!res.destroyed) {
+                  if (error2.code === "JOB_NOT_FOUND")
+                    res.end("event: removed\ndata: {}\n\n");
+                  else res.write("event: unavailable\ndata: {}\n\n");
+                }
+              } finally {
+                busy = false;
+              }
+            };
+            const timer = setInterval(() => void poll(), 1e3);
+            res.on("close", () => {
+              clearInterval(timer);
+              streams.delete(res);
+            });
+            await poll();
+          } else throw new Block("NOT_FOUND", "\u63A5\u53E3\u4E0D\u5B58\u5728");
+        } else throw new Block("NOT_FOUND", "\u63A5\u53E3\u4E0D\u5B58\u5728");
+        return;
+      }
       ensure(parts[0] === "projects", "NOT_FOUND", "\u63A5\u53E3\u4E0D\u5B58\u5728");
       if (parts.length === 1) {
         if (method === "GET") {
@@ -26181,13 +28551,62 @@ async function startConsole(options = {}) {
         return;
       }
       const projectId = parts[1];
+      if (parts[2] === "removal" && parts.length === 3) {
+        ensure(
+          !probes.has(projectId),
+          "LOCKED",
+          "\u8FDE\u63A5\u6D4B\u8BD5\u6B63\u5728\u6267\u884C\uFF0C\u8BF7\u7ED3\u675F\u540E\u518D\u5220\u9664\u9879\u76EE"
+        );
+        if (method === "GET") {
+          const scope = url2.searchParams.get("standards") ?? "false";
+          ensure(["true", "false"].includes(scope), "ARGUMENT", "\u5220\u9664\u8303\u56F4\u65E0\u6548");
+          json(res, await removal.preview(projectId, scope === "true"));
+        } else if (method === "DELETE")
+          json(res, await removal.remove(projectId, await body(req)));
+        else throw new Block("NOT_FOUND", "\u63A5\u53E3\u4E0D\u5B58\u5728");
+        return;
+      }
+      if (parts[2] === "launcher" && parts.length === 3 && method === "POST") {
+        json(res, await projectLauncher(projects, projectId));
+        return;
+      }
       if (parts.length === 2 && method === "DELETE") {
         await projects.remove(projectId);
         json(res, { ok: true });
         return;
       }
-      const engine = await reader(projects, projectId);
-      const registration = (await projects.get(projectId)).project;
+      if (parts[2] === "configurations" && parts.length === 3) {
+        if (method === "GET")
+          json(res, await projects.configurations(projectId));
+        else if (method === "POST") {
+          const input = await body(req);
+          json(
+            res,
+            await projects.attach(projectId, input.config_file, input.revision)
+          );
+        } else if (method === "PUT") {
+          const input = await body(req);
+          json(
+            res,
+            await projects.select(
+              projectId,
+              input.configuration_id,
+              input.revision,
+              input.config_revision
+            )
+          );
+        } else throw new Block("NOT_FOUND", "\u63A5\u53E3\u4E0D\u5B58\u5728");
+        return;
+      }
+      const loaded = await projects.get(projectId);
+      const engine = await reader(projects, projectId, loaded);
+      const registration = loaded.project;
+      const expectedBinding = req.headers["x-harness-configuration"] ?? url2.searchParams.get("configuration");
+      ensure(
+        !expectedBinding || expectedBinding === registration.current_configuration,
+        "CONFIG_CONFLICT",
+        "\u9879\u76EE\u914D\u7F6E\u5DF2\u5207\u6362\uFF0C\u8BF7\u5237\u65B0\u9875\u9762"
+      );
       const resource = parts[2];
       if (resource === "executors" && parts.length === 3) {
         if (method === "GET")
@@ -26285,6 +28704,12 @@ async function startConsole(options = {}) {
           if (busy || res.destroyed) return;
           busy = true;
           try {
+            const current = await projects.registration(projectId);
+            if (current.current_configuration !== registration.current_configuration) {
+              res.write("event: configuration_changed\ndata: {}\n\n");
+              res.end();
+              return;
+            }
             const page = await eventPage(engine, cursor);
             cursor = page.cursor;
             if (page.items.length || page.reset)
@@ -26295,8 +28720,8 @@ data: ${JSON.stringify(page)}
 
 `
               );
-            const stat = await fs18.stat(engine.store.file("db.json")).catch(() => null);
-            const configStat = await fs18.stat(registration.config_file);
+            const stat = await fs23.stat(engine.store.file("db.json")).catch(() => null);
+            const configStat = await fs23.stat(registration.config_file);
             const next = `${stat?.mtimeMs}:${stat?.size}:${configStat.mtimeMs}`;
             if (signature !== next) {
               signature = next;
@@ -26365,11 +28790,11 @@ data: ${JSON.stringify({ changed: true })}
             url2.searchParams.get("ref") ?? ""
           );
           ensure(
-            (await fs18.stat(artifact2.file)).size <= 32 * 1024 * 1024,
+            (await fs23.stat(artifact2.file)).size <= 32 * 1024 * 1024,
             "BODY_LIMIT",
             "\u4EA7\u7269\u8FC7\u5927\uFF0C\u8BF7\u4ECE\u672C\u673A\u63A7\u5236\u76EE\u5F55\u67E5\u770B"
           );
-          const data = await fs18.readFile(artifact2.file);
+          const data = await fs23.readFile(artifact2.file);
           ensure(
             data.length <= 32 * 1024 * 1024,
             "BODY_LIMIT",
@@ -26432,42 +28857,106 @@ data: ${JSON.stringify({ changed: true })}
   }
   origin = `http://127.0.0.1:${server.address().port}`;
   const url = `${origin}/#token=${token}`;
-  if (options.open !== false && process.platform === "win32") {
-    const script = `Start-Process '${url}'`;
-    const child = spawn3(
-      "powershell.exe",
-      [
-        "-NoProfile",
-        "-NonInteractive",
-        "-EncodedCommand",
-        Buffer.from(script, "utf16le").toString("base64")
-      ],
-      { windowsHide: true, stdio: "ignore" }
-    );
-    child.on("error", () => {
-    });
-    child.unref();
-  }
-  return {
+  const app = {
     server,
     origin,
     url,
     token,
+    instance_id: instanceId,
     projects,
+    onboarding,
     close: async () => {
       for (const stream of streams) stream.end();
       server.closeAllConnections();
       await new Promise(
         (resolve, reject) => server.close((error2) => error2 ? reject(error2) : resolve())
       );
+      await onboarding.waitAll();
     }
   };
+  try {
+    if (options.open !== false) await openBrowser(url);
+    return app;
+  } catch (error2) {
+    await app.close();
+    throw error2;
+  }
+}
+
+// src/console/launcher.ts
+import path24 from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
+async function launchConsole(options = {}) {
+  const root = options.registryRoot ?? defaultRegistryRoot();
+  const privateRoot = path24.join(root, "private");
+  await privateDirectory(privateRoot);
+  const recordFile = path24.join(privateRoot, "instance.json");
+  const lock = new Store(path24.join(root, "instance-lock"));
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await lock.lock(async () => {
+        const record = await readJson(recordFile).catch((e) => {
+          if (e.code === "ENOENT" || e instanceof SyntaxError) return null;
+          throw e;
+        });
+        if (record && /^http:\/\/127\.0\.0\.1:\d+$/.test(record.origin) && /^[a-f0-9]{64}$/.test(record.token)) {
+          let healthy = false;
+          try {
+            const res = await fetch(record.origin + "/api/instance", {
+              headers: { Authorization: "Bearer " + record.token },
+              redirect: "error",
+              signal: AbortSignal.timeout(2e3)
+            });
+            const identity = res.ok ? await res.json() : null;
+            healthy = identity?.instance_id === record.instance_id && identity?.pid === record.pid;
+          } catch {
+          }
+          if (healthy) {
+            if (options.configFile)
+              await new Projects(root).add(options.configFile);
+            const url = `${record.origin}/#token=${record.token}`;
+            if (options.open !== false) await openBrowser(url);
+            return { ...record, url, reused: true, close: async () => {
+            } };
+          }
+        }
+        const app = await startConsole({
+          ...options,
+          registryRoot: root,
+          open: false
+        });
+        const recordNext = {
+          pid: process.pid,
+          instance_id: app.instance_id,
+          origin: app.origin,
+          token: app.token,
+          started_at: (/* @__PURE__ */ new Date()).toISOString()
+        };
+        try {
+          await atomic(recordFile, recordNext);
+          if (options.open !== false) await openBrowser(app.url);
+        } catch (e) {
+          await app.close();
+          throw e;
+        }
+        return { ...app, reused: false };
+      });
+    } catch (e) {
+      ensure(
+        e.code !== "LOCKED" || attempt < 60,
+        "LOCKED",
+        "\u5DE5\u4F5C\u53F0\u542F\u52A8\u7E41\u5FD9\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5"
+      );
+      if (e.code !== "LOCKED") throw e;
+      await delay(200);
+    }
+  }
 }
 
 // src/cli.ts
 var help = `Codex Harness 1.3.0 \u2014 Node.js 24 / Windows
-\u7528\u6CD5\uFF1Aharness <\u547D\u4EE4> --config <\u9879\u76EE\u914D\u7F6E.yaml> [\u53C2\u6570]
-  ui [--config <\u8DEF\u5F84>] [--port <\u7AEF\u53E3>] [--no-open]  \u672C\u673A\u591A\u9879\u76EE\u5DE5\u4F5C\u53F0
+\u7528\u6CD5\uFF1Aharness <\u547D\u4EE4> (--config <\u9879\u76EE\u914D\u7F6E.yaml> | --project-id <\u9879\u76EEID>) [\u53C2\u6570]
+  ui [--reuse] [--config <\u8DEF\u5F84>] [--port <\u7AEF\u53E3>] [--no-open]  \u672C\u673A\u591A\u9879\u76EE\u5DE5\u4F5C\u53F0
   init --project <\u76EE\u5F55>          \u521B\u5EFA\u9879\u76EE\u4E8B\u5B9E\u6E05\u5355\u4E0E\u72EC\u7ACB\u5DE5\u4F5C\u533A
   doctor [--live] [--executor ID] \u5B9E\u6D4B\u6C99\u7BB1\uFF0C--live \u63A2\u6D4B\u6A21\u578B\u5DE5\u5177\u5F80\u8FD4
   onboard [--input <JSON>] [--dry-run]  \u4EA4\u4E92\u6216\u53C2\u6570\u63A5\u5165\uFF1B\u9ED8\u8BA4\u9884\u68C0\u3001\u521D\u59CB\u5316\u53CA\u57FA\u7EBF
@@ -26497,8 +28986,10 @@ async function main() {
     strict: true,
     options: {
       config: { type: "string" },
+      "project-id": { type: "string" },
       port: { type: "string" },
       "no-open": { type: "boolean" },
+      reuse: { type: "boolean" },
       input: { type: "string" },
       template: { type: "string" },
       "work-root": { type: "string" },
@@ -26538,20 +29029,36 @@ async function main() {
     return;
   }
   ensure(
+    !(values.config && values["project-id"]),
+    "ARGUMENT",
+    "--config \u548C --project-id \u4E0D\u80FD\u540C\u65F6\u4F7F\u7528"
+  );
+  let registered;
+  if (values["project-id"]) {
+    ensure(
+      !["onboard", "init", "ui"].includes(positionals[0]),
+      "ARGUMENT",
+      "\u5DF2\u767B\u8BB0\u9879\u76EE\u4E0D\u4F7F\u7528 --project-id \u91CD\u65B0\u521D\u59CB\u5316"
+    );
+    registered = await new Projects().get(values["project-id"]);
+    values.config = registered.project.config_file;
+  }
+  ensure(
     Number(process.versions.node.split(".")[0]) === 24,
     "NODE_VERSION",
     "\u9700\u8981 Node.js 24"
   );
   if (positionals[0] === "ui") {
-    const consoleServer = await startConsole({
+    const consoleServer = await (values.reuse ? launchConsole : startConsole)({
       configFile: values.config,
       port: values.port === void 0 ? void 0 : Number(values.port),
       open: !values["no-open"]
     });
-    console.error("Harness \u5DE5\u4F5C\u53F0\uFF1A" + consoleServer.url);
+    console.error("Harness \u5DE5\u4F5C\u53F0\uFF1A" + consoleServer.origin);
     console.log(
-      JSON.stringify({ ok: true, command: "ui", url: consoleServer.url })
+      JSON.stringify({ ok: true, command: "ui", url: consoleServer.origin })
     );
+    if ("reused" in consoleServer && consoleServer.reused) return;
     const stop = () => {
       void consoleServer.close().then(() => process.exit(0));
     };
@@ -26562,27 +29069,27 @@ async function main() {
   if (positionals[0] === "onboard") {
     let input = values.input ? await readJson(values.input) : {};
     if (!input.config && values.config)
-      input.config = await fs19.readFile(values.config, "utf8").then(import_yaml8.parse).catch((e) => {
+      input.config = await fs24.readFile(values.config, "utf8").then(import_yaml9.parse).catch((e) => {
         if (e.code === "ENOENT") return {};
         throw e;
       });
     input.config ??= {};
     input.config.project ??= {};
     if (values.project)
-      input.config.project.source_root = path18.resolve(values.project);
-    if (values.template) input.template_root = path18.resolve(values.template);
+      input.config.project.source_root = path25.resolve(values.project);
+    if (values.template) input.template_root = path25.resolve(values.template);
     if (values["work-root"])
-      input.config.project.work_root = path18.resolve(values["work-root"]);
+      input.config.project.work_root = path25.resolve(values["work-root"]);
     if (values["control-root"])
-      input.config.project.control_root = path18.resolve(values["control-root"]);
+      input.config.project.control_root = path25.resolve(values["control-root"]);
     if (values["private-env-file"])
-      input.config.private_env_file = path18.resolve(values["private-env-file"]);
+      input.config.private_env_file = path25.resolve(values["private-env-file"]);
     if (values["codex-path"])
       input.config.sandbox = {
         profile: "trusted_local",
         network: true,
         ...input.config.sandbox,
-        codex_path: path18.resolve(values["codex-path"])
+        codex_path: path25.resolve(values["codex-path"])
       };
     const name = values.executor ?? input.config.workflow?.active_executor ?? Object.keys(input.config.executors ?? {})[0] ?? "primary";
     if (values.model || values["base-url"] || values["api-key-env"]) {
@@ -26613,10 +29120,10 @@ async function main() {
     return;
   }
   ensure(values.config, "CONFIG", "\u8BF7\u6307\u5B9A --config");
-  const loaded = await loadConfig(values.config);
+  const loaded = registered ?? await loadConfig(values.config);
   secrets = loaded.secrets;
   const { config, vars } = loaded;
-  if (values.project) config.project.source_root = path18.resolve(values.project);
+  if (values.project) config.project.source_root = path25.resolve(values.project);
   for (const a of [config.project.work_root, config.project.control_root])
     ensure(
       !within(config.project.source_root, a) && !within(a, config.project.source_root),
@@ -26631,7 +29138,8 @@ async function main() {
     runner,
     (e) => console.error(JSON.stringify(engine.secrets.clean(e)))
   );
-  engine.configFile = path18.resolve(values.config);
+  engine.configFile = path25.resolve(values.config);
+  engine.environmentOverrides = registered?.environmentOverrides ?? {};
   const command = positionals[0];
   let result;
   const need = (name) => {
@@ -26669,13 +29177,13 @@ async function main() {
       break;
     case "run": {
       let task = need("task");
-      if (path18.isAbsolute(task)) {
+      if (path25.isAbsolute(task)) {
         ensure(
           within(config.project.control_root, task),
           "TASK",
           "\u4EFB\u52A1\u5FC5\u987B\u4F4D\u4E8E\u63A7\u5236\u76EE\u5F55"
         );
-        task = path18.relative(config.project.control_root, task).replaceAll("\\", "/");
+        task = path25.relative(config.project.control_root, task).replaceAll("\\", "/");
       }
       result = await engine.start(task, values.executor);
       secrets = engine.secrets;

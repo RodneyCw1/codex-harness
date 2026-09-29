@@ -2,7 +2,7 @@
 
 **A local execution and verification workflow coordinated by your current Codex session.**
 
-English | [简体中文](README.zh-CN.md) | [Step-by-step setup guide (中文)](docs/GETTING-STARTED.zh-CN.md)
+English | [简体中文](README.zh-CN.md) | [Workbench guide (中文)](docs/CONSOLE.zh-CN.md) | [Advanced setup (中文)](docs/GETTING-STARTED.zh-CN.md)
 
 Codex Harness connects project requirements, an external coding model, and independent verification on Windows. Your current Codex session analyzes the project, prepares implementation and acceptance documents, dispatches work, reviews evidence, and requests revisions. A local executor provides bounded file tools, native sandboxed checks, snapshots, and recoverable state. No additional decision-model API is required; the external worker still needs its own compatible API configuration.
 
@@ -10,8 +10,11 @@ This repository contains the **v1.3.0 executor** and its **v1.3 project template
 
 Both component folder names retain `v1.2` for path compatibility. Version 1.3 adds `onboard`, project document freezing with `prepare --docs`, automatic reports, JUnit/TAP test counts, and provider token/storage statistics. Zero executed tests or invalid reports cannot support acceptance. See the [changes](CHANGELOG.md), [migration and command reference](codex-harness-executor-v1.2/MIGRATION-1.3.md), and [validation record](codex-harness-executor-v1.2/VALIDATION-V1.3.md).
 
+**First run: install Node.js 24, extract the complete repository, and double-click `codex-harness-executor-v1.2\启动工作台.cmd`. The frontend is bundled; no separate frontend installation or development server is required.**
+
 ## What it does
 
+- Provides a local browser workbench for folder-based project onboarding, worker AI settings, task history, public model output, and verification evidence.
 - Freezes implementation, acceptance, and test documents before dispatching a task.
 - Gives the worker file-reading, search, patching, registered-check, and candidate-submission tools.
 - Verifies a frozen candidate in a fresh check copy and lets Codex review the actual assertions, changes, and evidence.
@@ -60,9 +63,9 @@ For installation, see [Node.js downloads](https://nodejs.org/en/download), [Git 
 
 ## Quick start
 
-The compiled `dist/harness.mjs` includes runtime dependencies. **Using the executor does not require `npm install` or a build.** For development, the executor directory now includes the dependency lockfile and `typecheck`, `test`, `test:host`, and `build` scripts; run `npm ci` there first.
+The local executor serves the frontend and authenticated API together. **No `npm install`, `npm run dev`, separate web deployment, or GitHub Pages setup is required for normal use.** Keep the complete distribution, including `dist/harness.mjs`, `dist/ui/`, `dist/harness-picker.exe`, and the bundled onboarding template. Node.js 24 must be installed separately.
 
-1. Download this repository using **Code → Download ZIP**, extract it, and keep both component folders outside your target project. Open PowerShell in the extracted repository directory.
+1. Download this repository using **Code → Download ZIP** and extract it outside your target project, for example to `C:\Tools\codex-harness`. Do not run it inside the ZIP or download only the HTML/CLI file. Open PowerShell in the extracted repository directory.
 2. Check Node.js and the executor:
 
    ```powershell
@@ -74,26 +77,62 @@ The compiled `dist/harness.mjs` includes runtime dependencies. **Using the execu
 
    Expect Node.js `v24.x.x` and executor version `1.3.0`. Help/version output alone does not verify the sandbox or model connection.
 
-3. Use the [beginner guide](docs/GETTING-STARTED.zh-CN.md) to create a project-specific YAML configuration outside the project. Fill in `base_url`, `model`, and `api_key_env`. Store the real key in the outside-project file referenced by `private_env_file`; do not paste it into the chat or YAML. The executor appends `/chat/completions` to `base_url`.
-4. Open the **target project** in Codex and send this prompt after replacing every bracketed field:
+3. Double-click `codex-harness-executor-v1.2\启动工作台.cmd` to start the service in the background and open your browser. The command-line alternative, from the repository root, is:
 
-   ```text
-   Target project: <absolute project path>
-   Template package: <absolute path to codex-harness-project-template-v1.2>
-   Executor package: <absolute path to codex-harness-executor-v1.2>
-   Local configuration: <absolute path to your outside-project YAML file>
-
-   Read the template's CODEX-SETUP.md and the executor's COORDINATOR.md.
-   Merge the project rules without overwriting existing instructions or work.
-   Inspect the project, register its real checks, protect acceptance inputs,
-   and check the native Codex CLI path. Do not read or print the private key file.
-   Run doctor --live; once it passes, initialize and record the baseline.
-   For this session, complete setup only and report what actually passed.
+   ```powershell
+   .\codex-harness-executor-v1.2\harness.cmd ui --reuse
    ```
 
-5. After setup, give Codex a concrete requirement. It maintains the task documents, dispatches work, verifies candidates, and coordinates revisions. You do not need to carry JSON messages between models.
+   The default address is `http://127.0.0.1:4317/`; another available port is selected if needed. Use the browser opened by the launcher, which establishes the local session. Do not bookmark token-bearing URLs or keep using an old service tab. Keep the terminal open when starting a new service with the CLI; the double-click launcher runs it in the background.
 
-For a first run, follow the guide's copied addition demo. Its initial failure is intentional; run it separately from the supplied package and your real project.
+4. Choose **添加项目 → 接入项目文件夹** (Add project → Project folder), select your project, and enter the worker API address, model and key. Click **检测项目** (Detect), review the tools, file changes and commands, then explicitly consent and click **一键接入** (Onboard). Maven and Node.js have automatic presets; existing YAML files can be imported. Preflight makes real provider calls and onboarding installs dependencies and runs project scripts. Keys stay in private local files outside the source repository.
+5. Open the **target project** in Codex and send this prompt after replacing every bracketed field:
+
+   ```text
+   Project already onboarded through Harness: <absolute project path>
+   Executor package: <absolute path to codex-harness-executor-v1.2>
+   Project ID: <shown in the workbench project settings>
+
+   Read AGENTS.md, docs/harness/README.md, and COORDINATOR.md.
+   Inspect real code and complete the project profile while preserving existing work.
+   Use the project ID to resolve the selected configuration; do not reinitialize
+   the project or read/print private keys.
+   My requirement is: <goal and constraints>.
+   Prepare implementation, acceptance and test documents before dispatching
+   the worker, then independently verify the actual results.
+   ```
+
+Initialization is not business acceptance. Onboarding installs generic rules; Codex still needs to write project-specific guidance and task documents. Zero tests, skipped tests and missing reports are not passes. Repeating onboarding does not add tests to its initial snapshot. Later task verification is shown separately, and exports still need review before merging.
+
+For manual YAML setup and the copied addition demo, use the [advanced guide](docs/GETTING-STARTED.zh-CN.md).
+
+## Reopening the workbench
+
+Double-click `启动工作台.cmd` after closing the browser or rebooting Windows. It reuses a healthy local instance and preserves local project registrations. It does not configure automatic startup. Closing the browser does not cancel an onboarding job running in the service.
+
+To create an optional **Harness 工作台** desktop shortcut, run this from the repository root:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\codex-harness-executor-v1.2\scripts\install-desktop-shortcut.ps1
+```
+
+Recreate the shortcut after moving the installation. Before upgrading, wait for active jobs to finish and identify and stop the old Harness service before launching the new version. Refreshing a tab does not reload backend code. Do not terminate all Node.js processes.
+
+The workbench is loopback-only, not a hosted multi-user website. Other users install their own tools, configure their own AI and onboard their own projects. Downloading this repository does not transfer your private keys or project history. See the [workbench guide](docs/CONSOLE.zh-CN.md) for ports, sessions and recovery.
+
+## Developing the workbench
+
+Only source development requires dependency installation and rebuilding:
+
+```powershell
+cd .\codex-harness-executor-v1.2
+npm ci
+npm run typecheck
+npm run build
+.\harness.cmd ui --reuse
+```
+
+Frontend sources are in `src/console/web/`; compiled assets are in `dist/ui/` and served on the same port. Restart an idle existing service to load changed backend code. Test commands are `npm test`, `npm run test:ui`, and `npm run test:host`; native sandbox checks need a Windows host environment.
 
 ## Everyday workflow
 
@@ -117,7 +156,7 @@ $Config = 'C:\Harness\config\demo.yaml'
 & $Harness status --config $Config
 ```
 
-Replace the example paths first. `doctor --live` performs sandbox probes and real worker API calls; it can incur provider usage. Use `status` after initialization. All business commands require `--config`; see the [command reference](codex-harness-executor-v1.2/RUNTIME.md) for inputs and recovery commands.
+Replace the example paths first. `doctor --live` performs sandbox probes and real worker API calls; it can incur provider usage. Use `status` after initialization. Business commands accept either `--project-id <ID>` or explicit `--config <path>`, never both. Project IDs follow the selected workbench configuration; fixed YAML paths do not. See the [command reference](codex-harness-executor-v1.2/RUNTIME.md) for inputs and recovery commands.
 
 Final accepted results are exported under `control_root/exports/<run-id>/`, including `changes.patch`, `before/`, `after/`, `delivery.json`, and review/evidence records. Review the export against your current source before applying it. Harness does not automatically merge, commit, push, or publish.
 
@@ -139,6 +178,8 @@ Most component reference documents are currently in Chinese.
 
 | Document | Read it for |
 |---|---|
+| [Workbench guide (中文)](docs/CONSOLE.zh-CN.md) | Browser startup, visual onboarding, AI settings, configuration switching and task evidence |
+| [Publishing checklist (中文)](docs/PUBLISHING.zh-CN.md) | Distribution completeness and privacy checks before a GitHub upload |
 | [Beginner guide](docs/GETTING-STARTED.zh-CN.md) | Installation, configuration, first demo, daily use, and troubleshooting |
 | [Project setup instructions](codex-harness-project-template-v1.2/CODEX-SETUP.md) | The setup procedure to give to Codex |
 | [New computer notes](codex-harness-project-template-v1.2/NEW-COMPUTER.md) | Rebinding paths and preparing a different machine |

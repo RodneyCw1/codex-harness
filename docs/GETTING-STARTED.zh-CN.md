@@ -1,12 +1,30 @@
 # Codex Harness 从零开始：安装、配置与使用
 
-**v1.3 推荐入口：** 使用 `onboard --config <项目外 YAML> --input <接入 JSON> --dry-run` 查看计划，确认输入后去掉 `--dry-run` 完成接入。任务文档可用 `prepare --docs` 直接冻结；`report` 查看过程，`stats` 查看供应商 token 和空间。参数、JSON 示例、JUnit/TAP 登记及迁移见 [v1.3 说明](../codex-harness-executor-v1.2/MIGRATION-1.3.md)。下面保留的手工流程与 v1.2 历史环境说明仍可用于排错；新发行 CLI 版本为 1.3.0，历史测试记录不代表本机预检结果。
+**v1.3 新用户推荐工作台接入，不必先手写 YAML。** 完整解压仓库、安装 Node.js 24 后，双击 `codex-harness-executor-v1.2\启动工作台.cmd` 即可打开页面。前端和本地 API 已随发行包打包，不需要 `npm install`、`npm run dev` 或云服务器。详细页面操作见[工作台说明](CONSOLE.zh-CN.md)。
 
 [返回中文首页](../README.zh-CN.md) · [English README](../README.md)
 
-本教程适用于 **Codex Harness v1.2.1、Windows、PowerShell 和 Codex 桌面会话**。目标是先让工作模型修复自带加法示例，完成独立验收并导出成果，再把同一流程用于自己的项目。
+## 推荐：可视化快速接入
 
-你负责安装环境、在本机填写 API Key、提供项目路径和需求。Codex 负责分析项目、维护三份任务文档、调用执行器、审查证据和安排返工。执行器本身没有独立聊天界面，也没有关闭会话后继续决策的后台服务。
+1. 准备 Windows、Node.js 24、Git、支持原生沙箱的 Codex CLI，以及目标项目所需的 JDK/Maven 或 Node.js 工具。发行包不附带这些系统运行时。
+2. 完整解压仓库到项目外的工具目录，双击执行器目录的 `启动工作台.cmd`。不要直接打开 `dist/ui/index.html`，它需要本地服务提供认证和项目数据。
+3. 在页面点击“添加项目”，选择项目文件夹，填写工作 AI 的 API 地址、模型和密钥，再检测项目。确认工具、文件与命令后，勾选真实调用及脚本执行授权，再接入。
+4. 接入记录显示预检、初始化及基线结果。没有测试报告或没有执行测试时，不能认定通过；让 Codex 补充真实任务和测试，不反复删除重建项目。
+5. 在 Codex 中打开目标项目，读取根目录 `AGENTS.md` 和 `docs/harness/`，补齐项目画像，再按具体需求编写实现、验收和测试文档。页面用于管理 AI 和查看过程，任务派发与独立验收仍由 Codex 完成。
+
+以后关闭浏览器或重启电脑，只需再次双击启动脚本；不需要重新安装依赖或接入已有项目。可在仓库根目录创建桌面入口：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\codex-harness-executor-v1.2\scripts\install-desktop-shortcut.ps1
+```
+
+默认端口是 4317，占用时使用可用端口，以启动入口打开的地址为准。升级时等待作业结束、关闭旧 Harness 后台后再启动新版，不要继续使用旧端口页面。普通网页刷新不会更新后台程序。
+
+## 进阶：命令行与手工配置
+
+下文保留 Windows、PowerShell 下的手工接入与加法示例，适合自定义配置、排错或了解底层流程；包含 v1.2.1 的历史环境说明。当前发行 CLI 为 1.3.0，历史测试记录不代表本机预检结果。批量接入可用 `onboard --config <项目外 YAML> --input <接入 JSON> --dry-run` 查看计划，确认后去掉 `--dry-run` 执行。文档冻结、JUnit/TAP 登记和迁移见 [v1.3 说明](../codex-harness-executor-v1.2/MIGRATION-1.3.md)。
+
+你负责安装环境、在本机填写 API Key、提供项目路径和需求。Codex 负责分析项目、维护三份任务文档、调用执行器、审查证据和安排返工。工作台不是聊天决策服务，没有关闭 Codex 会话后继续自动决策的后台模型。
 
 ## 目录
 

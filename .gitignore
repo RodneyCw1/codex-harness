@@ -3,6 +3,7 @@
 .vscode/
 .DS_Store
 Thumbs.db
+*.lnk
 
 # Installed dependencies and temporary test/build caches
 node_modules/
